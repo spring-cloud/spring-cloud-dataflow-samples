@@ -1,0 +1,10 @@
+http post --contentType 'application/json' --data "{\"title\": \"The Art of JAR Files 1\", \"author\": \"Spring Boot\"}" --target http://YOUR-cassandrastream-http-APP-URL/messages
+http post --contentType 'application/json' --data "{\"title\": \"The Art of JAR Files 2\", \"author\": \"Spring Boot\"}" --target http://YOUR-cassandrastream-http-APP-URL/messages
+http post --contentType 'application/json' --data "{\"title\": \"The Art of JAR Files 3\", \"author\": \"Spring Boot\"}" --target http://YOUR-cassandrastream-http-APP-URL/messages
+http post --contentType 'application/json' --data "{\"title\": \"The Art of JAR Files 4\", \"author\": \"Spring Boot\"}" --target http://YOUR-cassandrastream-http-APP-URL/messages
+http post --contentType 'application/json' --data "{\"title\": \"The Art of JAR Files 5\", \"author\": \"Spring Boot\"}" --target http://YOUR-cassandrastream-http-APP-URL/messages
+http post --contentType 'application/json' --data "{\"title\": \"The Art of JAR Files 6\", \"author\": \"Spring Boot\"}" --target http://YOUR-cassandrastream-http-APP-URL/messages
+http post --contentType 'application/json' --data "{\"title\": \"The Art of JAR Files 7\", \"author\": \"Spring Boot\"}" --target http://YOUR-cassandrastream-http-APP-URL/messages
+http post --contentType 'application/json' --data "{\"title\": \"The Art of JAR Files 8\", \"author\": \"Spring Boot\"}" --target http://YOUR-cassandrastream-http-APP-URL/messages
+http post --contentType 'application/json' --data "{\"title\": \"The Art of JAR Files 9\", \"author\": \"Spring Boot\"}" --target http://YOUR-cassandrastream-http-APP-URL/messages
+http post --contentType 'application/json' --data "{\"title\": \"The Art of JAR Files 10\", \"author\": \"Spring Boot\"}" --target http://YOUR-cassandrastream-http-APP-URL/messages

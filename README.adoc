@@ -1,1 +1,17 @@
 # spring-cloud-dataflow-samples
+
+This repository provides sample starter applications and code for use with the Spring Cloud Data Flow project. The following samples are available:
+
+## Streaming
+
+### http-cassandra
+
+A data pipeline demonstration that consumes data from an `http` endpoint, `transforms` while the data is in-transit, and writes the transformed payload to `cassandra` database.
+
+### http-mysql
+
+A data pipeline demonstration that consumes data from an `http` endpoint and writes the transformed payload to MySQL database using the `jdbc` sink.
+
+## Task / Batch
+
+## Data Science

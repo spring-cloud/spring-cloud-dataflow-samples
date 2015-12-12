@@ -1,4 +1,4 @@
-# spring-cloud-dataflow-samples
+# Spring Cloud Data Flow Samples
 
 This repository provides sample starter applications and code for use with the Spring Cloud Data Flow project. The following samples are available:
 

@@ -6,11 +6,11 @@ This repository provides sample starter applications and code for use with the S
 
 ### link:streaming/http-to-cassandra/README.adoc[http-cassandra]
 
-A data pipeline demonstration that consumes data from an `http` endpoint, `transforms` while the data is in-transit, and writes the transformed payload to `cassandra` database.
+A data pipeline demonstration that consumes data from an `http` endpoint and writes the payload to Cassandra database using the `cassandra` sink.
 
 ### link:streaming/http-to-mysql/README.adoc[http-mysql]
 
-A data pipeline demonstration that consumes data from an `http` endpoint and writes the transformed payload to MySQL database using the `jdbc` sink.
+A data pipeline demonstration that consumes data from an `http` endpoint and writes the payload to MySQL database using the `jdbc` sink.
 
 ## Task / Batch
 

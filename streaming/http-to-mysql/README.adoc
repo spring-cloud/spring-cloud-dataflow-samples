@@ -233,7 +233,7 @@ http post --contentType 'application/json' --target http://mysqlstream-http.app.
 > 202 ACCEPTED
 ```
 +
-. Connect to the MySQL instance and query the table `test.names` to list the new rows:
+. Connect to the MySQL instance and query the table `names` to list the new rows:
 +
 ```
 select * from names;

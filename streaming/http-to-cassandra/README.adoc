@@ -1,36 +1,49 @@
-# HTTP to Cassandra Demo
+:sectnums:
+= HTTP to Cassandra Demo
 
-In this demonstration, you will learn how to orchestrate a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an `http` endpoint and write the payload to `cassandra` database. 
+In this demonstration, you will learn how to orchestrate a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an _HTTP_ endpoint and write the payload to a _Cassandra_ database. 
 
-We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `admin` Spring Boot application. We will deploy `admin` using  https://github.com/spring-cloud/spring-cloud-dataflow/tree/master/spring-cloud-dataflow-admin-local[Local] and as well as https://github.com/spring-cloud/spring-cloud-dataflow-admin-cloudfoundry[Cloud Foundry] SPIs (Service Provider Interface) to demonstrate how Spring Cloud Data Flow takes advantage of _dev-sandbox_ and _cloud-native_ platform capabilities respectively.
+We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `admin` Spring Boot application. We will deploy `admin` using  https://github.com/spring-cloud/spring-cloud-dataflow/tree/master/spring-cloud-dataflow-admin-local[Local] as well as https://github.com/spring-cloud/spring-cloud-dataflow-admin-cloudfoundry[Cloud Foundry] SPIs (Service Provider Interface) to demonstrate how Spring Cloud Data Flow takes advantage of _dev-sandbox_ and _cloud-native_ platform capabilities respectively.
 
-# 1: Prerequisites for Local SPI
+== Using Local SPI
+
+=== Prerequisites
 
 In order to get started, make sure that you have the following components:
 
-* Local build of https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
-* Running instance of `redis`
-* Running instance of `cassandra`
-* Create the `book` table (in `cassandra`) using `create-table.sql`
+* Local build of link:https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
+* Running instance of link:http://redis.io/[Redis]
+* Running instance of link:http://cassandra.apache.org/[Apache Cassandra]
+* A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] to connect to the Cassandra instance. You might have to provide `host`, `port`, `username` and `password` depending on the Cassandra configuration you are using. 
+* Create a keyspace and a `book` table in Cassandra using:
++
+```
+CREATE KEYSPACE clouddata WITH REPLICATION = { 'class' : 'org.apache.cassandra.locator.SimpleStrategy', 'replication_factor': '1' } AND DURABLE_WRITES = true;
+USE clouddata;
+CREATE TABLE book  (
+    id          uuid PRIMARY KEY,
+    isbn        text,
+    author      text,
+    title       text
+);
+```
 
-## 1.1: Running the Sample Locally
+=== Running the Sample Locally
 
 . Launch the locally built `admin` application
 +
-
 ```
-→ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
-→ java -jar spring-cloud-dataflow-admin-local/target/spring-cloud-dataflow-admin-local-1.0.0.BUILD-SNAPSHOT.jar
+$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
+$ java -jar spring-cloud-dataflow-admin-local/target/spring-cloud-dataflow-admin-local-1.0.0.BUILD-SNAPSHOT.jar
 
 ```
 +
 
 . Connect to Spring Cloud Data Flow's `shell`
 +
-
 ```
-→ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
-→ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0.BUILD-SNAPSHOT.jar
+$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
+$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0.BUILD-SNAPSHOT.jar
 
   ____                              ____ _                __
  / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
@@ -53,12 +66,13 @@ dataflow:>version
 +
 . Create the stream
 +
-
 ```
-dataflow:>stream create cassandrastream --definition "http --spring.cloud.stream.bindings.output.contentType='application/json' | cassandra --ingestQuery='insert into book (isbn, title, author) values (uuid(), ?, ?)' --spring.cassandra.username='<USERNAME>' --spring.cassandra.password='<PASSWORD>' --spring.cassandra.port=<PORT> --spring.cassandra.contactPoints=<HOST> --spring.cassandra.keyspace='<KEYSPACE>' --includes='org.springframework.cloud.stream.demo:book:1.0.0.BUILD-SNAPSHOT' --spring.cassandra.entity-base-packages=demo.domain --queryType=INSERT" --deploy
+dataflow:>stream create cassandrastream --definition "http --server.port=8888 --spring.cloud.stream.bindings.output.contentType='application/json' | cassandra --ingestQuery='insert into book (id, isbn, title, author) values (uuid(), ?, ?, ?)' --spring.cassandra.keyspace=clouddata" --deploy
 
 Created and deployed new stream 'cassandrastream'
 ```
+NOTE: If Cassandra isn't running on default port on `localhost` or if you need username and password to connect, use one of the following options to specify the necessary connection parameters: `--spring.cassandra.username='<USERNAME>' --spring.cassandra.password='<PASSWORD>' --spring.cassandra.port=<PORT> --spring.cassandra.contactPoints=<LIST-OF-HOSTS>`
+
 +
 . Verify the stream is successfully deployed
 +
@@ -66,7 +80,7 @@ Created and deployed new stream 'cassandrastream'
 dataflow:>stream list
 ```
 +
-. Notice that `cassandrastream-http` and `cassandrastream-cassandra` https://github.com/spring-cloud/spring-cloud-stream-modules/[Spring Cloud Stream] modules are running as Spring Boot applications within the `admin` as a collocated process.
+. Notice that `cassandrastream-http` and `cassandrastream-cassandra` link:https://github.com/spring-cloud/spring-cloud-stream-modules/[Spring Cloud Stream] modules are running as Spring Boot applications within the `admin` as a collocated process.
 +
 
 ```
@@ -76,33 +90,27 @@ dataflow:>stream list
    Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-284240942697761420/cassandrastream.http
 ```
 +
-. Lookup the `port` for `cassandrastream-http` application from the logs [i.e: `/var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-284240942697761420/cassandrastream.http`]. 
-+
-
-```
-2015-12-15 15:52:42.896  INFO 18341 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 14491 (http)
-2015-12-15 15:52:42.900  INFO 18341 --- [           main] o.s.c.s.m.http.HttpSourceApplication     : Started HttpSourceApplication in 6.494 seconds (JVM running for 11.291)
-```
-+
-
-. Post sample data pointing to the `http` endpoint: `http://localhost:14491/messages` [i.e: **14491** in this case]
+. Post sample data pointing to the `http` endpoint: `http://localhost:8888/messages` [`8888` is the `server.port` we specified for the `http` source in this case]
 +
 ```
-dataflow:>http post --contentType 'application/json' --data "{\"title\": \"The Art of JAR Files\", \"author\": \"Spring Boot\"}" --target http://localhost:14491/messages
-> POST (application/json;charset=UTF-8) http://localhost:14491/messages {"title": "The Art of JAR Files", "author": "Spring Boot"}
+dataflow:>http post --contentType 'application/json' --data '{"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}' --target http://localhost:8888/messages
+> POST (application/json;charset=UTF-8) http://localhost:8888/messages {"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}
 > 202 ACCEPTED
 ```
 +
-. Use a database utility tool such as http://dbeaver.jkiss.org/[DBeaver] to connect to the Cassandra instance. Query the table `book` to list the persisted records
+. Connect to the Cassandra instance and query the table `clouddata.book` to list the persisted records
 +
 ```
-select * from book;
+select * from clouddata.book;
 ```
 
 +
 . That's it; you're done!
 
-# 2: Prerequisites for Pivotal Cloud Foundry SPI
+
+== Using Pivotal Cloud Foundry SPI
+
+=== Prerequisites for Pivotal Cloud Foundry SPI
 
 In order to get started, make sure that you have the following components:
 
@@ -110,20 +118,30 @@ In order to get started, make sure that you have the following components:
 * Local build of https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
 * Local build of Spring Cloud Data Flow's https://github.com/spring-cloud/spring-cloud-dataflow-admin-cloudfoundry[Cloud-Foundry-Admin]
 * Running instance of `redis` in Cloud Foundry
-* Running instance of `cassandra`
-* Create the `book` table (in `cassandra`) using `create-table.sql`
+* Running instance of `cassandra` in Cloud Foundry or from another Cloud provider
+* A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] to connect to the Cassandra instance. You might have to provide `host`, `port`, `username` and `password` depending on the Cassandra configuration you are using. 
+* Create a `book` table in your Cassandra keyspace using:
++
+```
+CREATE TABLE book  (
+    id          uuid PRIMARY KEY,
+    isbn        text,
+    author      text,
+    title       text
+);
+```
 
 
-## 2.1: Running the Sample in Cloud Foundry
+=== Running the Sample in Cloud Foundry
 
 . Verify that CF instance is reachable
 +
 
 ```
-→ cf api
+$ cf api
 API endpoint: https://api.system.navy.springapps.io (API version: 2.43.0)
 
-→ cf apps
+$ cf apps
 Getting apps in org sabby-dataflow / space development as sabby...
 OK
 
@@ -137,7 +155,7 @@ No apps found
 +
 
 ```
-→ cf apps
+$ cf apps
 Getting apps in org sabby-dataflow / space development as sabby...
 OK
 
@@ -152,8 +170,8 @@ s-c-dataflow-admin   started           1/1         1G       1G     s-c-dataflow-
 +
 
 ```
-→ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
-→ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0.BUILD-SNAPSHOT.jar
+$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
+$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0.BUILD-SNAPSHOT.jar
 
   ____                              ____ _                __
  / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
@@ -186,7 +204,7 @@ dataflow:>version
 +
 
 ```
-dataflow:>stream create cassandrastream --definition "http --spring.cloud.stream.bindings.output.contentType='application/json' | cassandra --ingestQuery='insert into book (isbn, title, author) values (uuid(), ?, ?)' --spring.cassandra.username='<USERNAME>' --spring.cassandra.password='<PASSWORD>' --spring.cassandra.port=<PORT> --spring.cassandra.contactPoints=<HOST> --spring.cassandra.keyspace='<KEYSPACE>' --includes='org.springframework.cloud.stream.demo:book:1.0.0.BUILD-SNAPSHOT' --spring.cassandra.entity-base-packages=demo.domain --queryType=INSERT" --deploy
+dataflow:>stream create cassandrastream --definition "http --spring.cloud.stream.bindings.output.contentType='application/json' | cassandra --ingestQuery='insert into book (id, isbn, title, author) values (uuid(), ?, ?, ?)' --spring.cassandra.username='<USERNAME>' --spring.cassandra.password='<PASSWORD>' --spring.cassandra.port=<PORT> --spring.cassandra.contactPoints=<HOST> --spring.cassandra.keyspace='<KEYSPACE>'" --deploy
 
 Created and deployed new stream 'cassandrastream'
 ```
@@ -201,7 +219,7 @@ dataflow:>stream list
 +
 
 ```
-→ cf apps
+$ cf apps
 Getting apps in org sabby-dataflow / space development as sabby...
 OK
 
@@ -214,28 +232,22 @@ s-c-dataflow-admin          started           1/1         1G       1G     s-c-da
 . Lookup the `url` for `cassandrastream-http` application from the list above. Post sample data pointing to the `http` endpoint: `<YOUR-cassandrastream-http-APP-URL>/messages`
 +
 ```
-dataflow:>script --file <PATH/TO>/spring-cloud-dataflow-samples/http-to-cassandra/data.txt
-
-http post --contentType 'application/json' --data "{\"title\": \"The Art of JAR Files 1\", \"author\": \"Spring Boot\"}" --target http://cassandrastream-http.app.navy.springapps.io/messages
-> POST (application/json;charset=UTF-8) http://cassandrastream-http.app.navy.springapps.io/messages {"title": "The Art of JAR Files 1", "author": "Spring Boot"}
+http post --contentType 'application/json' --data '{"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}' --target http://<YOUR-cassandrastream-http-APP-URL>/messages
+> POST (application/json;charset=UTF-8) http://cassandrastream-http.app.navy.springapps.io/messages {"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}
 > 202 ACCEPTED
-...
-...
-...
 ```
 +
-. Use a database utility tool such as http://dbeaver.jkiss.org/[DBeaver] to connect to the Cassandra instance. Query the table `book` to list all the 10 rows 
+. Connect to the Cassandra instance and query the table `book` to list the data inserted
 +
 ```
 select * from book;
 ```
-image:img/cassandra_table_results.png[Table Results]
 
 +
 . Now, let's try to take advantage of Pivotal Cloud Foundry's platform capability. Let's scale the `cassandrastream-http` application from 1 to 3 instances
 +
 ```
-→ cf scale cassandrastream-http -i 3
+$ cf scale cassandrastream-http -i 3
 Scaling app cassandrastream-http in org sabby-dataflow / space development as sabby...
 OK
 ```
@@ -243,7 +255,7 @@ OK
 . Verify App instances (3/3) running successfully
 +
 ```
-→ cf apps
+$ cf apps
 Getting apps in org sabby-dataflow / space development as sabby...
 OK
 
@@ -255,7 +267,8 @@ s-c-dataflow-admin          started           1/1         1G       1G     s-c-da
 +
 . That's it; you're done!
 
-# 3: Summary 
+:!sectnums:
+== Summary 
 
 In this sample, you have learned:
 

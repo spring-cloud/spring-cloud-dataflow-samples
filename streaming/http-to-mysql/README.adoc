@@ -1,27 +1,39 @@
-# HTTP to MySQL Demo
+:sectnums:
+= HTTP to MySQL Demo
 
 In this demonstration, you will learn how to orchestrate a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an `http` endpoint and write to MySQL database through `jdbc` sink. 
 
 We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `admin` Spring Boot application. We will deploy `admin` using  https://github.com/spring-cloud/spring-cloud-dataflow/tree/master/spring-cloud-dataflow-admin-local[Local] and as well as https://github.com/spring-cloud/spring-cloud-dataflow-admin-cloudfoundry[Cloud Foundry] SPIs (Service Provider Interface) to demonstrate how Spring Cloud Data Flow takes advantage of _dev-sandbox_ and _cloud-native_ platform capabilities respectively.
 
-# 1: Prerequisites for Local SPI
+== Using Local SPI
+
+=== Prerequisites
 
 In order to get started, make sure that you have the following components:
 
-* Cloud Foundry instance
 * Local build of https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
-* Running instance of `redis`
-* Running instance of `mysql`
-* Create the `names` table (in `mysql`) using `create-table.sql`
+* Running instance of link:http://redis.io/[Redis]
+* Running instance of link:http://www.mysql.com/[MySQL]
+* A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] or link:https://www.dbvis.com/[DbVisualizer]
+* Create the `test` database with a `names` table (in MySQL) using:
++
+```
+CREATE DATABASE test;
+USE test;
+CREATE TABLE names
+(
+	name varchar(255)
+);
+```
 
-## 1.1: Running the Sample Locally
+=== Running the Sample Locally
 
 . Launch the locally built `admin` application
 +
 
 ```
-→ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
-→ java -jar spring-cloud-dataflow-admin-local/target/spring-cloud-dataflow-admin-local-1.0.0.BUILD-SNAPSHOT.jar
+$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
+$ java -jar spring-cloud-dataflow-admin-local/target/spring-cloud-dataflow-admin-local-1.0.0.BUILD-SNAPSHOT.jar
 
 ```
 +
@@ -30,8 +42,8 @@ In order to get started, make sure that you have the following components:
 +
 
 ```
-→ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
-→ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0.BUILD-SNAPSHOT.jar
+$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
+$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0.BUILD-SNAPSHOT.jar
 
   ____                              ____ _                __
  / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
@@ -55,10 +67,12 @@ dataflow:>version
 +
 
 ```
-dataflow:>stream create --name mysqlstream --definition "http | jdbc --includes='mysql:mysql-connector-java:5.1.37' --spring.datasource.url='jdbc:mysql://<HOST>:<PORT>/<NAME>' --spring.datasource.username=<USERNAME> --spring.datasource.password=<PASSWORD> --tableName=names --columns=name --spring.datasource.driverClassName=com.mysql.jdbc.Driver --initialize=true" --deploy
+dataflow:>stream create --name mysqlstream --definition "http --server.port=8787 | jdbc --includes='mysql:mysql-connector-java:5.1.37' --spring.datasource.url='jdbc:mysql://localhost:3306/test' --tableName=names --columns=name --spring.datasource.driverClassName=com.mysql.jdbc.Driver --initialize=false" --deploy
 
 Created and deployed new stream 'mysqlstream'
 ```
+NOTE: If MySQL isn't running on default port on `localhost` or if you need username and password to connect, use one of the following options to specify the necessary connection parameters: `--spring.datasource.url='jdbc:mysql://<HOST>:<PORT>/<NAME>' --spring.datasource.username=<USERNAME> --spring.datasource.password=<PASSWORD>`
+
 +
 . Verify the stream is successfully deployed
 +
@@ -76,34 +90,26 @@ dataflow:>stream list
    Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-284240942697761420/mysqlstream.http
 ```
 
-+
-. Lookup the `port` for `mysqlstream-http` application from the logs [i.e: `/var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-284240942697761420/mysqlstream.http`]. 
-+
-
-```
-2015-12-15 16:38:55.557  INFO 19089 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 46073 (http)
-2015-12-15 16:38:55.559  INFO 19089 --- [           main] o.s.c.s.m.http.HttpSourceApplication     : Started HttpSourceApplication in 4.558 seconds (JVM running for 8.733)
-```
-+
-
-. Post sample data pointing to the `http` endpoint: `http://localhost:46073/messages` [i.e: **46073** in this case]
+. Post sample data pointing to the `http` endpoint: `http://localhost:8787/messages` [`8787` is the `server.port` we specified for the `http` source in this case]
 
 +
 ```
-dataflow:>http post --contentType 'application/json' --target http://localhost:46073/messages --data "{\"name\": \"Foo\"}"
-> POST (application/json;charset=UTF-8) http://localhost:46073/messages {"name": "Spring Boot"}
+dataflow:>http post --contentType 'application/json' --target http://localhost:8787/messages --data "{\"name\": \"Foo\"}"
+> POST (application/json;charset=UTF-8) http://localhost:8787/messages {"name": "Spring Boot"}
 > 202 ACCEPTED
 ```
 +
-. Use a database utility tool such as http://dbeaver.jkiss.org/[DBeaver] to connect to the MySQL instance. Query the table `names` to list all the 10 rows 
+. Connect to the MySQL instance and query the table `test.names` to list the new rows:
 +
 ```
-select * from names;
+select * from test.names;
 ```
 +
 . That's it; you're done!
 
-# 2: Prerequisites for Pivotal Cloud Foundry SPI
+== Using Pivotal Cloud Foundry SPI
+
+=== Prerequisites
 
 In order to get started, make sure that you have the following components:
 
@@ -112,18 +118,26 @@ In order to get started, make sure that you have the following components:
 * Local build of Spring Cloud Data Flow's https://github.com/spring-cloud/spring-cloud-dataflow-admin-cloudfoundry[Cloud-Foundry-Admin]
 * Running instance of `redis` in Cloud Foundry
 * Running instance of `mysql`
-* Create the `names` table (in `mysql`) using `create-table.sql`
+* A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] or link:https://www.dbvis.com/[DbVisualizer]
+* Create the `names` table (in MySQL) using:
++
+```
+CREATE TABLE names
+(
+	name varchar(255)
+);
+```
 
-## 2.1: Running the Sample in Cloud Foundry
+=== Running the Sample in Cloud Foundry
 
 . Verify that CF instance is reachable
 +
 
 ```
-→ cf api
+$ cf api
 API endpoint: https://api.system.navy.springapps.io (API version: 2.43.0)
 
-→ cf apps
+$ cf apps
 Getting apps in org sabby-dataflow / space development as sabby...
 OK
 
@@ -137,7 +151,7 @@ No apps found
 +
 
 ```
-→ cf apps
+$ cf apps
 Getting apps in org sabby-dataflow / space development as sabby...
 OK
 
@@ -148,12 +162,12 @@ s-c-dataflow-admin   started           1/1         1G       1G     s-c-dataflow-
 +
 . Notice that `s-c-dataflow-admin` application is started and ready for interaction via `http://s-c-dataflow-admin.app.navy.springapps.io` endpoint
 
-. Connect to Spring Cloud Data Flow's `shell`. 
+. Connect to Spring Cloud Data Flow's `shell` 
 +
 
 ```
-→ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
-→ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0.BUILD-SNAPSHOT.jar
+$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
+$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0.BUILD-SNAPSHOT.jar
 
   ____                              ____ _                __
  / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
@@ -201,7 +215,7 @@ dataflow:>stream list
 +
 
 ```
-→ cf apps
+$ cf apps
 Getting apps in org sabby-dataflow / space development as sabby...
 OK
 
@@ -214,27 +228,22 @@ s-c-dataflow-admin          started           1/1         1G       1G     s-c-da
 . Lookup the `url` for `mysqlstream-http` application from the list above. Post sample data pointing to the `http` endpoint: `<YOUR-mysqlstream-http-APP-URL>/messages`
 +
 ```
-dataflow:>script --file <PATH/TO>/spring-cloud-dataflow-samples/http-to-mysql/data.txt
-http post --contentType 'application/json' --target http://mysqlstream-http.app.navy.springapps.io/messages --data "{\"name\": \"Spring Boot 1\"}"
-> POST (application/json;charset=UTF-8) http://mysqlstream-http.app.navy.springapps.io/messages {"name": "Spring Boot 1"}
+http post --contentType 'application/json' --target http://mysqlstream-http.app.navy.springapps.io/messages --data "{\"name\": \"Bar"}"
+> POST (application/json;charset=UTF-8) http://mysqlstream-http.app.navy.springapps.io/messages {"name": "Bar"}
 > 202 ACCEPTED
-...
-...
-...
 ```
 +
-. Use a database utility tool such as http://dbeaver.jkiss.org/[DBeaver] to connect to the MySQL instance. Query the table `names` to list all the 10 rows 
+. Connect to the MySQL instance and query the table `test.names` to list the new rows:
 +
 ```
 select * from names;
 ```
-image:img/mysql_table_results.png[Table Results]
 
 +
 . Now, let's try to take advantage of Pivotal Cloud Foundry's platform capability. Let's scale the `mysqlstream-http` application from 1 to 3 instances
 +
 ```
-→ cf scale mysqlstream-http -i 3
+$ cf scale mysqlstream-http -i 3
 Scaling app mysqlstream-http in org sabby-dataflow / space development as sabby...
 OK
 ```
@@ -242,7 +251,7 @@ OK
 . Verify App instances (3/3) running successfully
 +
 ```
-→ cf apps
+$ cf apps
 Getting apps in org sabby-dataflow / space development as sabby...
 OK
 
@@ -254,7 +263,8 @@ s-c-dataflow-admin          started           1/1         1G       1G     s-c-da
 +
 . That's it; you're done!
 
-# 3: Summary 
+:!sectnums:
+== Summary 
 
 In this sample, you have learned:
 

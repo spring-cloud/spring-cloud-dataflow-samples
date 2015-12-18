@@ -90,11 +90,11 @@ dataflow:>stream list
    Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-284240942697761420/cassandrastream.http
 ```
 +
-. Post sample data pointing to the `http` endpoint: `http://localhost:8888/messages` [`8888` is the `server.port` we specified for the `http` source in this case]
+. Post sample data pointing to the `http` endpoint: `http://localhost:8888` [`8888` is the `server.port` we specified for the `http` source in this case]
 +
 ```
-dataflow:>http post --contentType 'application/json' --data '{"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}' --target http://localhost:8888/messages
-> POST (application/json;charset=UTF-8) http://localhost:8888/messages {"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}
+dataflow:>http post --contentType 'application/json' --data '{"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}' --target http://localhost:8888
+> POST (application/json;charset=UTF-8) http://localhost:8888 {"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}
 > 202 ACCEPTED
 ```
 +
@@ -229,11 +229,11 @@ cassandrastream-http        started           1/1         1G       1G     cassan
 s-c-dataflow-admin          started           1/1         1G       1G     s-c-dataflow-admin.app.navy.springapps.io
 ```
 +
-. Lookup the `url` for `cassandrastream-http` application from the list above. Post sample data pointing to the `http` endpoint: `<YOUR-cassandrastream-http-APP-URL>/messages`
+. Lookup the `url` for `cassandrastream-http` application from the list above. Post sample data pointing to the `http` endpoint: `<YOUR-cassandrastream-http-APP-URL>`
 +
 ```
-http post --contentType 'application/json' --data '{"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}' --target http://<YOUR-cassandrastream-http-APP-URL>/messages
-> POST (application/json;charset=UTF-8) http://cassandrastream-http.app.navy.springapps.io/messages {"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}
+http post --contentType 'application/json' --data '{"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}' --target http://<YOUR-cassandrastream-http-APP-URL>
+> POST (application/json;charset=UTF-8) http://cassandrastream-http.app.navy.springapps.io {"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}
 > 202 ACCEPTED
 ```
 +

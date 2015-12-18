@@ -90,12 +90,12 @@ dataflow:>stream list
    Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-284240942697761420/mysqlstream.http
 ```
 
-. Post sample data pointing to the `http` endpoint: `http://localhost:8787/messages` [`8787` is the `server.port` we specified for the `http` source in this case]
+. Post sample data pointing to the `http` endpoint: `http://localhost:8787` [`8787` is the `server.port` we specified for the `http` source in this case]
 
 +
 ```
-dataflow:>http post --contentType 'application/json' --target http://localhost:8787/messages --data "{\"name\": \"Foo\"}"
-> POST (application/json;charset=UTF-8) http://localhost:8787/messages {"name": "Spring Boot"}
+dataflow:>http post --contentType 'application/json' --target http://localhost:8787 --data "{\"name\": \"Foo\"}"
+> POST (application/json;charset=UTF-8) http://localhost:8787 {"name": "Spring Boot"}
 > 202 ACCEPTED
 ```
 +
@@ -225,11 +225,11 @@ mysqlstream-jdbc            started           1/1         1G       1G     mysqls
 s-c-dataflow-admin          started           1/1         1G       1G     s-c-dataflow-admin.app.navy.springapps.io
 ```
 +
-. Lookup the `url` for `mysqlstream-http` application from the list above. Post sample data pointing to the `http` endpoint: `<YOUR-mysqlstream-http-APP-URL>/messages`
+. Lookup the `url` for `mysqlstream-http` application from the list above. Post sample data pointing to the `http` endpoint: `<YOUR-mysqlstream-http-APP-URL>`
 +
 ```
-http post --contentType 'application/json' --target http://mysqlstream-http.app.navy.springapps.io/messages --data "{\"name\": \"Bar"}"
-> POST (application/json;charset=UTF-8) http://mysqlstream-http.app.navy.springapps.io/messages {"name": "Bar"}
+http post --contentType 'application/json' --target http://mysqlstream-http.app.navy.springapps.io --data "{\"name\": \"Bar"}"
+> POST (application/json;charset=UTF-8) http://mysqlstream-http.app.navy.springapps.io {"name": "Bar"}
 > 202 ACCEPTED
 ```
 +

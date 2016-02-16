@@ -33,7 +33,7 @@ CREATE TABLE names
 
 ```
 $ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
-$ java -jar spring-cloud-dataflow-admin-local/target/spring-cloud-dataflow-admin-local-1.0.0.BUILD-SNAPSHOT.jar
+$ java -jar spring-cloud-dataflow-server-local/target/spring-cloud-dataflow-server-local-1.0.0.BUILD-SNAPSHOT.jar
 
 ```
 +

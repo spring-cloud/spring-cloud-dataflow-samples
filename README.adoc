@@ -6,12 +6,18 @@ This repository provides sample starter applications and code for use with the S
 
 ### link:streaming/http-to-cassandra/README.adoc[http-cassandra]
 
-A data pipeline demonstration that consumes data from an `http` endpoint and writes the payload to Cassandra database using the `cassandra` sink.
+A data pipeline demonstration that consumes data from an `http` endpoint and writes the payload to Cassandra database using the `cassandra` sink application.
 
 ### link:streaming/http-to-mysql/README.adoc[http-mysql]
 
-A data pipeline demonstration that consumes data from an `http` endpoint and writes the payload to MySQL database using the `jdbc` sink.
+A data pipeline demonstration that consumes data from an `http` endpoint and writes the payload to MySQL database using the `jdbc` sink application.
 
 ## Task / Batch
+
+## Analytics
+
+### link:analytics/twitter-analytics/README.adoc[twitter-analytics]
+
+A data pipeline demonstration that consumes data from twitter-firehose using `twitterstream` source application and computes simple analytics over data-in-trasnsit with the help of `field-value-counter` sink application.
 
 ## Data Science

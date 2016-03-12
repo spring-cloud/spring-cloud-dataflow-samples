@@ -138,7 +138,7 @@ Displaying values for field value counter 'language'
 ```
 
 +
-. Go to `admin-ui` accessible at `http://localhost:9393` and launch the `Analytics` tab. From the default `Dashboard` menu, select the following combinations to visualize real-time updates on `field-value-counter`.
+. Go to `admin-ui` accessible at `http://localhost:9393/admin-ui` and launch the `Analytics` tab. From the default `Dashboard` menu, select the following combinations to visualize real-time updates on `field-value-counter`.
 
 - For real-time updates on `language` tags, select:
  .. Metric Type as `Field-Value-Counters`
@@ -149,7 +149,7 @@ Displaying values for field value counter 'language'
  .. Stream as `hashtags` 
  .. Visualization as `Bubble-Chart` or `Pie-Chart`
 
-image::/images/twitter_anlaytics.png[Twitter Analytics Visualization]
+image::images/twitter_analytics.png[Twitter Analytics Visualization]
 
 == Summary 
 

@@ -3,7 +3,7 @@
 
 In this demonstration, you will learn how to orchestrate a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an `http` endpoint and write to MySQL database through `jdbc` sink. 
 
-We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `admin` Spring Boot application. We will deploy `admin` using  https://github.com/spring-cloud/spring-cloud-dataflow/tree/master/spring-cloud-dataflow-admin-local[Local] as well as https://github.com/spring-cloud/spring-cloud-dataflow-admin-cloudfoundry[Cloud Foundry] SPIs (Service Provider Interface) to demonstrate how Spring Cloud Data Flow takes advantage of _dev-sandbox_ and _cloud-native_ platform capabilities respectively.
+We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `server` Spring Boot application. We will deploy the `server` using  https://github.com/spring-cloud/spring-cloud-dataflow/tree/master/spring-cloud-dataflow-server-local[Local] as well as https://github.com/spring-cloud/spring-cloud-dataflow-admin-cloudfoundry[Cloud Foundry] SPIs (Service Provider Interface) to demonstrate how Spring Cloud Data Flow takes advantage of _dev-sandbox_ and _cloud-native_ platform capabilities respectively.
 
 == Using Local SPI
 
@@ -28,7 +28,7 @@ CREATE TABLE names
 
 === Running the Sample Locally
 
-. Launch the locally built `admin` application
+. Launch the locally built `server` application
 +
 
 ```
@@ -80,7 +80,7 @@ NOTE: If MySQL isn't running on default port on `localhost` or if you need usern
 dataflow:>stream list
 ```
 +
-. Notice that `mysqlstream-http` and `mysqlstream-jdbc` https://github.com/spring-cloud/spring-cloud-stream-modules/[Spring Cloud Stream] modules are running as Spring Boot applications within the `admin` as a collocated process.
+. Notice that `mysqlstream-http` and `mysqlstream-jdbc` https://github.com/spring-cloud/spring-cloud-stream-modules/[Spring Cloud Stream] modules are running as Spring Boot applications within the `server` as a collocated process.
 +
 
 ```
@@ -115,7 +115,7 @@ In order to get started, make sure that you have the following components:
 
 * Cloud Foundry instance
 * Local build of https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
-* Local build of Spring Cloud Data Flow's https://github.com/spring-cloud/spring-cloud-dataflow-admin-cloudfoundry[Cloud-Foundry-Admin]
+* Local build of Spring Cloud Data Flow's https://github.com/spring-cloud/spring-cloud-dataflow-admin-cloudfoundry[Cloud-Foundry-Server]
 * Running instance of `redis` in Cloud Foundry
 * Running instance of `mysql`
 * A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] or link:https://www.dbvis.com/[DbVisualizer]
@@ -144,10 +144,10 @@ OK
 No apps found
 ```
 +
-. Follow the instructions to deploy Spring Cloud Data Flow's `admin` from https://github.com/spring-cloud/spring-cloud-dataflow-admin-cloudfoundry/blob/master/README.adoc[CF SPI] repo
+. Follow the instructions to deploy Spring Cloud Data Flow's `server` from https://github.com/spring-cloud/spring-cloud-dataflow-admin-cloudfoundry/blob/master/README.adoc[CF SPI] repo
 
 +
-. Once you complete step#3 from https://github.com/spring-cloud/spring-cloud-dataflow-admin-cloudfoundry/blob/master/README.adoc[CF SPI] instructions, you'll be able to list the newly deployed `s-c-dataflow-admin` application in Cloud Foundry
+. Once you complete step#3 from https://github.com/spring-cloud/spring-cloud-dataflow-admin-cloudfoundry/blob/master/README.adoc[CF SPI] instructions, you'll be able to list the newly deployed `s-c-dataflow-server` application in Cloud Foundry
 +
 
 ```
@@ -156,11 +156,11 @@ Getting apps in org sabby-dataflow / space development as sabby...
 OK
 
 name                 requested state   instances   memory   disk   urls
-s-c-dataflow-admin   started           1/1         1G       1G     s-c-dataflow-admin.app.navy.springapps.io
+s-c-dataflow-server  started           1/1         1G       1G     s-c-dataflow-server.app.navy.springapps.io
 ```
 
 +
-. Notice that `s-c-dataflow-admin` application is started and ready for interaction via `http://s-c-dataflow-admin.app.navy.springapps.io` endpoint
+. Notice that `s-c-dataflow-server` application is started and ready for interaction via `http://s-c-dataflow-server.app.navy.springapps.io` endpoint
 
 . Connect to Spring Cloud Data Flow's `shell` 
 +
@@ -186,12 +186,12 @@ Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "hel
 server-unknown:>
 ```
 +
-. Connect the `shell` with `admin` running at `http://s-c-dataflow-admin.app.navy.springapps.io`
+. Connect the `shell` with `server` running at `http://s-c-dataflow-server.app.navy.springapps.io`
 +
 
 ```
-server-unknown:>admin config server http://s-c-dataflow-admin.app.navy.springapps.io
-Successfully targeted http://s-c-dataflow-admin.app.navy.springapps.io
+server-unknown:>dataflow config server http://s-c-dataflow-server.app.navy.springapps.io
+Successfully targeted http://s-c-dataflow-server.app.navy.springapps.io
 dataflow:>version
 1.0.0.BUILD-SNAPSHOT
 ```
@@ -222,7 +222,7 @@ OK
 name                        requested state   instances   memory   disk   urls
 mysqlstream-http            started           1/1         1G       1G     mysqlstream-http.app.navy.springapps.io
 mysqlstream-jdbc            started           1/1         1G       1G     mysqlstream-jdbc.app.navy.springapps.io
-s-c-dataflow-admin          started           1/1         1G       1G     s-c-dataflow-admin.app.navy.springapps.io
+s-c-dataflow-server         started           1/1         1G       1G     s-c-dataflow-server.app.navy.springapps.io
 ```
 +
 . Lookup the `url` for `mysqlstream-http` application from the list above. Post sample data pointing to the `http` endpoint: `<YOUR-mysqlstream-http-APP-URL>`
@@ -258,7 +258,7 @@ OK
 name                        requested state   instances   memory   disk   urls
 mysqlstream-http            started           3/3         1G       1G     mysqlstream-http.app.navy.springapps.io
 mysqlstream-jdbc            started           1/1         1G       1G     mysqlstream-jdbc.app.navy.springapps.io
-s-c-dataflow-admin          started           1/1         1G       1G     s-c-dataflow-admin.app.navy.springapps.io
+s-c-dataflow-server         started           1/1         1G       1G     s-c-dataflow-server.app.navy.springapps.io
 ```
 +
 . That's it; you're done!

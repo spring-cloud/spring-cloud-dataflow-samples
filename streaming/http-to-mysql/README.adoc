@@ -137,10 +137,10 @@ CREATE TABLE names
 
 ```
 $ cf api
-API endpoint: https://api.system.navy.springapps.io (API version: 2.43.0)
+API endpoint: https://api.system.io (API version: 2.43.0)
 
 $ cf apps
-Getting apps in org sabby-dataflow / space development as sabby...
+Getting apps in org user-dataflow / space development as user...
 OK
 
 No apps found
@@ -154,15 +154,15 @@ No apps found
 
 ```
 $ cf apps
-Getting apps in org sabby-dataflow / space development as sabby...
+Getting apps in org user-dataflow / space development as user...
 OK
 
 name                 requested state   instances   memory   disk   urls
-dataflow-server      started           1/1         1G       1G     dataflow-server.app.navy.springapps.io
+dataflow-server      started           1/1         1G       1G     dataflow-server.app.io
 ```
 
 +
-. Notice that `dataflow-server` application is started and ready for interaction via `http://dataflow-server.app.navy.springapps.io` endpoint
+. Notice that `dataflow-server` application is started and ready for interaction via `http://dataflow-server.app.io` endpoint
 
 . Connect to Spring Cloud Data Flow's `shell` 
 +
@@ -188,12 +188,12 @@ Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "hel
 server-unknown:>
 ```
 +
-. Connect the `shell` with `server` running at `http://dataflow-server.app.navy.springapps.io`
+. Connect the `shell` with `server` running at `http://dataflow-server.app.io`
 +
 
 ```
-server-unknown:>dataflow config server http://dataflow-server.app.navy.springapps.io
-Successfully targeted http://dataflow-server.app.navy.springapps.io
+server-unknown:>dataflow config server http://dataflow-server.app.io
+Successfully targeted http://dataflow-server.app.io
 dataflow:>version
 1.0.0.BUILD-SNAPSHOT
 ```
@@ -230,20 +230,20 @@ dataflow:>stream list
 
 ```
 $ cf apps
-Getting apps in org sabby-dataflow / space development as sabby...
+Getting apps in org user-dataflow / space development as user...
 OK
 
 name                        requested state   instances   memory   disk   urls
-mysqlstream-http            started           1/1         1G       1G     mysqlstream-http.app.navy.springapps.io
-mysqlstream-jdbc            started           1/1         1G       1G     mysqlstream-jdbc.app.navy.springapps.io
-dataflow-server             started           1/1         1G       1G     dataflow-server.app.navy.springapps.io
+mysqlstream-http            started           1/1         1G       1G     mysqlstream-http.app.io
+mysqlstream-jdbc            started           1/1         1G       1G     mysqlstream-jdbc.app.io
+dataflow-server             started           1/1         1G       1G     dataflow-server.app.io
 ```
 +
 . Lookup the `url` for `mysqlstream-http` application from the list above. Post sample data pointing to the `http` endpoint: `<YOUR-mysqlstream-http-APP-URL>`
 +
 ```
-http post --contentType 'application/json' --target http://mysqlstream-http.app.navy.springapps.io --data "{\"name\": \"Bar"}"
-> POST (application/json;charset=UTF-8) http://mysqlstream-http.app.navy.springapps.io {"name": "Bar"}
+http post --contentType 'application/json' --target http://mysqlstream-http.app.io --data "{\"name\": \"Bar"}"
+> POST (application/json;charset=UTF-8) http://mysqlstream-http.app.io {"name": "Bar"}
 > 202 ACCEPTED
 ```
 +
@@ -258,7 +258,7 @@ select * from names;
 +
 ```
 $ cf scale mysqlstream-http -i 3
-Scaling app mysqlstream-http in org sabby-dataflow / space development as sabby...
+Scaling app mysqlstream-http in org user-dataflow / space development as user...
 OK
 ```
 +
@@ -266,13 +266,13 @@ OK
 +
 ```
 $ cf apps
-Getting apps in org sabby-dataflow / space development as sabby...
+Getting apps in org user-dataflow / space development as user...
 OK
 
 name                        requested state   instances   memory   disk   urls
-mysqlstream-http            started           3/3         1G       1G     mysqlstream-http.app.navy.springapps.io
-mysqlstream-jdbc            started           1/1         1G       1G     mysqlstream-jdbc.app.navy.springapps.io
-dataflow-server             started           1/1         1G       1G     dataflow-server.app.navy.springapps.io
+mysqlstream-http            started           3/3         1G       1G     mysqlstream-http.app.io
+mysqlstream-jdbc            started           1/1         1G       1G     mysqlstream-jdbc.app.io
+dataflow-server             started           1/1         1G       1G     dataflow-server.app.io
 ```
 +
 . That's it; you're done!

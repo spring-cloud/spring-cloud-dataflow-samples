@@ -3,9 +3,9 @@
 
 In this demonstration, you will learn how to orchestrate a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from _TwitterStream_ and compute simple analytics over data-in-transit using _Field-Value-Counter_. 
 
-We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `local-server`, a Spring Boot application.
+We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `Local` server, a Spring Boot application.
 
-== Using Local SPI
+== Using Local Server
 
 === Prerequisites
 
@@ -13,6 +13,7 @@ In order to get started, make sure that you have the following components:
 
 * Local build of link:https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
 * Running instance of link:http://redis.io/[Redis]
+* Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
 * Twitter credentials from link:https://apps.twitter.com/[Twitter Developers] site
 
 === Running the Sample Locally
@@ -155,6 +156,6 @@ image::images/twitter_analytics.png[Twitter Analytics Visualization]
 
 In this sample, you have learned:
 
-* How to use Spring Cloud Data Flow in `local-server` mode
+* How to use Spring Cloud Data Flow's `Local` server
 * How to use Spring Cloud Data Flow's `shell`
 * How to create streaming data pipeline to compute simple analytics using `Twitter Stream` and `Field Value Counter` data microservices

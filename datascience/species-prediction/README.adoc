@@ -3,9 +3,9 @@
 
 In this demonstration, you will learn how to use https://en.wikipedia.org/wiki/Predictive_Model_Markup_Language[PMML] model in the context of streaming data pipeline orchestrated by http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow]. 
 
-We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `local-server`, a Spring Boot application.
+We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `Local` server, a Spring Boot application.
 
-== Using Local SPI
+== Using Local Server
 
 === Prerequisites
 
@@ -13,6 +13,7 @@ In order to get started, make sure that you have the following components:
 
 * Local build of link:https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
 * Running instance of link:http://redis.io/[Redis]
+* Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
 
 === Running the Sample Locally
 
@@ -153,6 +154,6 @@ NOTE: `petalWidth` value changed from `1.5` to `1.8`
 
 In this sample, you have learned:
 
-* How to use Spring Cloud Data Flow in `local-server` mode
+* How to use Spring Cloud Data Flow's `Local` server
 * How to use Spring Cloud Data Flow's `shell`
 * How to use `pmml` processor to compute real-time predictions

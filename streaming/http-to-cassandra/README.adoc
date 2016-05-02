@@ -3,9 +3,9 @@
 
 In this demonstration, you will learn how to orchestrate a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an _HTTP_ endpoint and write the payload to a _Cassandra_ database. 
 
-We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `server` Spring Boot application. We will deploy the `server` using  https://github.com/spring-cloud/spring-cloud-dataflow/tree/master/spring-cloud-dataflow-server-local[Local] as well as https://github.com/spring-cloud/spring-cloud-dataflow-admin-cloudfoundry[Cloud Foundry] SPIs (Service Provider Interface) to demonstrate how Spring Cloud Data Flow takes advantage of _dev-sandbox_ and _cloud-native_ platform capabilities respectively.
+We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `server` Spring Boot application. We will deploy the `server` using  https://github.com/spring-cloud/spring-cloud-dataflow/tree/master/spring-cloud-dataflow-server-local[Local] as well as https://github.com/spring-cloud/spring-cloud-dataflow-server-cloudfoundry[Cloud Foundry] SPIs (Service Provider Interface) to demonstrate how Spring Cloud Data Flow takes advantage of _dev-sandbox_ and _cloud-native_ platform capabilities respectively.
 
-== Using Local SPI
+== Using Local Server
 
 === Prerequisites
 
@@ -13,6 +13,7 @@ In order to get started, make sure that you have the following components:
 
 * Local build of link:https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
 * Running instance of link:http://redis.io/[Redis]
+* Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
 * Running instance of link:http://cassandra.apache.org/[Apache Cassandra]
 * A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] to connect to the Cassandra instance. You might have to provide `host`, `port`, `username` and `password` depending on the Cassandra configuration you are using. 
 * Create a keyspace and a `book` table in Cassandra using:
@@ -108,16 +109,17 @@ select * from clouddata.book;
 . That's it; you're done!
 
 
-== Using Pivotal Cloud Foundry SPI
+== Using Cloud Foundry Server
 
-=== Prerequisites for Pivotal Cloud Foundry SPI
+=== Prerequisites
 
 In order to get started, make sure that you have the following components:
 
 * Cloud Foundry instance
 * Local build of https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
-* Local build of Spring Cloud Data Flow's https://github.com/spring-cloud/spring-cloud-dataflow-admin-cloudfoundry[Cloud-Foundry-Server]
+* Local build of Spring Cloud Data Flow's https://github.com/spring-cloud/spring-cloud-dataflow-server-cloudfoundry[Cloud Foundry Server]
 * Running instance of `redis` in Cloud Foundry
+* Running instance of `rabbit` in Cloud Foundry
 * Running instance of `cassandra` in Cloud Foundry or from another Cloud provider
 * A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] to connect to the Cassandra instance. You might have to provide `host`, `port`, `username` and `password` depending on the Cassandra configuration you are using. 
 * Create a `book` table in your Cassandra keyspace using:
@@ -148,10 +150,10 @@ OK
 No apps found
 ```
 +
-. Follow the instructions to deploy Spring Cloud Data Flow's `server` from https://github.com/spring-cloud/spring-cloud-dataflow-admin-cloudfoundry/blob/master/README.adoc[CF SPI] repo
+. Follow the instructions to deploy Spring Cloud Data Flow's `server` from https://github.com/spring-cloud/spring-cloud-dataflow-server-cloudfoundry/blob/master/README.adoc[Cloud Foundry Server] repo
 
 +
-. Once you complete step#3 from https://github.com/spring-cloud/spring-cloud-dataflow-admin-cloudfoundry/blob/master/README.adoc[CF SPI] instructions, you'll be able to list the newly deployed `s-c-dataflow-server` application in Cloud Foundry
+. Once you complete step#3 from https://github.com/spring-cloud/spring-cloud-dataflow-server-cloudfoundry/blob/master/README.adoc[Cloud Foundry Server] instructions, you'll be able to list the newly deployed `dataflow-server` application in Cloud Foundry
 +
 
 ```
@@ -160,11 +162,11 @@ Getting apps in org sabby-dataflow / space development as sabby...
 OK
 
 name                 requested state   instances   memory   disk   urls
-s-c-dataflow-server  started           1/1         1G       1G     s-c-dataflow-server.app.navy.springapps.io
+dataflow-server  started           1/1         1G       1G     dataflow-server.app.navy.springapps.io
 ```
 
 +
-. Notice that `s-c-dataflow-server` application is started and ready for interaction via `http://s-c-dataflow-server.app.navy.springapps.io` endpoint
+. Notice that `dataflow-server` application is started and ready for interaction via `http://dataflow-server.app.navy.springapps.io` endpoint
 
 . Connect to Spring Cloud Data Flow's `shell`. 
 +
@@ -190,15 +192,28 @@ Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "hel
 server-unknown:>
 ```
 +
-. Connect the `shell` with `server` running at `http://s-c-dataflow-server.app.navy.springapps.io`
+. Connect the `shell` with `server` running at `http://dataflow-server.app.navy.springapps.io`
 +
 
 ```
-server-unknown:>dataflow config server http://s-c-dataflow-server.app.navy.springapps.io
-Successfully targeted http://s-c-dataflow-server.app.navy.springapps.io
+server-unknown:>dataflow config server http://dataflow-server.app.navy.springapps.io
+Successfully targeted http://dataflow-server.app.navy.springapps.io
 dataflow:>version
 1.0.0.BUILD-SNAPSHOT
 ```
+
++
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] RabbitMQ binder variant of the `http` and `cassandra` applications
++
+
+```
+dataflow:>module register --type source --name http --uri maven://org.springframework.cloud.stream.app:http-source-rabbit:1.0.0.BUILD-SNAPSHOT --force
+Successfully registered module 'source:http'
+
+dataflow:>module register --type sink --name cassandra --uri maven://org.springframework.cloud.stream.app:cassandra-sink-rabbit:1.0.0.BUILD-SNAPSHOT --force
+Successfully registered module 'sink:cassandra'
+```
+
 +
 . Create the stream
 +
@@ -226,7 +241,7 @@ OK
 name                        requested state   instances   memory   disk   urls
 cassandrastream-cassandra   started           1/1         1G       1G     cassandrastream-cassandra.app.navy.springapps.io
 cassandrastream-http        started           1/1         1G       1G     cassandrastream-http.app.navy.springapps.io
-s-c-dataflow-server         started           1/1         1G       1G     s-c-dataflow-server.app.navy.springapps.io
+dataflow-server             started           1/1         1G       1G     dataflow-server.app.navy.springapps.io
 ```
 +
 . Lookup the `url` for `cassandrastream-http` application from the list above. Post sample data pointing to the `http` endpoint: `<YOUR-cassandrastream-http-APP-URL>`
@@ -262,7 +277,7 @@ OK
 name                        requested state   instances   memory   disk   urls
 cassandrastream-cassandra   started           1/1         1G       1G     cassandrastream-cassandra.app.navy.springapps.io
 cassandrastream-http        started           3/3         1G       1G     cassandrastream-http.app.navy.springapps.io
-s-c-dataflow-server         started           1/1         1G       1G     s-c-dataflow-server.app.navy.springapps.io
+dataflow-server             started           1/1         1G       1G     dataflow-server.app.navy.springapps.io
 ```
 +
 . That's it; you're done!
@@ -272,7 +287,7 @@ s-c-dataflow-server         started           1/1         1G       1G     s-c-da
 
 In this sample, you have learned:
 
-* How to use Spring Cloud Data Flow in `Local` and `Pivotal Cloud Foundry`
+* How to use Spring Cloud Data Flow's `Local` and `Cloud Foundry` servers
 * How to use Spring Cloud Data Flow's `shell`
 * How to create streaming data pipeline to connect and write to `Cassandra`
 * How to scale data microservice applications on `Pivotal Cloud Foundry`

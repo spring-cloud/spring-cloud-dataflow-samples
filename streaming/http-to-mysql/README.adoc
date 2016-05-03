@@ -63,12 +63,48 @@ Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "hel
 dataflow:>version
 1.0.0.BUILD-SNAPSHOT
 ```
+
 +
-. Create the stream
+. Patch the `jdbc` sink with `mysql` driver
+
+- build the https://github.com/spring-cloud/spring-cloud-stream-app-starters#spring-cloud-stream-app-starters[spring-cloud-stream-app-starters] project
+- cd `jdbc-sink-kafka`
+- modify `pom.xml` to include `mysql` driver (_remove `hsqldb`_)
++
+[source,xml]
+----
+      <dependency>
+        <groupId>org.hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <version>2.3.3</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>5.1.37</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-jdbc</artifactId>
+        <version>8.0.33</version>
+      </dependency>
+----
++
+- build project: `mvn clean install`
+- force https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[register] the app in Spring Cloud Data Flow server
 +
 
 ```
-dataflow:>stream create --name mysqlstream --definition "http --server.port=8787 | jdbc --includes='mysql:mysql-connector-java:5.1.37' --spring.datasource.url='jdbc:mysql://localhost:3306/test' --tableName=names --columns=name --spring.datasource.driverClassName=com.mysql.jdbc.Driver --initialize=false" --deploy
+dataflow:>module register --name jdbc --type sink --uri maven://org.springframework.cloud.stream.app:jdbc-sink-kafka:1.0.0.BUILD-SNAPSHOT --force
+Successfully registered module 'sink:jdbc'
+```
+
++
+. Create the stream
++
+```
+dataflow:>stream create --name mysqlstream --definition "http --server.port=8787 | jdbc --spring.datasource.url='jdbc:mysql://localhost:3306/test' --tableName=names --columns=name" --deploy
 
 Created and deployed new stream 'mysqlstream'
 ```
@@ -81,14 +117,14 @@ NOTE: If MySQL isn't running on default port on `localhost` or if you need usern
 dataflow:>stream list
 ```
 +
-. Notice that `mysqlstream-http` and `mysqlstream-jdbc` https://github.com/spring-cloud/spring-cloud-stream-modules/[Spring Cloud Stream] modules are running as Spring Boot applications within the `server` as a collocated process.
+. Notice that `mysqlstream-http` and `mysqlstream-jdbc` https://github.com/spring-cloud/spring-cloud-stream-modules/[Spring Cloud Stream] modules are running as Spring Boot applications within the Local `server` as collocated processes.
 +
 
 ```
-2015-12-15 16:38:46.795  INFO 18337 --- [nio-9393-exec-6] o.s.c.d.a.s.l.OutOfProcessModuleDeployer : deploying module org.springframework.cloud.stream.module:jdbc-sink:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
-   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-284240942697761420/mysqlstream.jdbc
-2015-12-15 16:38:46.798  INFO 18337 --- [nio-9393-exec-6] o.s.c.d.a.s.l.OutOfProcessModuleDeployer : deploying module org.springframework.cloud.stream.module:http-source:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
-   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-284240942697761420/mysqlstream.http
+2016-05-03 09:29:55.918  INFO 65162 --- [nio-9393-exec-3] o.s.c.d.spi.local.LocalAppDeployer       : deploying app mysqlstream.jdbc instance 0
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-dataflow-6850863945840320040/mysqlstream1-1462292995903/mysqlstream.jdbc
+2016-05-03 09:29:55.939  INFO 65162 --- [nio-9393-exec-3] o.s.c.d.spi.local.LocalAppDeployer       : deploying app mysqlstream.http instance 0
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-dataflow-6850863945840320040/mysqlstream-1462292995934/mysqlstream.http
 ```
 
 . Post sample data pointing to the `http` endpoint: `http://localhost:8787` [`8787` is the `server.port` we specified for the `http` source in this case]
@@ -197,6 +233,37 @@ Successfully targeted http://dataflow-server.app.io
 dataflow:>version
 1.0.0.BUILD-SNAPSHOT
 ```
+
++
+. Patch the `jdbc` sink with `mysql` driver
+
+- build the https://github.com/spring-cloud/spring-cloud-stream-app-starters#spring-cloud-stream-app-starters[spring-cloud-stream-app-starters] project
+- cd `jdbc-sink-rabbit`
+- modify `pom.xml` to include `mysql` driver (_remove `hsqldb`_)
++
+[source,xml]
+----
+      <dependency>
+        <groupId>org.hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <version>2.3.3</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>5.1.37</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-jdbc</artifactId>
+        <version>8.0.33</version>
+      </dependency>
+----
++
+- build project: `mvn clean install`
++
+
 +
 . https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] RabbitMQ binder variant of the `http` and `jdbc` applications
 +
@@ -214,7 +281,7 @@ Successfully registered module 'sink:jdbc'
 +
 
 ```
-dataflow:>stream create --name mysqlstream --definition "http | jdbc --includes='mysql:mysql-connector-java:5.1.37' --spring.datasource.url='jdbc:mysql://<HOST>:<PORT>/<NAME>' --spring.datasource.username=<USERNAME> --spring.datasource.password=<PASSWORD> --tableName=names --columns=name --spring.datasource.driverClassName=com.mysql.jdbc.Driver --initialize=true" --deploy
+dataflow:>stream create --name mysqlstream --definition "http | jdbc --spring.datasource.url='jdbc:mysql://<HOST>:<PORT>/<NAME>' --spring.datasource.username=<USERNAME> --spring.datasource.password=<PASSWORD> --tableName=names --columns=name" --deploy
 
 Created and deployed new stream 'mysqlstream'
 ```

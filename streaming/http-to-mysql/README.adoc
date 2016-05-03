@@ -117,7 +117,7 @@ NOTE: If MySQL isn't running on default port on `localhost` or if you need usern
 dataflow:>stream list
 ```
 +
-. Notice that `mysqlstream-http` and `mysqlstream-jdbc` https://github.com/spring-cloud/spring-cloud-stream-modules/[Spring Cloud Stream] modules are running as Spring Boot applications within the Local `server` as collocated process.
+. Notice that `mysqlstream-http` and `mysqlstream-jdbc` https://github.com/spring-cloud/spring-cloud-stream-modules/[Spring Cloud Stream] modules are running as Spring Boot applications within the Local `server` as collocated processes.
 +
 
 ```

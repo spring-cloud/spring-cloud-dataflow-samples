@@ -96,7 +96,7 @@ dataflow:>version
 +
 
 ```
-dataflow:>module register --name jdbc --type sink --uri maven://org.springframework.cloud.stream.app:jdbc-sink-kafka:1.0.0.BUILD-SNAPSHOT --force
+dataflow:>app register --name jdbc --type sink --uri maven://org.springframework.cloud.stream.app:jdbc-sink-kafka:1.0.0.BUILD-SNAPSHOT --force
 Successfully registered module 'sink:jdbc'
 ```
 

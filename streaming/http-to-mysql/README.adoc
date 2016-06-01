@@ -97,7 +97,7 @@ dataflow:>version
 
 ```
 dataflow:>app register --name jdbc --type sink --uri maven://org.springframework.cloud.stream.app:jdbc-sink-kafka:1.0.0.BUILD-SNAPSHOT --force
-Successfully registered module 'sink:jdbc'
+Successfully registered application 'sink:jdbc'
 ```
 
 +
@@ -269,11 +269,11 @@ dataflow:>version
 +
 
 ```
-dataflow:>module register --type source --name http --uri maven://org.springframework.cloud.stream.app:http-source-rabbit:1.0.0.BUILD-SNAPSHOT --force
-Successfully registered module 'source:http'
+dataflow:>app register --type source --name http --uri maven://org.springframework.cloud.stream.app:http-source-rabbit:1.0.0.BUILD-SNAPSHOT --force
+Successfully registered application 'source:http'
 
-dataflow:>module register --type sink --name jdbc --uri maven://org.springframework.cloud.stream.app:jdbc-sink-rabbit:1.0.0.BUILD-SNAPSHOT --force
-Successfully registered module 'sink:jdbc'
+dataflow:>app register --type sink --name jdbc --uri maven://org.springframework.cloud.stream.app:jdbc-sink-rabbit:1.0.0.BUILD-SNAPSHOT --force
+Successfully registered application 'sink:jdbc'
 ```
 
 +
@@ -321,7 +321,7 @@ select * from names;
 ```
 
 +
-. Now, let's try to take advantage of Pivotal Cloud Foundry's platform capability. Let's scale the `mysqlstream-http` application from 1 to 3 instances
+. Now, let's take advantage of Pivotal Cloud Foundry's platform capability. Let's scale the `mysqlstream-http` application from 1 to 3 instances
 +
 ```
 $ cf scale mysqlstream-http -i 3

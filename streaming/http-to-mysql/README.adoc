@@ -269,10 +269,10 @@ dataflow:>version
 +
 
 ```
-dataflow:>module register --type source --name http --uri maven://org.springframework.cloud.stream.app:http-source-rabbit:1.0.0.BUILD-SNAPSHOT --force
+dataflow:>app register --type source --name http --uri maven://org.springframework.cloud.stream.app:http-source-rabbit:1.0.0.BUILD-SNAPSHOT --force
 Successfully registered module 'source:http'
 
-dataflow:>module register --type sink --name jdbc --uri maven://org.springframework.cloud.stream.app:jdbc-sink-rabbit:1.0.0.BUILD-SNAPSHOT --force
+dataflow:>app register --type sink --name jdbc --uri maven://org.springframework.cloud.stream.app:jdbc-sink-rabbit:1.0.0.BUILD-SNAPSHOT --force
 Successfully registered module 'sink:jdbc'
 ```
 

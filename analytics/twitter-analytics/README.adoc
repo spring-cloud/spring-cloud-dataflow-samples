@@ -58,10 +58,10 @@ dataflow:>version
 (1) dataflow:>stream create tweets --definition "twitterstream --consumerKey=<CONSUMER_KEY> --consumerSecret=<CONSUMER_SECRET> --accessToken=<ACCESS_TOKEN> --accessTokenSecret=<ACCESS_TOKEN_SECRET> | log"
 Created new stream 'tweets'
 
-(2) dataflow:>stream create tweetlang  --definition ":tweets.twitterstream > field-value-counter --fieldName=lang --name=language --store=redis" --deploy
+(2) dataflow:>stream create tweetlang  --definition ":tweets.twitterstream > field-value-counter --fieldName=lang --name=language" --deploy
 Created and deployed new stream 'tweetlang'
 
-(3) dataflow:>stream create tagcount --definition ":tweets.twitterstream > field-value-counter --fieldName=entities.hashtags.text --name=hashtags --store=redis" --deploy
+(3) dataflow:>stream create tagcount --definition ":tweets.twitterstream > field-value-counter --fieldName=entities.hashtags.text --name=hashtags" --deploy
 Created and deployed new stream 'tagcount'
 
 (4) dataflow:>stream deploy tweets

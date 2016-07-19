@@ -12,7 +12,6 @@ We will begin by discussing the steps to prep, configure and operationalize Spri
 In order to get started, make sure that you have the following components:
 
 * Local build of https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
-* Running instance of link:http://redis.io/[Redis]
 * Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
 * Running instance of link:http://www.mysql.com/[MySQL]
 * A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] or link:https://www.dbvis.com/[DbVisualizer]
@@ -34,7 +33,7 @@ CREATE TABLE names
 
 ```
 $ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
-$ java -jar spring-cloud-dataflow-server-local/target/spring-cloud-dataflow-server-local-1.0.0.BUILD-SNAPSHOT.jar
+$ java -jar spring-cloud-dataflow-server-local/target/spring-cloud-dataflow-server-local-[VERSION].jar
 
 ```
 +
@@ -44,7 +43,7 @@ $ java -jar spring-cloud-dataflow-server-local/target/spring-cloud-dataflow-serv
 
 ```
 $ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
-$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0.BUILD-SNAPSHOT.jar
+$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-[VERSION].jar
 
   ____                              ____ _                __
  / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
@@ -57,47 +56,19 @@ $ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0
  | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
  |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
 
-1.0.0.BUILD-SNAPSHOT
+[VERSION]
 
 Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
 dataflow:>version
-1.0.0.BUILD-SNAPSHOT
+[VERSION]
 ```
 
 +
-. Patch the `jdbc` sink with `mysql` driver
-
-- build the https://github.com/spring-cloud/spring-cloud-stream-app-starters#spring-cloud-stream-app-starters[spring-cloud-stream-app-starters] project
-- cd `jdbc-sink-kafka`
-- modify `pom.xml` to include `mysql` driver (_remove `hsqldb`_)
-+
-[source,xml]
-----
-      <dependency>
-        <groupId>org.hsqldb</groupId>
-        <artifactId>hsqldb</artifactId>
-        <version>2.3.3</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>mysql</groupId>
-        <artifactId>mysql-connector-java</artifactId>
-        <version>5.1.37</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat</groupId>
-        <artifactId>tomcat-jdbc</artifactId>
-        <version>8.0.33</version>
-      </dependency>
-----
-+
-- build project: `mvn clean install`
-- force https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[register] the app in Spring Cloud Data Flow server
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] Kafka binder variant of out-of-the-box applications
 +
 
 ```
-dataflow:>app register --name jdbc --type sink --uri maven://org.springframework.cloud.stream.app:jdbc-sink-kafka:1.0.0.BUILD-SNAPSHOT --force
-Successfully registered application 'sink:jdbc'
+dataflow:>app import --uri http://bit.ly/stream-applications-kafka-maven
 ```
 
 +
@@ -153,7 +124,6 @@ In order to get started, make sure that you have the following components:
 * Cloud Foundry instance
 * Local build of https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
 * Local build of Spring Cloud Data Flow's https://github.com/spring-cloud/spring-cloud-dataflow-server-cloudfoundry[Cloud Foundry Server]
-* Running instance of `redis` in Cloud Foundry
 * Running instance of `rabbit` in Cloud Foundry
 * Running instance of `mysql`
 * A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] or link:https://www.dbvis.com/[DbVisualizer]
@@ -205,7 +175,7 @@ dataflow-server      started           1/1         1G       1G     dataflow-serv
 
 ```
 $ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
-$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0.BUILD-SNAPSHOT.jar
+$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-[VERSION].jar
 
   ____                              ____ _                __
  / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
@@ -218,7 +188,7 @@ $ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0
  | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
  |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
 
-1.0.0.BUILD-SNAPSHOT
+[VERSION]
 
 Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
 server-unknown:>
@@ -231,49 +201,15 @@ server-unknown:>
 server-unknown:>dataflow config server http://dataflow-server.app.io
 Successfully targeted http://dataflow-server.app.io
 dataflow:>version
-1.0.0.BUILD-SNAPSHOT
+[VERSION]
 ```
 
 +
-. Patch the `jdbc` sink with `mysql` driver
-
-- build the https://github.com/spring-cloud/spring-cloud-stream-app-starters#spring-cloud-stream-app-starters[spring-cloud-stream-app-starters] project
-- cd `jdbc-sink-rabbit`
-- modify `pom.xml` to include `mysql` driver (_remove `hsqldb`_)
-+
-[source,xml]
-----
-      <dependency>
-        <groupId>org.hsqldb</groupId>
-        <artifactId>hsqldb</artifactId>
-        <version>2.3.3</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>mysql</groupId>
-        <artifactId>mysql-connector-java</artifactId>
-        <version>5.1.37</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat</groupId>
-        <artifactId>tomcat-jdbc</artifactId>
-        <version>8.0.33</version>
-      </dependency>
-----
-+
-- build project: `mvn clean install`
-+
-
-+
-. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] RabbitMQ binder variant of the `http` and `jdbc` applications
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] RabbitMQ binder variant of out-of-the-box applications
 +
 
 ```
-dataflow:>app register --type source --name http --uri maven://org.springframework.cloud.stream.app:http-source-rabbit:1.0.0.BUILD-SNAPSHOT --force
-Successfully registered application 'source:http'
-
-dataflow:>app register --type sink --name jdbc --uri maven://org.springframework.cloud.stream.app:jdbc-sink-rabbit:1.0.0.BUILD-SNAPSHOT --force
-Successfully registered application 'sink:jdbc'
+dataflow:>app import --uri http://bit.ly/stream-applications-rabbit-maven
 ```
 
 +

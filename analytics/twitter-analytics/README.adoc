@@ -52,6 +52,14 @@ dataflow:>version
 ```
 
 +
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] Kafka binder variant of out-of-the-box applications
++
+
+```
+dataflow:>app import --uri http://bit.ly/stream-applications-kafka-maven
+```
+
++
 . Create and deploy the following streams
 +
 ```

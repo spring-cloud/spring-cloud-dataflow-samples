@@ -12,7 +12,6 @@ We will begin by discussing the steps to prep, configure and operationalize Spri
 In order to get started, make sure that you have the following components:
 
 * Local build of link:https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
-* Running instance of link:http://redis.io/[Redis]
 * Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
 * Running instance of link:http://cassandra.apache.org/[Apache Cassandra]
 * A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] to connect to the Cassandra instance. You might have to provide `host`, `port`, `username` and `password` depending on the Cassandra configuration you are using. 
@@ -35,7 +34,7 @@ CREATE TABLE book  (
 +
 ```
 $ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
-$ java -jar spring-cloud-dataflow-server-local/target/spring-cloud-dataflow-server-local-1.0.0.BUILD-SNAPSHOT.jar
+$ java -jar spring-cloud-dataflow-server-local/target/spring-cloud-dataflow-server-local-[VERSION].BUILD-SNAPSHOT.jar
 
 ```
 +
@@ -44,7 +43,7 @@ $ java -jar spring-cloud-dataflow-server-local/target/spring-cloud-dataflow-serv
 +
 ```
 $ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
-$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0.BUILD-SNAPSHOT.jar
+$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-[VERSION].BUILD-SNAPSHOT.jar
 
   ____                              ____ _                __
  / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
@@ -57,22 +56,30 @@ $ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0
  | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
  |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
 
-1.0.0.BUILD-SNAPSHOT
+[VERSION].BUILD-SNAPSHOT
 
 Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
 dataflow:>version
-1.0.0.BUILD-SNAPSHOT
+[VERSION].BUILD-SNAPSHOT
+```
+
++
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] Kafka binder variant of out-of-the-box applications
++
+
+```
+dataflow:>app import --uri http://bit.ly/stream-applications-kafka-maven
 ```
 
 +
 . Create the stream
 +
 ```
-dataflow:>stream create cassandrastream --definition "http --server.port=8888 --spring.cloud.stream.bindings.output.contentType='application/json' | cassandra --ingestQuery='insert into book (id, isbn, title, author) values (uuid(), ?, ?, ?)' --spring.cassandra.keyspace=clouddata" --deploy
+dataflow:>stream create cassandrastream --definition "http --server.port=8888 --spring.cloud.stream.bindings.output.contentType='application/json' | cassandra --ingestQuery='insert into book (id, isbn, title, author) values (uuid(), ?, ?, ?)' --keyspace=clouddata" --deploy
 
 Created and deployed new stream 'cassandrastream'
 ```
-NOTE: If Cassandra isn't running on default port on `localhost` or if you need username and password to connect, use one of the following options to specify the necessary connection parameters: `--spring.cassandra.username='<USERNAME>' --spring.cassandra.password='<PASSWORD>' --spring.cassandra.port=<PORT> --spring.cassandra.contactPoints=<LIST-OF-HOSTS>`
+NOTE: If Cassandra isn't running on default port on `localhost` or if you need username and password to connect, use one of the following options to specify the necessary connection parameters: `--username='<USERNAME>' --password='<PASSWORD>' --port=<PORT> --contact-points=<LIST-OF-HOSTS>`
 
 +
 . Verify the stream is successfully deployed
@@ -118,7 +125,6 @@ In order to get started, make sure that you have the following components:
 * Cloud Foundry instance
 * Local build of https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
 * Local build of Spring Cloud Data Flow's https://github.com/spring-cloud/spring-cloud-dataflow-server-cloudfoundry[Cloud Foundry Server]
-* Running instance of `redis` in Cloud Foundry
 * Running instance of `rabbit` in Cloud Foundry
 * Running instance of `cassandra` in Cloud Foundry or from another Cloud provider
 * A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] to connect to the Cassandra instance. You might have to provide `host`, `port`, `username` and `password` depending on the Cassandra configuration you are using. 
@@ -173,7 +179,7 @@ dataflow-server  started           1/1         1G       1G     dataflow-server.a
 
 ```
 $ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
-$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0.BUILD-SNAPSHOT.jar
+$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-[VERSION].BUILD-SNAPSHOT.jar
 
   ____                              ____ _                __
  / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
@@ -186,7 +192,7 @@ $ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0
  | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
  |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
 
-1.0.0.BUILD-SNAPSHOT
+[VERSION].BUILD-SNAPSHOT
 
 Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
 server-unknown:>
@@ -199,19 +205,15 @@ server-unknown:>
 server-unknown:>dataflow config server http://dataflow-server.app.io
 Successfully targeted http://dataflow-server.app.io
 dataflow:>version
-1.0.0.BUILD-SNAPSHOT
+[VERSION].BUILD-SNAPSHOT
 ```
 
 +
-. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] RabbitMQ binder variant of the `http` and `cassandra` applications
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] RabbitMQ binder variant of out-of-the-box applications
 +
 
 ```
-dataflow:>module register --type source --name http --uri maven://org.springframework.cloud.stream.app:http-source-rabbit:1.0.0.BUILD-SNAPSHOT --force
-Successfully registered module 'source:http'
-
-dataflow:>module register --type sink --name cassandra --uri maven://org.springframework.cloud.stream.app:cassandra-sink-rabbit:1.0.0.BUILD-SNAPSHOT --force
-Successfully registered module 'sink:cassandra'
+dataflow:>app import --uri http://bit.ly/stream-applications-rabbit-maven
 ```
 
 +
@@ -219,7 +221,7 @@ Successfully registered module 'sink:cassandra'
 +
 
 ```
-dataflow:>stream create cassandrastream --definition "http --spring.cloud.stream.bindings.output.contentType='application/json' | cassandra --ingestQuery='insert into book (id, isbn, title, author) values (uuid(), ?, ?, ?)' --spring.cassandra.username='<USERNAME>' --spring.cassandra.password='<PASSWORD>' --spring.cassandra.port=<PORT> --spring.cassandra.contactPoints=<HOST> --spring.cassandra.keyspace='<KEYSPACE>'" --deploy
+dataflow:>stream create cassandrastream --definition "http --spring.cloud.stream.bindings.output.contentType='application/json' | cassandra --ingestQuery='insert into book (id, isbn, title, author) values (uuid(), ?, ?, ?)' --username='<USERNAME>' --password='<PASSWORD>' --port=<PORT> --contact-points=<HOST> --keyspace='<KEYSPACE>'" --deploy
 
 Created and deployed new stream 'cassandrastream'
 ```

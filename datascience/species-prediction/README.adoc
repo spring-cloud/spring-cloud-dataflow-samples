@@ -12,7 +12,6 @@ We will begin by discussing the steps to prep, configure and operationalize Spri
 In order to get started, make sure that you have the following components:
 
 * Local build of link:https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
-* Running instance of link:http://redis.io/[Redis]
 * Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
 
 === Running the Sample Locally
@@ -21,7 +20,7 @@ In order to get started, make sure that you have the following components:
 +
 ```
 $ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
-$ java -jar spring-cloud-dataflow-server-local/target/spring-cloud-dataflow-server-local-1.0.0.BUILD-SNAPSHOT.jar
+$ java -jar spring-cloud-dataflow-server-local/target/spring-cloud-dataflow-server-local-[VERSION].BUILD-SNAPSHOT.jar
 
 ```
 +
@@ -30,7 +29,7 @@ $ java -jar spring-cloud-dataflow-server-local/target/spring-cloud-dataflow-serv
 +
 ```
 $ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
-$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0.BUILD-SNAPSHOT.jar
+$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-[VERSION].BUILD-SNAPSHOT.jar
 
   ____                              ____ _                __
  / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
@@ -43,11 +42,19 @@ $ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-1.0.0
  | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
  |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
 
-1.0.0.BUILD-SNAPSHOT
+[VERSION].BUILD-SNAPSHOT
 
 Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
 dataflow:>version
-1.0.0.BUILD-SNAPSHOT
+[VERSION].BUILD-SNAPSHOT
+```
+
++
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] Kafka binder variant of out-of-the-box applications
++
+
+```
+dataflow:>app import --uri http://bit.ly/stream-applications-kafka-maven
 ```
 
 +

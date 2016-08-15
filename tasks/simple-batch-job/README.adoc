@@ -1,0 +1,221 @@
+:sectnums:
+= Batch Job on Cloud Foundry
+
+In this demonstration, you will learn how to orchestrate short-lived data processing (_eg: Spring Batch Jobs_) using http://cloud.spring.io/spring-cloud-task/[Spring Cloud Task] and http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] on Cloud Foundry.
+
+== Using Cloud Foundry Server
+
+=== Prerequisites
+
+In order to get started, make sure that you have the following components:
+
+* Local https://pivotal.io/pcf-dev[PCFDev] instance 
+* Local install of https://github.com/cloudfoundry/v3-cli-plugin[V3-CF-CLI] plugin
+* Local build of https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
+* Local build of Spring Cloud Data Flow's https://github.com/spring-cloud/spring-cloud-dataflow-server-cloudfoundry[Cloud Foundry Server]
+* Running instance of `mysql` in Cloud Foundry or from another Cloud provider
+
+NOTE: PCF 1.7.12 or greater is required to run Tasks on Spring Cloud Data Flow. As of this writing, PCFDev and PWS supports builds upon this version.
+
+=== Running the Sample in Cloud Foundry
+
+. Verify that CF instance is reachable
++
+
+```
+→ cf api
+API endpoint: https://api.local.pcfdev.io (API version: 2.54.0)
+
+$ cf apps
+Getting apps in org user-dataflow / space development as user...
+OK
+
+No apps found
+```
++
+. Follow the http://docs.spring.io/spring-cloud-dataflow-server-cloudfoundry/docs/current-SNAPSHOT/reference/htmlsingle/#getting-started[getting-started] instructions to deploy Spring Cloud Data Flow's Cloud Foundry Server
+
++
+. Once you complete the instructions, you'll be able to list the newly deployed `dataflow-server` application in Cloud Foundry
+
++
+
+```
+$ cf apps
+Getting apps in org user-dataflow / space development as user...
+OK
+
+name             requested state   instances   memory   disk   urls
+dataflow-server  started           1/1         1G       1G     dataflow-server.local.pcfdev.io
+```
++
+
+. Tasks in Spring Cloud Data Flow requires an RDBMS to host "task repository" (see http://docs.spring.io/spring-cloud-dataflow/docs/1.0.0.RELEASE/reference/htmlsingle/#spring-cloud-dataflow-task-repository[here] for more details), so let's bind `mysql` service and restage the `dataflow-server`
+
++
+
+```
+$ cf set-env dataflow-server SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_SERVICES redis,rabbit,mysql
+$ cf restage dataflow-server
+```
++
+
+. Notice that `dataflow-server` application is started and ready for interaction via `http://dataflow-server.local.pcfdev.io` endpoint
+
+. Connect to Spring Cloud Data Flow's `shell`. 
++
+
+```
+$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
+$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-<VERSION>.jar
+
+  ____                              ____ _                __
+ / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
+ \___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
+  ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
+ |____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
+  ____ |_|    _          __|___/                 __________
+ |  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
+ | | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
+ | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
+ |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
+
+<VERSION>
+
+Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
+server-unknown:>
+```
++
+. Connect `shell` with the `server` running at `http://dataflow-server.local.pcfdev.io`
++
+
+```
+server-unknown:>dataflow config server http://dataflow-server.local.pcfdev.io
+Successfully targeted http://dataflow-server.local.pcfdev.io
+dataflow:>version
+<VERSION>
+```
++
+
+. Verify there's no Task applications running on PCFDev using `v3-cf-cli`
+
++
+```
+→ cf v3-apps
+No v3 apps found.
+```
++
+
+. Let's build and register the batch-job https://github.com/spring-cloud/spring-cloud-task/tree/master/spring-cloud-task-samples/batch-job[example] from Spring Cloud Task samples. For convenience, the final https://github.com/spring-cloud/spring-cloud-dataflow-samples/raw/master/tasks/simple-batch-job/batch-job-1.0.0.BUILD-SNAPSHOT.jar[uber-jar artifact] is provided with this sample
+
++
+
+```
+dataflow:>app register --type task --name simple_batch_job --uri https://github.com/spring-cloud/spring-cloud-dataflow-samples/raw/master/tasks/simple-batch-job/batch-job-1.0.0.BUILD-SNAPSHOT.jar
+```
++
+
+. Create the task with `simple-batch-job` application
+
++
+```
+dataflow:>task create foo --definition "simple_batch_job"
+```
+NOTE: Unlike Streams, the Task definitions don't require explicit deployment. They can be launched on-demand, scheduled, or triggered by streams. 
+
++
+
+. Verify there's *still* no Task applications running on PCFDev - they are listed only after the initial launch/staging attempt on PCF
+
++
+```
+→ cf v3-apps
+No v3 apps found.
+```
++
+
+. Let's launch `foo`
+
++
+
+```
+dataflow:>task launch foo 
+```
++
+
+. Verify the execution of `foo` by tailing the logs
+
++
+
+```
+→ cf v3-logs foo 
+Tailing logs for app foo...
+
+2016-08-14T18:48:54.22-0700 [APP/TASK/foo/0]OUT Creating container
+2016-08-14T18:48:55.47-0700 [APP/TASK/foo/0]OUT
+
+2016-08-14T18:49:06.59-0700 [APP/TASK/foo/0]OUT 2016-08-15 01:49:06.598  INFO 14 --- [           main] o.s.b.c.l.support.SimpleJobLauncher      : Job: [SimpleJob: [name=job1]] launched with the following parameters: [{}]
+
+...
+...
+
+2016-08-14T18:49:06.78-0700 [APP/TASK/foo/0]OUT 2016-08-15 01:49:06.785  INFO 14 --- [           main] o.s.b.c.l.support.SimpleJobLauncher      : Job: [SimpleJob: [name=job1]] completed with the following parameters: [{}] and the following status: [COMPLETED]
+
+...
+...
+
+2016-08-14T18:49:07.36-0700 [APP/TASK/foo/0]OUT 2016-08-15 01:49:07.363  INFO 14 --- [           main] o.s.b.c.l.support.SimpleJobLauncher      : Job: [SimpleJob: [name=job2]] launched with the following parameters: [{}]
+
+...
+...
+
+2016-08-14T18:49:07.53-0700 [APP/TASK/foo/0]OUT 2016-08-15 01:49:07.536  INFO 14 --- [           main] o.s.b.c.l.support.SimpleJobLauncher      : Job: [SimpleJob: [name=job2]] completed with the following parameters: [{}] and the following status: [COMPLETED]
+
+...
+...
+
+2016-08-14T18:49:07.71-0700 [APP/TASK/foo/0]OUT Exit status 0
+2016-08-14T18:49:07.78-0700 [APP/TASK/foo/0]OUT Destroying container
+2016-08-14T18:49:08.47-0700 [APP/TASK/foo/0]OUT Successfully destroyed container
+
+```
+NOTE: Verify `job1` and `job2` operations embeddded in `simple-batch-job` application are launched independently and they returned with the status `COMPLETED`.
+
++
+
+NOTE: Unlike LRPs in Cloud Foundry, tasks are short-lived, so the logs aren't always available. They are generated only when the Task application runs; at the end of Task operation, the container that ran the Task application is destroyed to free-up resources.
++
+
+. List Tasks in Cloud Foundry
+
++
+
+```
+→ cf v3-apps
+name       total_desired_instances
+foo        0
+```
++
+
+. Verify Task execution details
+
++
+
+```
+dataflow:>task execution list
+╔══════════════════════════╤══╤════════════════════════════╤════════════════════════════╤═════════╗
+║        Task Name         │ID│         Start Time         │          End Time          │Exit Code║
+╠══════════════════════════╪══╪════════════════════════════╪════════════════════════════╪═════════╣
+║Demo Batch Job Task:cloud:│1 │Sun Aug 14 18:49:05 PDT 2016│Sun Aug 14 18:49:07 PDT 2016│0        ║
+╚══════════════════════════╧══╧════════════════════════════╧════════════════════════════╧═════════╝
+```
++
+
+
+== Summary 
+
+In this sample, you have learned:
+
+* How to register and orchestrate Spring Batch jobs in Spring Cloud Data Flow
+* How to use `v3-cf-cli` in the context of Task applications orchestrated by Spring Cloud Data Flow
+* How to verify task executions and task repository 

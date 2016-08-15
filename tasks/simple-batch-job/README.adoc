@@ -1,7 +1,7 @@
 :sectnums:
 = Batch Job on Cloud Foundry
 
-In this demonstration, you will learn how to orchestrate short-lived data processing (_eg: Spring Batch Jobs_) using http://cloud.spring.io/spring-cloud-task/[Spring Cloud Task] and http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] on Cloud Foundry.
+In this demonstration, you will learn how to orchestrate short-lived data processing application (_eg: Spring Batch Jobs_) using http://cloud.spring.io/spring-cloud-task/[Spring Cloud Task] and http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] on Cloud Foundry.
 
 == Using Cloud Foundry Server
 
@@ -13,7 +13,7 @@ In order to get started, make sure that you have the following components:
 * Local install of https://github.com/cloudfoundry/v3-cli-plugin[V3-CF-CLI] plugin
 * Local build of https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
 * Local build of Spring Cloud Data Flow's https://github.com/spring-cloud/spring-cloud-dataflow-server-cloudfoundry[Cloud Foundry Server]
-* Running instance of `mysql` in Cloud Foundry or from another Cloud provider
+* Running instance of mysql in PCFDev
 
 NOTE: PCF 1.7.12 or greater is required to run Tasks on Spring Cloud Data Flow. As of this writing, PCFDev and PWS supports builds upon this version.
 
@@ -208,6 +208,20 @@ dataflow:>task execution list
 ╠══════════════════════════╪══╪════════════════════════════╪════════════════════════════╪═════════╣
 ║Demo Batch Job Task:cloud:│1 │Sun Aug 14 18:49:05 PDT 2016│Sun Aug 14 18:49:07 PDT 2016│0        ║
 ╚══════════════════════════╧══╧════════════════════════════╧════════════════════════════╧═════════╝
+```
+
+. Verify Job execution details
+
++
+
+```
+dataflow:>job execution list
+╔═══╤═══════╤═════════╤════════════════════════════╤═════════════════════╤══════════════════╗
+║ID │Task ID│Job Name │         Start Time         │Step Execution Count │Definition Status ║
+╠═══╪═══════╪═════════╪════════════════════════════╪═════════════════════╪══════════════════╣
+║2  │1      │job2     │Sun Aug 14 18:49:07 PDT 2016│1                    │Destroyed         ║
+║1  │1      │job1     │Sun Aug 14 18:49:06 PDT 2016│1                    │Destroyed         ║
+╚═══╧═══════╧═════════╧════════════════════════════╧═════════════════════╧══════════════════╝
 ```
 +
 

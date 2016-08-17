@@ -39,7 +39,7 @@ No apps found
 NOTE: For this sample, all you need is the `mysql` service and in PCFDev, the `mysql` service comes with a different plan. From CF CLI, create the service by: `cf create-service p-mysql 512mb mysql` and bind this service to `dataflow-server` by: `cf bind-service dataflow-server mysql`.
 +
 
-NOTE: All the apps deployed to PCFDev start with low memory by default. It is recommended to change it to at least 512MB for `dataflow-server`. Change the memory by: `cf set-env dataflow-server SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_MEMORY 512`.
+NOTE: All the apps deployed to PCFDev start with low memory by default. It is recommended to change it to at least 512MB for `dataflow-server`. Change the memory by: `cf set-env dataflow-server SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_MEMORY 512`. Likewise, we would have to skip SSL validation by: `cf set-env dataflow-server SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_SKIP_SSL_VALIDATION true`.
 
 . Once you complete the instructions, you'll be able to list the newly deployed `dataflow-server`
 

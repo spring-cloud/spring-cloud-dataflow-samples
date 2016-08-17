@@ -36,7 +36,12 @@ No apps found
 . Follow the http://docs.spring.io/spring-cloud-dataflow-server-cloudfoundry/docs/current-SNAPSHOT/reference/htmlsingle/#getting-started[getting-started] instructions to deploy Spring Cloud Data Flow's Cloud Foundry Server
 
 +
-. Once you complete the instructions, you'll be able to list the newly deployed `dataflow-server` application in Cloud Foundry
+NOTE: For this sample, all you need is the `mysql` service and in PCFDev, the `mysql` service comes with a different plan. From CF CLI, create the service by: `cf create-service p-mysql 512mb mysql` and bind this service to `dataflow-server` by: `cf bind-service dataflow-server mysql`.
++
+
+NOTE: All the apps deployed to PCFDev start with low memory by default. It is recommended to change it to at least 512MB for `dataflow-server`. Change the memory by: `cf set-env dataflow-server SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_MEMORY 512`.
+
+. Once you complete the instructions, you'll be able to list the newly deployed `dataflow-server`
 
 +
 
@@ -46,19 +51,23 @@ Getting apps in org user-dataflow / space development as user...
 OK
 
 name             requested state   instances   memory   disk   urls
-dataflow-server  started           1/1         1G       1G     dataflow-server.local.pcfdev.io
+dataflow-server  started           1/1         512M     512M   dataflow-server.local.pcfdev.io
 ```
 +
+
+NOTE: The `ORG`, `SPACE` and `USER` could vary depending on your Cloud Foundry environment in use.
 
 . Tasks in Spring Cloud Data Flow requires an RDBMS to host "task repository" (see http://docs.spring.io/spring-cloud-dataflow/docs/1.0.0.RELEASE/reference/htmlsingle/#spring-cloud-dataflow-task-repository[here] for more details), so let's bind `mysql` service and restage the `dataflow-server`
 
 +
 
 ```
-$ cf set-env dataflow-server SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_SERVICES redis,rabbit,mysql
+$ cf set-env dataflow-server SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_SERVICES mysql
 $ cf restage dataflow-server
 ```
 +
+
+NOTE: We only need `mysql` service for this sample.
 
 . Notice that `dataflow-server` application is started and ready for interaction via `http://dataflow-server.local.pcfdev.io` endpoint
 

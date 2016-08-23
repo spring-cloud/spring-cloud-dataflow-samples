@@ -62,7 +62,7 @@ NOTE: The `ORG`, `SPACE` and `USER` could vary depending on your Cloud Foundry e
 +
 
 ```
-$ cf set-env dataflow-server SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_SERVICES mysql
+$ cf set-env dataflow-server SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_TASK_SERVICES mysql
 $ cf restage dataflow-server
 ```
 +

@@ -14,6 +14,10 @@ A data pipeline demonstration that consumes data from an `http` endpoint and wri
 
 ## Task / Batch
 
+### link:tasks/simple-batch-job/README.adoc[simple-batch-job]
+
+A simple Spring Batch job running as short-lived task in Cloud Foundry.
+
 ## Analytics
 
 ### link:analytics/twitter-analytics/README.adoc[twitter-analytics]

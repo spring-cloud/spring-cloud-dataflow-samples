@@ -22,7 +22,7 @@ A simple Spring Batch job running as short-lived task in Cloud Foundry.
 
 ### link:analytics/twitter-analytics/README.adoc[twitter-analytics]
 
-A data pipeline demonstration that consumes data from twitter-firehose using `twitterstream` source application and computes simple analytics over data-in-trasnsit with the help of `field-value-counter` sink application.
+A data pipeline demonstration that consumes data from twitter-firehose using `twitterstream` source application and computes simple analytics over data-in-transit with the help of `field-value-counter` sink application.
 
 ## Data Science
 

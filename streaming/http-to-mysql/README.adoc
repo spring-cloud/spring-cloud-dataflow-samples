@@ -75,7 +75,7 @@ dataflow:>app import --uri http://bit.ly/stream-applications-kafka-maven
 . Create the stream
 +
 ```
-dataflow:>stream create --name mysqlstream --definition "http --server.port=8787 | jdbc --spring.datasource.url='jdbc:mysql://localhost:3306/test' --tableName=names --columns=name" --deploy
+dataflow:>stream create --name mysqlstream --definition "http --server.port=8787 | jdbc --spring.datasource.url='jdbc:mysql://localhost:3306/test' --tableName=names --columns=name --spring.datasource.driver-class-name=org.mariadb.jdbc.Driver" --deploy
 
 Created and deployed new stream 'mysqlstream'
 ```

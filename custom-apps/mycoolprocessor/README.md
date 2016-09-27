@@ -110,7 +110,7 @@ app register --type processor --name convertToCelsius --uri https://github.com/m
 Create the stream
 
 ```
-dataflow:>stream create --name convertToCelsiusStream --definition "http  --port=9090 | convertToCelsius | log" --deploy --deploy
+dataflow:>stream create --name convertToCelsiusStream --definition "http  --port=9090 | convertToCelsius | log" --deploy 
 
 Created and deployed new stream 'convertToCelsiusStream'
 ```
@@ -150,8 +150,11 @@ dataflow:>http post --target http://localhost:9090 --data 76
 > 202 ACCEPTED
 ```
 
-Open the logs for the stream you created to see the output of our stream
-
+Open the log file for the convertToCelsiusStream.log app to see the output of our stream
+```
+tail -f /var/folders/2q/krqwcbhj2d58csmthyq_n1nw0000gp/T/spring-cloud-dataflow-7563139704229890655/convertToCelsiusStream-1474990317406/convertToCelsiusStream.log/stdout_0.log
+```
+You should see the temperature you posted converted to Celsius!
 ```
 2016-09-27 10:05:34.933  INFO 95616 --- [CelsiusStream-1] log.sink                                 : 23
 ```

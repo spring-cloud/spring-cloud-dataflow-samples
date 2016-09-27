@@ -57,7 +57,7 @@ If all goes right you should have a running standalone Spring Boot Application. 
 
 In order to get started, make sure that you have the following components:
 
-* Local build of https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
+* Local build of https://github.com/spring-cloud/spring-cloud-dataflow [Spring Cloud Data Flow]
 * Running instance of RabbitMQ https://www.rabbitmq.com/
 
 
@@ -101,10 +101,10 @@ dataflow:>version
 dataflow:>app import --uri http://bit.ly/stream-applications-rabbit-maven
 ```
 
-Register your custom app
+Register your custom app (I have my custom app jar on this public Github repo for ease of deployment)
 
 ```
-app register --type processor --name convertToCelsius --uri https://github.com/<PATH/TO/MYCOOLPROCESSOR>/mycoolprocessor-0.0.1-SNAPSHOT.jar --force
+app register --type processor --name convertToCelsius --uri https://github.com/mross1080/spring-cloud-dataflow-samples/raw/master/custom-apps/mycoolprocessor/assets/mycoolprocessor-0.0.1-SNAPSHOT.jar --force
 ```
 
 Create the stream
@@ -112,7 +112,7 @@ Create the stream
 ```
 dataflow:>stream create --name convertToCelsiusStream --definition "http  --port=9090 | convertToCelsius | log" --deploy --deploy
 
-Created and deployed new stream 'mysqlstream'
+Created and deployed new stream 'convertToCelsiusStream'
 ```
 
 
@@ -122,7 +122,14 @@ Verify the stream is successfully deployed
 dataflow:>stream list
 ```
 
- Notice that `mysqlstream-http` and `mysqlstream-jdbc` https://github.com/spring-cloud/spring-cloud-stream-modules/[Spring Cloud Stream] modules are running as Spring Boot applications within the Local `server` as collocated processes.
+
+Verify that the apps have successfully deployed
+
+```
+dataflow:>runtime apps
+```
+
+ Notice that `convertToCelsiusStream.http`,`convertToCelsiusStream.log` and `convertToCelsiusStream.convertToCelsius` https://github.com/spring-cloud/spring-cloud-stream-modules/ [Spring Cloud Stream] modules are running as Spring Boot applications within the Local `server` as collocated processes.  Also since we are running locally, note the file location of the logs.  
 
 
 ```

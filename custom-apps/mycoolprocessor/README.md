@@ -3,10 +3,13 @@
 
 ### Creating your Project
 
-Today we're going to talk about how to create a custom Spring Cloud Stream module for use as part of Spring Cloud Data Flow.  We're going to go through all the steps of making a simple processor that will allow you to do convert a Fahrenheit integer temperature to Celsius.  We will be running the demo locally, but all the steps will work in a Cloud Foundry enviornment as well.  The first step is to create a new spring cloud stream project.  We can do that by going to http://start-scs.cfapps.io/ , which is the spring cloud stream intializer.
+Today we're going to talk about how to create a custom Spring Cloud Stream module for use as part of Spring Cloud Data Flow.  We're going to go through all the steps of making a simple processor that will allow you to do convert a Fahrenheit integer temperature to Celsius.  We will be running the demo locally, but all the steps will work in a Cloud Foundry environment as well.  The first step is to create a new spring cloud stream project.  We can do that by going to http://start-scs.cfapps.io/ , which is the spring cloud stream initializer.
+
+![alt text](https://github.com/mross1080/spring-cloud-dataflow-samples/blob/master/custom-apps/mycoolprocessor/assets/screenshot1.png?raw=true "SCS Screen 1")
 
 What you're going to want to do is setup your maven project however you like, I personally used io.mross.MyCoolProcessor.  Then you're going to add your first dependency.  We're making a transform processor here so you're going to want to add the ***transform processor*** as your first dependency to get you started with your project structure.  Secondly you need to choose a message transport binding for your custom app.  You have the option to either choose the ***rabbitmq binder starter*** or ***kafka binder starter***, but I will personally be using RabbitMQ, mainly for ease of deployment in Cloud Foundry.  Once you've set this up your page should look like this.
-___
+
+![alt text](https://github.com/mross1080/spring-cloud-dataflow-samples/blob/master/custom-apps/mycoolprocessor/assets/setupProject.png?raw=true "SCS Screen 2")
 
 Hit the generate project button and then open your new project in an IDE of your choice.
 
@@ -19,7 +22,7 @@ Now we're at a point where we can actually create our custom module.  In our Spr
 
 Remember, a Spring Cloud Stream is supposed to be a stand alone spring boot application that can be run on it's own.  Spring Cloud Dataflow is the orchestration layer that ties these individual Spring Cloud Stream apps together.
 
-Since I named my project MyCoolProcessor, the Spring Cloud Stream Generator created a MyCoolProcessorApplication.java file.  What's amazing about Spring Cloud Stream is you don't even need to change this file as it is to get off the ground running.  What you do need to do is create a Configuration file where you will definie your custom logic.  I am going create a transformer that takes a fahrenheit input and converts it to celcius.  We want to follow the same naming convention as the application file, so create a new file in the same directory called MyCoolProcesorConfiguration.java.
+Since I named my project MyCoolProcessor, the Spring Cloud Stream Generator created a MyCoolProcessorApplication.java file.  What's amazing about Spring Cloud Stream is you don't even need to change this file as it is to get off the ground running.  What you do need to do is create a Configuration file where you will define your custom logic.  I am going create a transformer that takes a fahrenheit input and converts it to celcius.  We want to follow the same naming convention as the application file, so create a new file in the same directory called MyCoolProcesorConfiguration.java.
 
 
 ##### MyCoolProcessorConfiguration.java
@@ -35,7 +38,7 @@ public class MyCoolProcessorConfiguration {
 }
 ```
 
-If you inspect the file you can see that there are two important spring annotations.  First we annotate the class with **@EnableBinding(Processor.class)**.  Second we create a method and annotate it with ***@Transformer(inputChannel = Processor.INPUT, outputChannel = Processor.OUTPUT)***.  By adding these two annotations you are basically classifying this stream module as a Processor(as opposed to a source or a sink).  This allows you to specifiy that you are recieving input from upstream(Processor.input) and outputting data downstream(Processor.OUTPUT).
+If you inspect the file you can see that there are two important spring annotations.  First we annotate the class with **@EnableBinding(Processor.class)**.  Second we create a method and annotate it with ***@Transformer(inputChannel = Processor.INPUT, outputChannel = Processor.OUTPUT)***.  By adding these two annotations you are basically classifying this stream module as a Processor(as opposed to a source or a sink).  This allows you to specify that you are receiving input from upstream(Processor.input) and outputting data downstream(Processor.OUTPUT).
 
 In my convertToCelsius method, I am taking the String input, casting it to an integer, and then returning the converted number to celsius.  This method is dead simple, but that is also the beauty of this programming style.  You can add as much logic as you want to this method, and as long as you annotate it properly and return valid output, you now have a proper Spring Cloud Stream processor.
 

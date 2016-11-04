@@ -1,0 +1,138 @@
+:sectnums:
+= Groovy Processor Demo
+
+In this demonstration, you will learn how to orchestrate a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an `http` endpoint and transform that data using a groovy script.
+
+We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `server` Spring Boot application. We will deploy the `server` using  https://github.com/spring-cloud/spring-cloud-dataflow/tree/master/spring-cloud-dataflow-server-local[Local] to show how we can build data pipelines in our local development environments.
+
+== Using Local Server
+
+=== Prerequisites
+
+In order to get started, make sure that you have the following components:
+
+* Local build of https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
+* Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
+* A remote copy of our groovy script available to access over HTTP (We will be keeping ours in a publicly accessible github repo)
++
+
+
+=== Building our Groovy Script
+We're going to want to build a simple groovy script that is going to be able to ingest in a Json payload, preform some logic, and then do a transformation to the object.  Let's see what this looks like below.
+```
+import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
+
+def jsonSlurper = new JsonSlurper()
+def obj = jsonSlurper.parseText(payload)
+def stockPrice = obj.price
+
+if (stockPrice > 100) {
+  obj.action = "SELL"
+} else {
+  obj.action = "HOLD"
+}
+
+return JsonOutput.toJson(obj)
+```
+This groovy script is going to ingest a Json payload, convert it to an object, check the field "price", and add a new field based on the value of "price".  Now that we have a groovy script that we can reference in our data pipeline, we can start our server and deploy our stream.
+
+=== Running the Sample Locally
+
+. Launch the locally built `server`
++
+
+```
+$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
+$ java -jar spring-cloud-dataflow-server-local/target/spring-cloud-dataflow-server-local-<VERSION>.jar
+
+```
++
+
+. Connect to Spring Cloud Data Flow's `shell`
++
+
+```
+$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
+$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-<VERSION>.jar
+
+  ____                              ____ _                __
+ / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
+ \___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
+  ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
+ |____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
+  ____ |_|    _          __|___/                 __________
+ |  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
+ | | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
+ | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
+ |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
+
+<VERSION>
+
+Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
+dataflow:>version
+<VERSION>
+```
+
++
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] Kafka binder variant of out-of-the-box applications
++
+
+```
+dataflow:>app import --uri http://bit.ly/1-0-4-GA-stream-applications-kafka-maven
+```
+
++
+. Create the stream
++
+```
+dataflow:>stream create stockActionStream --definition "http --server.port=9001 | groovy-transform --script=https://raw.githubusercontent.com/mross1080/scdfresources/master/transform_payload.groovy | log" --deploy
+
+Created and deployed new stream 'stockActionStream'
+```
+
++
+. Verify the stream is successfully deployed
++
+```
+dataflow:>stream list
+```
++
+. Notice that `stockActionStream-http`, `stockActionStream-groovy-transform` and `stockActionStream-log` https://github.com/spring-cloud/spring-cloud-stream-modules/[Spring Cloud Stream] modules are running as Spring Boot applications within the Local `server` as collocated processes.
++
+
+```
+2016-10-26 17:29:05.404  INFO 24496 --- [io-9393-exec-10] o.s.c.d.spi.local.LocalAppDeployer       : deploying app stockActionStream.log instance 0
+   Logs will be in /var/folders/2q/krqwcbhj2d58csmthyq_n1nw0000gp/T/spring-cloud-dataflow-4184525971754128915/stockActionStream-1477517345397/stockActionStream.log
+2016-10-26 17:29:05.890  INFO 24496 --- [io-9393-exec-10] o.s.c.d.spi.local.LocalAppDeployer       : deploying app stockActionStream.groovy-transform instance 0
+   Logs will be in /var/folders/2q/krqwcbhj2d58csmthyq_n1nw0000gp/T/spring-cloud-dataflow-4184525971754128915/stockActionStream-1477517345886/stockActionStream.groovy-transform
+2016-10-26 17:29:06.547  INFO 24496 --- [io-9393-exec-10] o.s.c.d.spi.local.LocalAppDeployer       : deploying app stockActionStream.http instance 0
+   Logs will be in /var/folders/2q/krqwcbhj2d58csmthyq_n1nw0000gp/T/spring-cloud-dataflow-4184525971754128915/stockActionStream-1477517346541/stockActionStream.http
+```
+
+. Post sample data pointing to the `http` endpoint: `http://localhost:9001` [`9001` is the `server.port` we specified for the `http` source in this case]
+
++
+```
+dataflow:>http post --target http://localhost:9001 --data {"symbol":"BLAH","price":120}
+> POST (text/plain;Charset=UTF-8) http://localhost:9001 {"symbol":"BLAH","price":120}
+> 202 ACCEPTED
+```
++
+. Open the stockActionStream-log application logs to view the results.
++
+```
+2016-10-27 10:17:38.046  INFO 36431 --- [ kafka-binder-1] log.sink                                 : {"action":"SELL","price":120,"symbol":"BLAH"}
+```
++
+. That's it; you're done!
+
+
+:!sectnums:
+== Summary
+
+In this sample, you have learned:
+
+* How to use Spring Cloud Data Flow's `Local` server
+* How to use Spring Cloud Data Flow's `shell`
+* How to create streaming data pipeline that does processing ussing a groovy script

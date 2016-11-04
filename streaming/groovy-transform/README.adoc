@@ -3,7 +3,7 @@
 
 In this demonstration, you will learn how to orchestrate a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an `http` endpoint and transform that data using a groovy script.
 
-We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `server` Spring Boot application. We will deploy the `server` using  https://github.com/spring-cloud/spring-cloud-dataflow/tree/master/spring-cloud-dataflow-server-local[Local] as well as https://github.com/spring-cloud/spring-cloud-dataflow-server-cloudfoundry[Cloud Foundry] SPIs (Service Provider Interface) to demonstrate how Spring Cloud Data Flow takes advantage of _dev-sandbox_ and _cloud-native_ platform capabilities, respectively.
+We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `server` Spring Boot application. We will deploy the `server` using  https://github.com/spring-cloud/spring-cloud-dataflow/tree/master/spring-cloud-dataflow-server-local[Local] to show how we can build data pipelines in our local development environments.
 
 == Using Local Server
 
@@ -13,6 +13,7 @@ In order to get started, make sure that you have the following components:
 
 * Local build of https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
 * Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
+* A remote copy of our groovy script available to access over HTTP (We will be keeping ours in a publicly accessible github repo)
 +
 
 

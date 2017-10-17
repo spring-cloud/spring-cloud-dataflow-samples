@@ -10,6 +10,7 @@ Make sure that you have the following components:
 * Local build of link:https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
 * Local build of link:https://github.com/spring-cloud/spring-cloud-function[Spring Cloud Function]
 * Running instance of RabbitMQ
+* General understanding of the out-of-the-box https://github.com/spring-cloud-stream-app-starters/function/blob/master/spring-cloud-starter-stream-app-function/README.adoc[function-runner] application
 
 === Running the Sample Locally
 
@@ -57,7 +58,7 @@ dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-rabbi
 ```
 
 +
-. Register the out-of-the-box function-runner application (_we will use the `1.0.0.BUILD-SNAPSHOT` built by the Spring CI system_)
+. Register the out-of-the-box https://github.com/spring-cloud-stream-app-starters/function/blob/master/spring-cloud-starter-stream-app-function/README.adoc[function-runner] application (_we will use the `1.0.0.BUILD-SNAPSHOT` built by the Spring CI system_)
 +
 
 ```

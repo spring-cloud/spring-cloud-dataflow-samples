@@ -1,7 +1,7 @@
 :sectnums:
 = Species Prediction
 
-In this demonstration, you will learn how to use https://en.wikipedia.org/wiki/Predictive_Model_Markup_Language[PMML] model in the context of streaming data pipeline orchestrated by http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow]. 
+In this demonstration, you will learn how to use https://en.wikipedia.org/wiki/Predictive_Model_Markup_Language[PMML] model in the context of streaming data pipeline orchestrated by http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow].
 
 We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `Local` server, a Spring Boot application.
 
@@ -9,7 +9,7 @@ We will begin by discussing the steps to prep, configure and operationalize Spri
 
 === Prerequisites
 
-In order to get started, make sure that you have the following components:
+Make sure that you have the following components:
 
 * Local build of link:https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
 * Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
@@ -54,7 +54,7 @@ dataflow:>version
 +
 
 ```
-dataflow:>app import --uri http://bit.ly/stream-applications-kafka-maven
+dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-kafka-10-maven
 ```
 
 +
@@ -66,7 +66,7 @@ dataflow:>stream create --name pmmlTest --definition "http --server.port=9001 | 
 Created and deployed new stream 'pmmlTest'
 
 ```
-NOTE: The built-in `pmml` processor will load the given PMML model definition and create an internal object representation that can be evaluated quickly. When the stream receives the data, it will be used as the input for the evaluation of the analytical model `iris-flower-classifier-1` contained in the PMML document. The result of this evaluation is a new field `predictedSpecies` that was created from the `pmml` processor by applying a classifier that uses the naiveBayes algorithm. 
+NOTE: The built-in `pmml` processor will load the given PMML model definition and create an internal object representation that can be evaluated quickly. When the stream receives the data, it will be used as the input for the evaluation of the analytical model `iris-flower-classifier-1` contained in the PMML document. The result of this evaluation is a new field `predictedSpecies` that was created from the `pmml` processor by applying a classifier that uses the naiveBayes algorithm.
 
 +
 . Verify the stream is successfully deployed
@@ -76,7 +76,7 @@ NOTE: The built-in `pmml` processor will load the given PMML model definition an
 dataflow:>stream list
 ```
 +
-. Notice that `pmmlTest.http`, `pmmlTest.pmml`, and `pmmlTest.log` link:https://github.com/spring-cloud/spring-cloud-stream-modules/[Spring Cloud Stream] applications are running within the `local-server`.
+. Notice that `pmmlTest.http`, `pmmlTest.pmml`, and `pmmlTest.log` link:https://github.com/spring-cloud-stream-app-starters/[Spring Cloud Stream] applications are running within the `local-server`.
 +
 
 ```
@@ -96,7 +96,7 @@ dataflow:>http post --target http://localhost:9001 --contentType application/jso
 > 202 ACCEPTED
 ```
 +
-. Verify the predicted outcome by tailing `<PATH/TO/LOGAPP/pmmlTest.log/stdout_0.log` file. The `predictedSpecies` in this case is `versicolor`. 
+. Verify the predicted outcome by tailing `<PATH/TO/LOGAPP/pmmlTest.log/stdout_0.log` file. The `predictedSpecies` in this case is `versicolor`.
 +
 ```
 {
@@ -121,7 +121,7 @@ dataflow:>http post --target http://localhost:9001 --contentType application/jso
 ```
 
 +
-. Let's post with a slight variation in data. 
+. Let's post with a slight variation in data.
 +
 
 ```
@@ -157,10 +157,10 @@ NOTE: `petalWidth` value changed from `1.5` to `1.8`
 }
 ```
 
-== Summary 
+== Summary
 
 In this sample, you have learned:
 
 * How to use Spring Cloud Data Flow's `Local` server
-* How to use Spring Cloud Data Flow's `shell`
+* How to use Spring Cloud Data Flow's `shell` application
 * How to use `pmml` processor to compute real-time predictions

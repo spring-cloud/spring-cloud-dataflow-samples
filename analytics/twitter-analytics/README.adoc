@@ -1,15 +1,15 @@
 :sectnums:
 = Twitter Analytics
 
-In this demonstration, you will learn how to orchestrate a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from _TwitterStream_ and compute simple analytics over data-in-transit using _Field-Value-Counter_. 
+In this demonstration, you will learn how to orchestrate a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from _TwitterStream_ and compute simple analytics over data-in-transit using _Field-Value-Counter_.
 
-We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `Local` server, a Spring Boot application.
+We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `Local` server.
 
 == Using Local Server
 
 === Prerequisites
 
-In order to get started, make sure that you have the following components:
+Make sure that you have the following components:
 
 * Local build of link:https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
 * Running instance of link:http://redis.io/[Redis]
@@ -56,7 +56,7 @@ dataflow:>version
 +
 
 ```
-dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-kafka-10-maven 
+dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-kafka-10-maven
 ```
 
 +
@@ -75,7 +75,7 @@ Created and deployed new stream 'tagcount'
 (4) dataflow:>stream deploy tweets
 Deployed stream 'tweets'
 ```
-NOTE: To get a consumerKey and consumerSecret you need to register a twitter application. If you don’t already have one set up, you can create an app at the link:https://apps.twitter.com/[Twitter Developers] site to get these credentials. The tokens `<CONSUMER_KEY>`, `<CONSUMER_SECRET>`, `<CONSUMER_SECRET>`, and `<ACCESS_TOKEN_SECRET>` are required to be replaced with your account credentials. 
+NOTE: To get a consumerKey and consumerSecret you need to register a twitter application. If you don’t already have one set up, you can create an app at the link:https://apps.twitter.com/[Twitter Developers] site to get these credentials. The tokens `<CONSUMER_KEY>`, `<CONSUMER_SECRET>`, `<CONSUMER_SECRET>`, and `<ACCESS_TOKEN_SECRET>` are required to be replaced with your account credentials.
 
 +
 . Verify the streams are successfully deployed. Where: (1) is the primary pipeline; (2) and (3) are tapping the primary pipeline with the DSL syntax `<stream-name>.<label/app name>` [e.x. `:tweets.twitterstream`]; and (4) is the final deployment of primary pipeline
@@ -85,7 +85,7 @@ NOTE: To get a consumerKey and consumerSecret you need to register a twitter app
 dataflow:>stream list
 ```
 +
-. Notice that `tweetlang.field-value-counter`, `tagcount.field-value-counter`, `tweets.log` and `tweets.twitterstream` link:https://github.com/spring-cloud/spring-cloud-stream-modules/[Spring Cloud Stream] applications are running as Spring Boot applications within the `local-server`.
+. Notice that `tweetlang.field-value-counter`, `tagcount.field-value-counter`, `tweets.log` and `tweets.twitterstream` link:https://github.com/spring-cloud-stream-app-starters/[Spring Cloud Stream] applications are running as Spring Boot applications within the `local-server`.
 +
 
 ```
@@ -111,7 +111,7 @@ dataflow:>field-value-counter list
 ╚════════════════════════╝
 ```
 +
-. Verify you can query individual `field-value-counter` results successfully 
+. Verify you can query individual `field-value-counter` results successfully
 +
 ```
 dataflow:>field-value-counter display hashtags
@@ -151,19 +151,19 @@ Displaying values for field value counter 'language'
 
 - For real-time updates on `language` tags, select:
  .. Metric Type as `Field-Value-Counters`
- .. Stream as `language` 
+ .. Stream as `language`
  .. Visualization as `Bubble-Chart` or `Pie-Chart`
 - For real-time updates on `hashtags` tags, select:
  .. Metric Type as `Field-Value-Counters`
- .. Stream as `hashtags` 
+ .. Stream as `hashtags`
  .. Visualization as `Bubble-Chart` or `Pie-Chart`
 
 image::images/twitter_analytics.png[Twitter Analytics Visualization]
 
-== Summary 
+== Summary
 
 In this sample, you have learned:
 
 * How to use Spring Cloud Data Flow's `Local` server
-* How to use Spring Cloud Data Flow's `shell`
-* How to create streaming data pipeline to compute simple analytics using `Twitter Stream` and `Field Value Counter` data microservices
+* How to use Spring Cloud Data Flow's `shell` application
+* How to create streaming data pipeline to compute simple analytics using `Twitter Stream` and `Field Value Counter` applications

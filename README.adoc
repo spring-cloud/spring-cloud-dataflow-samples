@@ -18,6 +18,12 @@ A data pipeline demonstration that consumes data from an `http` endpoint and wri
 
 A simple Spring Batch job running as short-lived task in Cloud Foundry.
 
+## Functions
+
+### link:functions/README.adoc[functions-in-scdf]
+
+A simple demonstration of Spring Cloud Function and Spring Cloud Data Flow integration.
+
 ## Analytics
 
 ### link:analytics/twitter-analytics/README.adoc[twitter-analytics]
@@ -28,4 +34,4 @@ A data pipeline demonstration that consumes data from twitter-firehose using `tw
 
 ### link:datascience/species-prediction/README.adoc[species-prediction]
 
-A simple demonstration to walkthrough the steps to compute real-time predictions using https://en.wikipedia.org/wiki/Predictive_Model_Markup_Language[PMML] data microservice application.
+A simple demonstration to walkthrough the steps to compute real-time predictions using https://en.wikipedia.org/wiki/Predictive_Model_Markup_Language[PMML] application.

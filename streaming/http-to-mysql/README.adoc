@@ -1,7 +1,7 @@
 :sectnums:
 = HTTP to MySQL Demo
 
-In this demonstration, you will learn how to orchestrate a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an `http` endpoint and write to MySQL database using `jdbc` sink. 
+In this demonstration, you will learn how to orchestrate a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an `http` endpoint and write to MySQL database using `jdbc` sink.
 
 We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `server` Spring Boot application. We will deploy the `server` using  https://github.com/spring-cloud/spring-cloud-dataflow/tree/master/spring-cloud-dataflow-server-local[Local] as well as https://github.com/spring-cloud/spring-cloud-dataflow-server-cloudfoundry[Cloud Foundry] SPIs (Service Provider Interface) to demonstrate how Spring Cloud Data Flow takes advantage of _dev-sandbox_ and _cloud-native_ platform capabilities, respectively.
 
@@ -9,7 +9,7 @@ We will begin by discussing the steps to prep, configure and operationalize Spri
 
 === Prerequisites
 
-In order to get started, make sure that you have the following components:
+Make sure that you have the following components:
 
 * Local build of https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
 * Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
@@ -28,7 +28,7 @@ CREATE TABLE names
 
 === Running the Sample Locally
 
-. Launch the locally built `server` 
+. Launch the locally built `server`
 +
 
 ```
@@ -68,7 +68,7 @@ dataflow:>version
 +
 
 ```
-dataflow:>app import --uri http://bit.ly/1-0-4-GA-stream-applications-kafka-maven
+dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-kafka-10-maven
 ```
 
 +
@@ -88,7 +88,7 @@ NOTE: If MySQL isn't running on default port on `localhost` or if you need usern
 dataflow:>stream list
 ```
 +
-. Notice that `mysqlstream-http` and `mysqlstream-jdbc` https://github.com/spring-cloud/spring-cloud-stream-modules/[Spring Cloud Stream] modules are running as Spring Boot applications within the Local `server` as collocated processes.
+. Notice that `mysqlstream-http` and `mysqlstream-jdbc` https://github.com/spring-cloud-stream-app-starters//[Spring Cloud Stream] applications are running as Spring Boot applications within the Local `server` as collocated processes.
 +
 
 ```
@@ -170,7 +170,7 @@ dataflow-server      started           1/1         1G       1G     dataflow-serv
 +
 . Notice that `dataflow-server` application is started and ready for interaction via `http://dataflow-server.app.io` endpoint
 
-. Connect to Spring Cloud Data Flow's `shell` 
+. Connect to Spring Cloud Data Flow's `shell`
 +
 
 ```
@@ -209,7 +209,7 @@ dataflow:>version
 +
 
 ```
-dataflow:>app import --uri http://bit.ly/1-0-4-GA-stream-applications-rabbit-maven
+dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven
 ```
 
 +
@@ -234,7 +234,7 @@ NOTE: By supplying `mysql` property through `app.jdbc.spring.cloud.deployer.clou
 dataflow:>stream list
 ```
 +
-. Notice that `mysqlstream-http` and `mysqlstream-jdbc` https://github.com/spring-cloud/spring-cloud-stream-modules/[Spring Cloud Stream] modules are running as _cloud-native_ (microservice) applications in Cloud Foundry
+. Notice that `mysqlstream-http` and `mysqlstream-jdbc` https://github.com/spring-cloud-stream-app-starters/[Spring Cloud Stream] applications are running as _cloud-native_ (microservice) applications in Cloud Foundry
 +
 
 ```
@@ -287,7 +287,7 @@ dataflow-server             started           1/1         1G       1G     datafl
 . That's it; you're done!
 
 :!sectnums:
-== Summary 
+== Summary
 
 In this sample, you have learned:
 

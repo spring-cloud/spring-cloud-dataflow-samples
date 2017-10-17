@@ -1,7 +1,7 @@
 :sectnums:
 = HTTP to Cassandra Demo
 
-In this demonstration, you will learn how to orchestrate a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an _HTTP_ endpoint and write the payload to a _Cassandra_ database. 
+In this demonstration, you will learn how to orchestrate a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an _HTTP_ endpoint and write the payload to a _Cassandra_ database.
 
 We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `server` Spring Boot application. We will deploy the `server` using  https://github.com/spring-cloud/spring-cloud-dataflow/tree/master/spring-cloud-dataflow-server-local[Local] as well as https://github.com/spring-cloud/spring-cloud-dataflow-server-cloudfoundry[Cloud Foundry] SPIs (Service Provider Interface) to demonstrate how Spring Cloud Data Flow takes advantage of _dev-sandbox_ and _cloud-native_ platform capabilities respectively.
 
@@ -9,12 +9,12 @@ We will begin by discussing the steps to prep, configure and operationalize Spri
 
 === Prerequisites
 
-In order to get started, make sure that you have the following components:
+Make sure that you have the following components:
 
 * Local build of link:https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
 * Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
 * Running instance of link:http://cassandra.apache.org/[Apache Cassandra]
-* A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] to connect to the Cassandra instance. You might have to provide `host`, `port`, `username` and `password` depending on the Cassandra configuration you are using. 
+* A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] to connect to the Cassandra instance. You might have to provide `host`, `port`, `username` and `password` depending on the Cassandra configuration you are using.
 * Create a keyspace and a `book` table in Cassandra using:
 +
 ```
@@ -68,7 +68,7 @@ dataflow:>version
 +
 
 ```
-dataflow:>app import --uri http://bit.ly/stream-applications-kafka-maven
+dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-kafka-10-maven
 ```
 
 +
@@ -88,7 +88,7 @@ NOTE: If Cassandra isn't running on default port on `localhost` or if you need u
 dataflow:>stream list
 ```
 +
-. Notice that `cassandrastream-http` and `cassandrastream-cassandra` link:https://github.com/spring-cloud/spring-cloud-stream-modules/[Spring Cloud Stream] modules are running as Spring Boot applications within the `server` as a collocated process.
+. Notice that `cassandrastream-http` and `cassandrastream-cassandra` link:https://github.com/spring-cloud-stream-app-starters//[Spring Cloud Stream] applications are running as Spring Boot applications within the `server` as a collocated process.
 +
 
 ```
@@ -127,7 +127,7 @@ In order to get started, make sure that you have the following components:
 * Local build of Spring Cloud Data Flow's https://github.com/spring-cloud/spring-cloud-dataflow-server-cloudfoundry[Cloud Foundry Server]
 * Running instance of `rabbit` in Cloud Foundry
 * Running instance of `cassandra` in Cloud Foundry or from another Cloud provider
-* A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] to connect to the Cassandra instance. You might have to provide `host`, `port`, `username` and `password` depending on the Cassandra configuration you are using. 
+* A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] to connect to the Cassandra instance. You might have to provide `host`, `port`, `username` and `password` depending on the Cassandra configuration you are using.
 * Create a `book` table in your Cassandra keyspace using:
 +
 ```
@@ -174,7 +174,7 @@ dataflow-server  started           1/1         1G       1G     dataflow-server.a
 +
 . Notice that `dataflow-server` application is started and ready for interaction via `http://dataflow-server.app.io` endpoint
 
-. Connect to Spring Cloud Data Flow's `shell`. 
+. Connect to Spring Cloud Data Flow's `shell`.
 +
 
 ```
@@ -213,7 +213,7 @@ dataflow:>version
 +
 
 ```
-dataflow:>app import --uri http://bit.ly/stream-applications-rabbit-maven
+dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven
 ```
 
 +
@@ -232,7 +232,7 @@ Created and deployed new stream 'cassandrastream'
 dataflow:>stream list
 ```
 +
-. Notice that `cassandrastream-http` and `cassandrastream-cassandra` https://github.com/spring-cloud/spring-cloud-stream-modules/[Spring Cloud Stream] modules are running as _cloud-native_ (microservice) applications in Cloud Foundry
+. Notice that `cassandrastream-http` and `cassandrastream-cassandra` https://github.com/spring-cloud-stream-app-starters/[Spring Cloud Stream] applications are running as _cloud-native_ (microservice) applications in Cloud Foundry
 +
 
 ```
@@ -285,7 +285,7 @@ dataflow-server             started           1/1         1G       1G     datafl
 . That's it; you're done!
 
 :!sectnums:
-== Summary 
+== Summary
 
 In this sample, you have learned:
 

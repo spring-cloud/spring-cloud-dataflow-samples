@@ -75,7 +75,7 @@ Created and deployed new stream 'tagcount'
 (4) dataflow:>stream deploy tweets
 Deployed stream 'tweets'
 ```
-NOTE: To get a consumerKey and consumerSecret you need to register a twitter application. If you don’t already have one set up, you can create an app at the link:https://apps.twitter.com/[Twitter Developers] site to get these credentials. The tokens `<CONSUMER_KEY>`, `<CONSUMER_SECRET>`, `<CONSUMER_SECRET>`, and `<ACCESS_TOKEN_SECRET>` are required to be replaced with your account credentials.
+NOTE: To get a consumerKey and consumerSecret you need to register a twitter application. If you don’t already have one set up, you can create an app at the link:https://apps.twitter.com/[Twitter Developers] site to get these credentials. The tokens `<CONSUMER_KEY>`, `<CONSUMER_SECRET>`, `<ACCESS_TOKEN>`, and `<ACCESS_TOKEN_SECRET>` are required to be replaced with your account credentials.
 
 +
 . Verify the streams are successfully deployed. Where: (1) is the primary pipeline; (2) and (3) are tapping the primary pipeline with the DSL syntax `<stream-name>.<label/app name>` [e.x. `:tweets.twitterstream`]; and (4) is the final deployment of primary pipeline

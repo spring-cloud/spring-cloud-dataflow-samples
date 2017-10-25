@@ -1,0 +1,13 @@
+
+If you do not have access an existing Geode installation, install http://geode.apache.org[Apache Geode] or
+http://geode.apache.org/[Pivotal Gemfire] and start the `gfsh` CLI in a separate terminal.
+```
+    _________________________     __
+   / _____/ ______/ ______/ /____/ /
+  / /  __/ /___  /_____  / _____  /
+ / /__/ / ____/  _____/ / /    / /
+/______/_/      /______/_/    /_/    1.2.1
+
+Monitor and Manage Apache Geode
+gfsh>
+```

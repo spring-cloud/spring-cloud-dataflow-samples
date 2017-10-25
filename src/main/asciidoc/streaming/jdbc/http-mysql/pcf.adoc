@@ -1,0 +1,104 @@
+
+==== Using the Cloud Foundry Server
+
+===== Additional Prerequisites
+
+* Cloud Foundry instance
+
+* Running instance of `rabbit` in Cloud Foundry
+* Running instance of `mysql` in Cloud Foundry
+* A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] or link:https://www.dbvis.com/[DbVisualizer]
+* Create the `names` table (in MySQL) using:
++
+```
+CREATE TABLE names
+(
+	name varchar(255)
+);
+```
++
+* The Spring Cloud Data Flow Cloud Foundry Server
+include::{docs_dir}/cloudfoundry-server.adoc[]
+
+===== Building and Running the Demo
+
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
++
+include::{docs_dir}/maven-access.adoc[]
++
+```
+dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven
+```
++
+. Create the stream
++
+
+```
+dataflow:>stream create --name mysqlstream --definition "http | jdbc --tableName=names --columns=name"
+Created new stream 'mysqlstream'
+
+dataflow:>stream deploy --name mysqlstream --properties "app.jdbc.spring.cloud.deployer.cloudfoundry.services=mysql"
+Deployed stream 'mysqlstream'
+
+```
++
+
+NOTE: By supplying  the `app.jdbc.spring.cloud.deployer.cloudfoundry.services=mysql` property, we are deploying the stream with `jdbc-sink` to automatically bind to `mysql` service and only this application in the stream gets the service binding. This also eliminates the requirement to supply `datasource` credentials in stream definition.
++
+. Verify the stream is successfully deployed
++
+```
+dataflow:>stream list
+```
++
+. Notice that `mysqlstream-http` and `mysqlstream-jdbc` https://github.com/spring-cloud-stream-app-starters/[Spring Cloud Stream] applications are running as _cloud-native_ (microservice) applications in Cloud Foundry
++
+
+```
+$ cf apps
+Getting apps in org user-dataflow / space development as user...
+OK
+
+name                        requested state   instances   memory   disk   urls
+mysqlstream-http            started           1/1         1G       1G     mysqlstream-http.app.io
+mysqlstream-jdbc            started           1/1         1G       1G     mysqlstream-jdbc.app.io
+dataflow-server             started           1/1         1G       1G     dataflow-server.app.io
+```
++
+. Lookup the `url` for `mysqlstream-http` application from the list above. Post sample data pointing to the `http` endpoint: `<YOUR-mysqlstream-http-APP-URL>`
++
+```
+http post --contentType 'application/json' --target http://mysqlstream-http.app.io --data "{\"name\": \"Bar"}"
+> POST (application/json;charset=UTF-8) http://mysqlstream-http.app.io {"name": "Bar"}
+> 202 ACCEPTED
+```
++
+. Connect to the MySQL instance and query the table `names` to list the new rows:
++
+```
+select * from names;
+```
+
++
+. Now, let's take advantage of Pivotal Cloud Foundry's platform capability. Let's scale the `mysqlstream-http` application from 1 to 3 instances
++
+```
+$ cf scale mysqlstream-http -i 3
+Scaling app mysqlstream-http in org user-dataflow / space development as user...
+OK
+```
++
+. Verify App instances (3/3) running successfully
++
+```
+$ cf apps
+Getting apps in org user-dataflow / space development as user...
+OK
+
+name                        requested state   instances   memory   disk   urls
+mysqlstream-http            started           3/3         1G       1G     mysqlstream-http.app.io
+mysqlstream-jdbc            started           1/1         1G       1G     mysqlstream-jdbc.app.io
+dataflow-server             started           1/1         1G       1G     dataflow-server.app.io
+```
++
+. You're done!

@@ -1,0 +1,114 @@
+[[gemfire-cq-log-cf]]
+==== Using the Cloud Foundry Server
+===== Additional Prerequisites
+
+* A Cloud Foundry instance
+
+* Running instance of a `rabbit` service in Cloud Foundry
+
+* Running instance of the https://docs.pivotal.io/p-cloud-cache/1-0/developer.html[Pivotal Cloud Cache for PCF] (PCC) service `cloudcache` in Cloud Foundry.
+
+* The Spring Cloud Data Flow Cloud Foundry Server
+
+include::{docs_dir}/cloudfoundry-server.adoc[]
+
+===== Building and Running the Demo
+
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
++
+include::{docs_dir}/maven-access.adoc[]
++
+```
+dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven
+```
++
+. Get the PCC connection information
++
+```
+$ cf service-key cloudcache my-service-key
+Getting key my-service-key for service instance cloudcache as <user>...
+
+{
+ "locators": [
+  "10.0.16.9[55221]",
+  "10.0.16.11[55221]",
+  "10.0.16.10[55221]"
+ ],
+ "urls": {
+  "gfsh": "http://...",
+  "pulse": "http://.../pulse"
+ },
+ "users": [
+  {
+   "password": <password>,
+   "username": "cluster_operator"
+  },
+  {
+   "password": <password>,
+   "username": "developer"
+  }
+ ]
+}
+```
++
+. Using `gfsh`, connect to the PCC instance as `cluster_operator` using the service key values and create the Test region.
++
+```
+gfsh>connect --use-http --url=<gfsh-url> --user=cluster_operator --password=<cluster_operator_password>
+gfsh>create region --name Orders --type=REPLICATE
+```
++
+. Create the stream using the Data Flow Shell
++
+This example creates an gemfire-cq source to which will publish events matching a query criteria on a region. In this case we will monitor the `Orders` region. For simplicity, we will avoid creating a data structure for the order.
+Each cache entry contains an integer value representing the quantity of the ordered item. This stream will fire a message whenever the value>999. By default, the source emits only the value. Here we will override that using the
+`cq-event-expression` property.  This accepts a SpEL expression bound to a https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/query/CqEvent.html[CQEvent]. To reference the entire CQEvent instance, we use `#this`.
+In order to display the contents in the log, we will invoke `toString()` on the instance.
++
+```
+dataflow:>stream create --name orders --definition " gemfire-cq  --username=developer --password=<developer-password> --connect-type=locator --host-addresses=10.0.16.9:55221 --query='SELECT * from /Orders o where o > 999' --cq-event-expression=#this.toString()  | log" --deploy
+Created and deployed new stream 'events'
+```
++
+. Verify the stream is successfully deployed
++
+```
+dataflow:>stream list
+```
++
+. Monitor stdout for the log sink
++
+```
+cf logs <log-sink-app-name>
+```
++
+. Using `gfsh`, create and update some cache entries
++
+```
+gfsh>connect --use-http --url=<gfsh-url> --user=cluster_operator --password=<cluster_operator_password>
+gfsh>put --region Orders  --value-class java.lang.Integer --key 01234 --value 1000
+gfsh>put --region Orders  --value-class java.lang.Integer --key 11234 --value 1005
+gfsh>put --region Orders  --value-class java.lang.Integer --key 21234 --value 100
+gfsh>put --region Orders  --value-class java.lang.Integer --key 31234 --value 999
+gfsh>put --region Orders  --value-class java.lang.Integer --key 21234 --value 1000
+
+```
++
+. Observe the log output
+You should see messages like:
++
+[source,console,options=nowrap]
+----
+2017-10-30 09:53:02.231  INFO 8563 --- [ire-cq.orders-1] log-sink                                 : CqEvent [CqName=GfCq1; base operation=CREATE; cq operation=CREATE; key=01234; value=1000]
+2017-10-30 09:53:19.732  INFO 8563 --- [ire-cq.orders-1] log-sink                                 : CqEvent [CqName=GfCq1; base operation=CREATE; cq operation=CREATE; key=11234; value=1005]
+2017-10-30 09:53:53.242  INFO 8563 --- [ire-cq.orders-1] log-sink                                 : CqEvent [CqName=GfCq1; base operation=UPDATE; cq operation=CREATE; key=21234; value=1000]
+----
++
+. Another interesting demonstration combines `gemfire-cq` with the link:../http-gemfire/README.adoc[http-gemfire] example.
++
+```
+dataflow:> stream create --name stocks --definition "http --port=9090 | gemfire-json-server --regionName=Stocks --keyExpression=payload.getField('symbol')" --deploy
+dataflow:> stream create --name stock_watch --definition "gemfire-cq --query='Select * from /Stocks where symbol=''VMW''' | log" --deploy
+```
++
+. You're done!

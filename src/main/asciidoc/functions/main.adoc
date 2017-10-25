@@ -1,0 +1,123 @@
+:sectnums:
+:docs_dir: ..
+=== Functions in Spring Cloud Data Flow
+
+In this sample, you will learn how to use https://github.com/spring-cloud/spring-cloud-function[Spring Cloud Function] based streaming applications in Spring Cloud Data Flow. To learn more about Spring Cloud Function, check out the http://cloud.spring.io/spring-cloud-function/[project page].
+
+==== Prerequisites
+
+* A Running Data Flow Shell
+include::{docs_dir}/shell.adoc[]
+* A running local Data Flow Server
+include::{docs_dir}/local-server.adoc[]
+* A local build of link:https://github.com/spring-cloud/spring-cloud-function[Spring Cloud Function]
+* A running instance of https://www.rabbitmq.com/[Rabbit MQ]
+* General understanding of the out-of-the-box https://github.com/spring-cloud-stream-app-starters/function/blob/master/spring-cloud-starter-stream-app-function/README.adoc[function-runner] application
+
+==== Building and Running the Demo
+
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
++
+include::{docs_dir}/maven-access.adoc[]
++
+```
+dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven
+```
++
+. Register the out-of-the-box https://github.com/spring-cloud-stream-app-starters/function/blob/master/spring-cloud-starter-stream-app-function/README.adoc[function-runner] application (_we will use the `1.0.0.BUILD-SNAPSHOT` built by the Spring CI system_)
++
+```
+dataflow:>app register --name function-runner --type processor --uri http://repo.spring.io/libs-snapshot/org/springframework/cloud/stream/app/function-app-rabbit/1.0.0.BUILD-SNAPSHOT/function-app-rabbit-1.0.0.BUILD-SNAPSHOT.jar --metadata-uri http://repo.spring.io/libs-snapshot/org/springframework/cloud/stream/app/function-app-rabbit/1.0.0.BUILD-SNAPSHOT/function-app-rabbit-1.0.0.BUILD-SNAPSHOT-metadata.jar
+```
++
+. Create and deploy the following stream
++
+```
+dataflow:>stream create foo --definition "http --server.port=9001 | function-runner --function.className=com.example.functions.CharCounter --function.location=file:///<PATH/TO/SPRING-CLOUD-FUNCTION>/spring-cloud-function-samples/function-sample/target/spring-cloud-function-sample-1.0.0.BUILD-SNAPSHOT.jar | log" --deploy
+
+```
++
+NOTE: Replace the `<PATH/TO/SPRING-CLOUD-FUNCTION>` with the correct path.
+
++
+NOTE: The source core of `CharCounter` function is in Spring cloud Function's https://github.com/spring-cloud/spring-cloud-function/blob/master/spring-cloud-function-samples/function-sample/src/main/java/com/example/functions/CharCounter.java[samples repo].
++
+. Verify the stream is successfully deployed.
++
+```
+dataflow:>stream list
+```
++
+////
+TODO: Doesn't render correctly in PDF
+[source,bash,options="nowrap"]
+----
+╔══════╤══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╤════════════╗
+║Stream│                                                                                        Stream Definition                                                                                         │   Status   ║
+║ Name │                                                                                                                                                                                                  │            ║
+╠══════╪══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╪════════════╣
+║foo   │http --server.port=9001 | function-runner --function.className=com.example.functions.CharCounter                                                                                                  │All apps    ║
+║      │--function.location=file:///<PATH/TO/SPRING-CLOUD-FUNCTION>/spring-cloud-function-samples/function-sample/target/spring-cloud-function-sample-1.0.0.BUILD-<SNAPSHOT class="jar"></SNAPSHOT>       │have been   ║
+║      │| log                                                                                                                                                                                             │successfully║
+║      │                                                                                                                                                                                                  │deployed    ║
+╚══════╧══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╧════════════╝
+----
+////
++
+. Notice that `foo-http`, `foo-function-runner`, and `foo-log` link:https://github.com/spring-cloud-stream-app-starters/[Spring Cloud Stream] applications are running as Spring Boot applications and the log locations will be printed in the Local-server console.
++
+[source,bash,options="nowrap"]
+----
+....
+....
+2017-10-17 11:43:03.714  INFO 18409 --- [nio-9393-exec-7] o.s.c.d.s.s.AppDeployerStreamDeployer    : Deploying application named [log] as part of stream named [foo] with resource URI [maven://org.springframework.cloud.stream.app:log-sink-rabbit:jar:1.2.0.RELEASE]
+2017-10-17 11:43:04.379  INFO 18409 --- [nio-9393-exec-7] o.s.c.d.spi.local.LocalAppDeployer       : Deploying app with deploymentId foo.log instance 0.
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gs/T/spring-cloud-dataflow-6549025456609489200/foo-1508265783715/foo.log
+2017-10-17 11:43:04.380  INFO 18409 --- [nio-9393-exec-7] o.s.c.d.s.s.AppDeployerStreamDeployer    : Deploying application named [function-runner] as part of stream named [foo] with resource URI [file:/var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gs/T/deployer-resource-cache8941581850579153886/http-c73a62adae0abd7ec0dee91d891575709f02f8c9]
+2017-10-17 11:43:04.384  INFO 18409 --- [nio-9393-exec-7] o.s.c.d.spi.local.LocalAppDeployer       : Deploying app with deploymentId foo.function-runner instance 0.
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gs/T/spring-cloud-dataflow-6549025456609489200/foo-1508265784380/foo.function-runner
+2017-10-17 11:43:04.385  INFO 18409 --- [nio-9393-exec-7] o.s.c.d.s.s.AppDeployerStreamDeployer    : Deploying application named [http] as part of stream named [foo] with resource URI [maven://org.springframework.cloud.stream.app:http-source-rabbit:jar:1.2.0.RELEASE]
+2017-10-17 11:43:04.391  INFO 18409 --- [nio-9393-exec-7] o.s.c.d.spi.local.LocalAppDeployer       : Deploying app with deploymentId foo.http instance 0.
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gs/T/spring-cloud-dataflow-6549025456609489200/foo-1508265784385/foo.http
+....
+....
+----
+
++
+. Post sample data to the `http` endpoint: `http://localhost:9001` (`9001` is the `port` we specified for the `http` source in this case)
++
+```
+dataflow:>http post --target http://localhost:9001 --data "hello world"
+> POST (text/plain) http://localhost:9001 hello world
+> 202 ACCEPTED
+
+
+dataflow:>http post --target http://localhost:9001 --data "hmm, yeah, it works now!"
+> POST (text/plain) http://localhost:9001 hmm, yeah, it works now!
+> 202 ACCEPTED
+```
+
++
+. Tail the log-sink's standard-out logs to see the character counts
++
+[source,bash,options="nowrap"]
+----
+$ tail -f /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gs/T/spring-cloud-dataflow-6549025456609489200/foo-1508265783715/foo.log/stdout_0.log
+
+....
+....
+....
+....
+2017-10-17 11:45:39.363  INFO 19193 --- [on-runner.foo-1] log-sink                                 : 11
+2017-10-17 11:46:40.997  INFO 19193 --- [on-runner.foo-1] log-sink                                 : 24
+....
+....
+----
+
+==== Summary
+
+In this sample, you have learned:
+
+* How to use Spring Cloud Data Flow's `Local` server
+* How to use Spring Cloud Data Flow's `shell` application
+* How to use the out-of-the-box `function-runner` application in Spring Cloud Data Flow

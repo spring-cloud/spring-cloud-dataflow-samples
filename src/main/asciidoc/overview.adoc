@@ -1,0 +1,23 @@
+[[spring-cloud-data-flow-samples-overview]]
+== Overview
+This guide contains samples and demonstrations of how to build data pipelines with https://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow].
+
+== Streaming
+include::streaming/cassandra/http-to-cassandra/main.adoc[]
+include::streaming/jdbc/http-mysql/main.adoc[]
+include::streaming/gemfire/http-gemfire/main.adoc[]
+include::streaming/gemfire/gemfire-cq-log/main.adoc[]
+include::streaming/gemfire/gemfire-log/main.adoc[]
+include::streaming/custom-apps/celsius-converter-processor/main.adoc[]
+
+== Task / Batch
+include::tasks/simple-batch-job/main.adoc[]
+
+== Analytics
+include::analytics/twitter-analytics/main.adoc[]
+
+== Data Science
+include::datascience/species-prediction/main.adoc[]
+
+== Functions
+include::functions/main.adoc[]

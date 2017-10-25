@@ -1,0 +1,106 @@
+[[gemfire-http-cf]]
+===== Using the Cloud Foundry Server
+====== Additional Prerequisites
+
+* A Cloud Foundry instance
+
+* Running instance of a `rabbit` service in Cloud Foundry
+
+* Running instance of the https://docs.pivotal.io/p-cloud-cache/1-0/developer.html[Pivotal Cloud Cache for PCF] (PCC) service `cloudcache` in Cloud Foundry.
+
+* Cloud Data Flow Cloud Foundry Server
+include::{docs_dir}/cloudfoundry-server.adoc[]
+
+====== Building and Running the Demo
+
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
++
+include::{docs_dir}/maven-access.adoc[]
++
+```
+dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven
+```
++
+. Get the PCC connection information
++
+```
+$ cf service-key cloudcache my-service-key
+Getting key my-service-key for service instance cloudcache as <user>...
+
+{
+ "locators": [
+  "10.0.16.9[55221]",
+  "10.0.16.11[55221]",
+  "10.0.16.10[55221]"
+ ],
+ "urls": {
+  "gfsh": "http://...",
+  "pulse": "http://.../pulse"
+ },
+ "users": [
+  {
+   "password": <password>,
+   "username": "cluster_operator"
+  },
+  {
+   "password": <password>,
+   "username": "developer"
+  }
+ ]
+}
+```
++
+. Using `gfsh`, connect to the PCC instance as `cluster_operator` using the service key values and create the Stocks region.
++
+```
+gfsh>connect --use-http --url=<gfsh-url> --user=cluster_operator --password=<cluster_operator_password>
+gfsh>create region --name Stocks --type=REPLICATE
+```
++
+. Create the stream, connecting to the PCC instance as developer
++
+This example creates an http endpoint to which we will post stock prices as a JSON document containing `symbol` and `price` fields.
+The property `--json=true` to enable Geode's JSON support and configures the sink to convert JSON String payloads to https://geode.apache.org/releases/latest/javadoc/org/apache/geode/pdx/PdxInstance.html[PdxInstance], the recommended way
+to store JSON documents in Geode. The `keyExpression` property is a SpEL expression used to extract the `symbol` value the PdxInstance to use as an entry key.
++
+NOTE: PDX serialization is very efficient and supports OQL queries without requiring a custom domain class.
+Use of custom domain types requires these classes to be in the class path of both the stream apps and the cache server.
+For this reason, the use of custom payload types is generally discouraged.
++
+```
+dataflow:>stream create --name stocks --definition "http --security.basic.enabled=false | gemfire --username=developer --password=<developer-password> --connect-type=locator --host-addresses=10.0.16.9:55221 --regionName=Stocks --keyExpression=payload.getField('symbol')" --deploy
+```
+
+. Verify the stream is successfully deployed
++
+```
+dataflow:>stream list
+```
+
+. Post sample data pointing to the `http` endpoint
++
+
+Get the url of the http source using `cf apps`
++
+```
+dataflow:>http post --target http://<http source url> --contentType application/json --data '{"symbol":"VMW","price":117.06}'
+> POST (application/json) http://... {"symbol":"VMW","price":117.06}
+> 202 ACCEPTED
+```
++
+. Using `gfsh`, connect to the PCC instance as `cluster_operator` using the service key values.
++
+```
+gfsh>connect --use-http --url=<gfsh-url> --user=cluster_operator --password=<cluster_operator_password>
+gfsh>get --key='VMW' --region=/Stocks
+Result      : true
+Key Class   : java.lang.String
+Key         : VMW
+Value Class : org.apache.geode.pdx.internal.PdxInstanceImpl
+
+symbol | price
+------ | ------
+VMW    | 117.06
+```
++
+. You're done!

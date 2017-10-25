@@ -1,0 +1,74 @@
+==== Using the Local Server
+
+===== Additional Prerequisites
+
+* A running local Data Flow Server
+include::{docs_dir}/local-server.adoc[]
+
+* Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
+* Running instance of link:http://www.mysql.com/[MySQL]
+* A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] or link:https://www.dbvis.com/[DbVisualizer]
+* Create the `test` database with a `names` table (in MySQL) using:
++
+```
+CREATE DATABASE test;
+USE test;
+CREATE TABLE names
+(
+	name varchar(255)
+);
+```
+
+===== Building and Running the Demo
+
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Kafka binder
++
+include::{docs_dir}/maven-access.adoc[]
++
+```
+dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-kafka-10-maven
+```
++
+. Create the stream
++
+```
+dataflow:>stream create --name mysqlstream --definition "http --server.port=8787 | jdbc --tableName=names --columns=name --spring.datasource.driver-class-name=org.mariadb.jdbc.Driver --spring.datasource.url='jdbc:mysql://localhost:3306/test'" --deploy
+
+Created and deployed new stream 'mysqlstream'
+```
+NOTE: If MySQL isn't running on default port on `localhost` or if you need username and password to connect, use one of the following options to specify the necessary connection parameters: `--spring.datasource.url='jdbc:mysql://<HOST>:<PORT>/<NAME>' --spring.datasource.username=<USERNAME> --spring.datasource.password=<PASSWORD>`
+
++
+. Verify the stream is successfully deployed
++
+```
+dataflow:>stream list
+```
++
+. Notice that `mysqlstream-http` and `mysqlstream-jdbc` https://github.com/spring-cloud-stream-app-starters//[Spring Cloud Stream] applications are running as Spring Boot applications within the Local `server` as collocated processes.
++
+
+[source,console,options=nowrap]
+----
+2016-05-03 09:29:55.918  INFO 65162 --- [nio-9393-exec-3] o.s.c.d.spi.local.LocalAppDeployer       : deploying app mysqlstream.jdbc instance 0
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-dataflow-6850863945840320040/mysqlstream1-1462292995903/mysqlstream.jdbc
+2016-05-03 09:29:55.939  INFO 65162 --- [nio-9393-exec-3] o.s.c.d.spi.local.LocalAppDeployer       : deploying app mysqlstream.http instance 0
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-dataflow-6850863945840320040/mysqlstream-1462292995934/mysqlstream.http
+----
+
+. Post sample data pointing to the `http` endpoint: `http://localhost:8787` [`8787` is the `server.port` we specified for the `http` source in this case]
+
++
+```
+dataflow:>http post --contentType 'application/json' --target http://localhost:8787 --data "{\"name\": \"Foo\"}"
+> POST (application/json;charset=UTF-8) http://localhost:8787 {"name": "Spring Boot"}
+> 202 ACCEPTED
+```
++
+. Connect to the MySQL instance and query the table `test.names` to list the new rows:
++
+```
+select * from test.names;
+```
++
+. You're done!

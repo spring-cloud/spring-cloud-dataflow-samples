@@ -1,0 +1,35 @@
+= Spring Cloud Data Flow Samples
+Sabby Anandan; David Turanski; Glenn Renfro; Eric Bottard; Mark Pollack;
+:doctype: book
+:toc:
+:toclevels: 4
+:source-highlighter: prettify
+:numbered:
+:icons: font
+:hide-uri-scheme:
+:docinfo: shared
+
+:spring-cloud-stream-docs: http://docs.spring.io/spring-cloud-stream/docs/{scst-core-version}/reference/htmlsingle/index.html
+:github-code: https://github.com/spring-cloud/spring-cloud-dataflow-samples
+
+
+ifdef::backend-html5[]
+
+Version {project-version}
+
+(C) 2012-2017 Pivotal Software, Inc.
+
+_Copies of this document may be made for your own use and for distribution to
+others, provided that you do not charge any fee for such copies and further
+provided that each copy contains this Copyright Notice, whether distributed in
+print or electronically._
+
+endif::backend-html5[]
+
+// ======================================================================================
+
+[[overview]]
+
+include::overview.adoc[]
+
+// ======================================================================================

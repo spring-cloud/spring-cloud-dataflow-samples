@@ -1,0 +1,106 @@
+[[gemfire-log-local]]
+==== Using the Local Server
+===== Additional Prerequisites
+
+* A Running Data Flow Server
+include::{docs_dir}/local-server.adoc[]
+* A running instance of https://www.rabbitmq.com[Rabbit MQ]
+
+===== Building and Running the Demo
+
+. Use gfsh to start a locator and server
++
+```
+gfsh>start locator --name=locator1
+gfsh>start server --name=server1
+
+```
+. Create a region called `Test`
++
+```
+gfsh>create region --name Test --type=REPLICATE
+```
++
+*Use the Shell to create the sample stream*
++
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
++
+include::{docs_dir}/maven-access.adoc[]
++
+```
+dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven
+```
+. Create the stream
++
+This example creates an gemfire source to which will publish events on a region
++
+```
+dataflow:>stream create --name events --definition " gemfire --regionName=Test | log" --deploy
+Created and deployed new stream 'events'
+```
+NOTE: If the Geode locator isn't running on default port on `localhost`, add the options `--connect-type=locator --host-addresses=<host>:<port>`. If there are multiple
+locators, you can provide a comma separated list of locator addresses. This is not necessary for the sample but is typical for production environments to enable fail-over.
+
+. Verify the stream is successfully deployed
++
+```
+dataflow:>stream list
+```
+
+. Monitor stdout for the log sink. When you deploy the stream, you will see log messages in the Data Flow server console like this
++
+
+[source,console,options=nowrap]
+----
+2017-10-28 17:28:23.275  INFO 15603 --- [nio-9393-exec-2] o.s.c.d.spi.local.LocalAppDeployer       : Deploying app with deploymentId events.log instance 0.
+   Logs will be in /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-dataflow-4093992067314402881/events-1509226103269/events.log
+2017-10-28 17:28:23.277  INFO 15603 --- [nio-9393-exec-2] o.s.c.d.s.c.StreamDeploymentController   : Downloading resource URI [maven://org.springframework.cloud.stream.app:gemfire-source-rabbit:1.2.0.RELEASE]
+2017-10-28 17:28:23.311  INFO 15603 --- [nio-9393-exec-2] o.s.c.d.s.c.StreamDeploymentController   : Deploying application named [gemfire] as part of stream named [events] with resource URI [maven://org.springframework.cloud.stream.app:gemfire-source-rabbit:1.2.0.RELEASE]
+2017-10-28 17:28:23.318  INFO 15603 --- [nio-9393-exec-2] o.s.c.d.spi.local.LocalAppDeployer       : Deploying app with deploymentId events.gemfire instance 0.
+   Logs will be in /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-dataflow-4093992067314402881/events-1509226103311/events.gemfire
+----
+
++
+Copy the location of the `log` sink logs. This is a directory that ends in `events.log`. The log files will be in `stdout_0.log` under this directory. You can monitor the output of the log sink using `tail`, or something similar:
++
+
+[source,console,options=nowrap]
+----
+$tail -f /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-dataflow-4093992067314402881/events-1509226103269/events.log/stdout_0.log
+----
+
++
+. Using `gfsh`, create and update some cache entries
++
+```
+gfsh>put --region /Test --key 1  --value "value 1"
+gfsh>put --region /Test --key 2  --value "value 2"
+gfsh>put --region /Test --key 3  --value "value 3"
+gfsh>put --region /Test --key 1  --value "new value 1"
+```
++
+. Observe the log output
+You should see messages like:
++
+[source,console,options=nowrap]
+----
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 1"
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 2"
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 3"
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : new value 1"
+----
+
++
+By default, the message payload contains the updated value. Depending on your application, you may need additional information. The data comes from https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/EntryEvent.html[EntryEvent]. You
+can access any fields using the source's `cache-event-expression` property. This takes a SpEL expression bound to the EntryEvent. Try something like `--cache-event-expression='{key:'\+key+',new_value:'\+newValue+'}'` (HINT: You will need to destroy the stream and recreate it to
+add this property, an exercise left to the reader). Now you should see log messages like:
++
+
+[source,console,options=nowrap]
+----
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log-sink                                 : {key:1,new_value:value 1}
+2017-10-28 17:41:24.466  INFO 18986 --- [emfire.events-1] log-sink                                 : {key:2,new_value:value 2}
+----
+
++
+. You're done!

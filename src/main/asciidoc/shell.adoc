@@ -1,0 +1,30 @@
+
+The Spring Cloud Data Flow Shell is available for https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started-deploying-spring-cloud-dataflow[download] or you can https://github.com/spring-cloud/spring-cloud-dataflow[build] it yourself.
+
+NOTE: the Spring Cloud Data Flow Shell and Local server implementation are in the same repository and are both built by running `./mvnw install` from the project root directory. If you have already run the build, use the jar in `spring-cloud-dataflow-shell/target`
+
+To run the Shell open a new terminal session:
+```
+$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW-SHELL-JAR>
+$ java -jar spring-cloud-dataflow-shell-<VERSION>.jar
+  ____                              ____ _                __
+ / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
+ \___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
+  ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
+ |____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
+  ____ |_|    _          __|___/                 __________
+ |  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
+ | | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
+ | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
+ |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
+
+
+Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
+dataflow:>
+```
+NOTE: The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
+use the shell. If you prefer, you can use the Data Flow UI http://localhost:9393/dashboard, (or wherever it the server is hosted) to perform equivalent operations.
+
+ifdef::backend-pdf[]
+image::scdf-dashboard.png[SCDF Dashboard, scaledwidth="50%"]
+endif::[]

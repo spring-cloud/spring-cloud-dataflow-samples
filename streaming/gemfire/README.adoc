@@ -1,127 +1,14 @@
 :sectnums:
 = HTTP to Gemfire Demo
 
-In this demonstration, you will learn how to orchestrate a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an `http` endpoint and write to Gemfire using the `gemfire` sink.
+In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an `http` endpoint and write to Gemfire using the `gemfire` sink.
 
 We will take you through the steps to configure and run Spring Cloud Data Flow server in either a https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started/[local] or https://docs.spring.io/spring-cloud-dataflow-server-cloudfoundry/docs/current/reference/htmlsingle/#getting-started[Cloud Foundry] environment.
 
 NOTE: For legacy reasons the `gemfire` Spring Cloud Stream Apps are named after `Pivotal GemFire`. The code base for the commercial product has since been open sourced as `Apache Geode`. These samples should work with compatible versions of Pivotal GemFire or Apache Geode. Herein we will refer to the installed IMDG simply as `Geode`.
 
-== Using Local Server
 
-=== Prerequisites
-
-In order to get started, make sure that you have the following components:
-
-
-* The Spring Cloud Data Flow Local Server. This is a Spring Boot app. Instructions to download the current executable jar are https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started/[here] or you can
-https://github.com/spring-cloud/spring-cloud-dataflow[build it yourself].
-* The Spring Cloud Data Flow DSL Shell. This is a Spring Boot app. Instructions to download the current executable jar are https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started/[here] or you can
-https://github.com/spring-cloud/spring-cloud-dataflow[build it yourself].
-* Running instance of https://www.rabbitmq.com[Rabbit MQ]
-* A Geode installation with a locator and cache server running.
-
-
-==== Setup Geode
-
-If you do not have access an existing Geode installation, install http://geode.apache.org[Apache Geode] or
-http://geode.apache.org/[Pivotal Gemfire] and start a locator and server using the `gfsh` CLI.
-```
-    _________________________     __
-   / _____/ ______/ ______/ /____/ /
-  / /  __/ /___  /_____  / _____  /
- / /__/ / ____/  _____/ / /    / /
-/______/_/      /______/_/    /_/    1.2.1
-
-Monitor and Manage Apache Geode
-gfsh>start locator --name=locator1
-...
-gfsh>start server --name=server1
-
-```
-
-* Create a region called `Stocks`
-
-```
-gfsh>create region --name Stocks --type=REPLICATE
-```
-
-=== Running the Sample Locally
-
-. Launch the local `server`
-+
-```
-$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW-LOCAL-JAR>
-$ java -jar spring-cloud-dataflow-server-local-<VERSION>.jar
-```
-
-. Start Spring Cloud Data Flow's `shell` in a separate terminal
-+
-```
-$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW-SHELL-JAR>
-$ java -jar spring-cloud-dataflow-shell-<VERSION>.jar
-
-  ____                              ____ _                __
- / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
- \___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
-  ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
- |____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
-  ____ |_|    _          __|___/                 __________
- |  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
- | | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
- | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
- |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
-
-
-Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
-```
-
-. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
-+
-```
-dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven
-```
-. Create the stream
-+
-```
-dataflow:>stream create --name stocks --definition "http --port=9090 | gemfire --json=true --regionName=Stocks --keyExpression=payload.getField('symbol')" --deploy
-Created and deployed new stream 'stocks'
-```
-NOTE: If the Geode locator isn't running on default port on `localhost`, add the options --pool.connect-type=locator --pool.host-addresses=<host>:<port>. If there are multiple
-locators, you can provide a comma separated list of locator addresses. This is not necessary for the sample but is typical for production environments to enable fail-over.
-
-. Verify the stream is successfully deployed
-+
-```
-dataflow:>stream list
-```
-
-. Post sample data pointing to the `http` endpoint: `http://localhost:9090` [`9090` is the `server.port` we specified for the `http` source in this case]
-+
-```
-dataflow:>http post --target http://localhost:9090 --contentType application/json --data '{"symbol":"VMW","price":117.06}'
-> POST (application/json) http://localhost:9090 {"symbol":"VMW","price":117.06}
-> 202 ACCEPTED
-```
-+
-. Using `gfsh`, connect to the locator if not already connected, and verify the cache entry was created.
-+
-```
-gfsh>get --key='VMW' --region=/Stocks
-Result      : true
-Key Class   : java.lang.String
-Key         : VMW
-Value Class : org.apache.geode.pdx.internal.PdxInstanceImpl
-
-symbol | price
------- | ------
-VMW    | 117.06
-```
-+
-. You're done!
-
-NOTE: This example sets the property `--json=true` to enable Geode's JSON support. This converts JSON String payloads to https://geode.apache.org/releases/latest/javadoc/org/apache/geode/pdx/PdxInstance.html[PdxInstance], enabling efficient serialization and field level mapping without
-requiring a custom domain class. Use of custom domain types requires these classes to be in the class path of both the stream apps and the cache server. For this reason, the use of custom payload types is generally discouraged.
+include::local.adoc[]
 
 
 == Using the Cloud Foundry Server

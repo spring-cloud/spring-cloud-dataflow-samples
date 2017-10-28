@@ -1,7 +1,8 @@
 :sectnums:
-= HTTP to Gemfire Demo
+= Gemfire to Log Demo
 
-In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an `http` endpoint and write to Gemfire using the `gemfire` sink.
+In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from a `gemfire` endpoint and write to a log using the `log` sink.
+The `gemfire` source creates a https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/CacheListener.html[CacheListener] to monitor events for a region and publish a message whenever an entry is changed.
 
 We will take you through the steps to configure and run Spring Cloud Data Flow server in either a https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started/[local] or https://docs.spring.io/spring-cloud-dataflow-server-cloudfoundry/docs/current/reference/htmlsingle/#getting-started[Cloud Foundry] environment.
 
@@ -13,11 +14,27 @@ include::../../../shell.adoc[]
 * A Geode installation with a locator and cache server running
 include::../geode-setup.adoc[]
 
+. Start a locator and server
++
+```
+gfsh>start locator --name=locator1
+gfsh>start server --name=server1
+
+```
+
+. Create a region called `Test`
++
+```
+gfsh>create region --name Test --type=REPLICATE
+```
+
 == Using the Local Server
 
 include::local.adoc[]
 
+
 == Using the Cloud Foundry Server
+
 
 include::pcf.adoc[]
 
@@ -28,4 +45,4 @@ In this sample, you have learned:
 
 * How to use Spring Cloud Data Flow's `Local` and `Cloud Foundry` servers
 * How to use Spring Cloud Data Flow's `shell`
-* How to create streaming data pipeline to connect and write to `gemfire`
+* How to create streaming data pipeline to connect and publish events from `gemfire`

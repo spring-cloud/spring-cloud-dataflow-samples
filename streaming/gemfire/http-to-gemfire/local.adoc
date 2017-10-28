@@ -3,6 +3,19 @@
 * A Running Data Flow Server
 include::../../../local-server.adoc[]
 * A running instance of https://www.rabbitmq.com[Rabbit MQ]
+. Use gfsh to start a locator and server
++
+```
+gfsh>start locator --name=locator1
+gfsh>start server --name=server1
+
+```
+. Create a region called `Stocks`
++
+```
+gfsh>create region --name Stocks --type=REPLICATE
+```
++
 Use the Shell to create the sample stream.
 
 . https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder

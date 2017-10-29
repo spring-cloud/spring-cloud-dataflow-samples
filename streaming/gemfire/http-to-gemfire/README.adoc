@@ -1,4 +1,5 @@
 :sectnums:
+:allow-uri-read:
 = HTTP to Gemfire Demo
 
 In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an `http` endpoint and write to Gemfire using the `gemfire` sink.

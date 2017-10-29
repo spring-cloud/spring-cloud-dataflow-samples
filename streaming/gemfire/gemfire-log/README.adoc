@@ -10,9 +10,21 @@ NOTE: For legacy reasons the `gemfire` Spring Cloud Stream Apps are named after 
 
 == Prerequisites
 * A Running Data Flow Shell
-include::../../../shell.adoc[]
+Unresolved directive in README.adoc - include::../../../shell.adoc[]
 * A Geode installation with a locator and cache server running
-include::../geode-setup.adoc[]
+
+If you do not have access an existing Geode installation, install http://geode.apache.org[Apache Geode] or
+http://geode.apache.org/[Pivotal Gemfire] and start the `gfsh` CLI in a separate terminal.
+```
+    _________________________     __
+   / _____/ ______/ ______/ /____/ /
+  / /  __/ /___  /_____  / _____  /
+ / /__/ / ____/  _____/ / /    / /
+/______/_/      /______/_/    /_/    1.2.1
+
+Monitor and Manage Apache Geode
+gfsh>
+```
 
 . Start a locator and server
 +
@@ -30,13 +42,266 @@ gfsh>create region --name Test --type=REPLICATE
 
 == Using the Local Server
 
-include::local.adoc[]
+=== Running the Sample Locally
+==== Additional Prerequisites
+* A Running Data Flow Server
+Unresolved directive in local.adoc - include::{docs_dir}/local-server.adoc[]
+* A running instance of https://www.rabbitmq.com[Rabbit MQ]
+. Use gfsh to start a locator and server
++
+```
+gfsh>start locator --name=locator1
+gfsh>start server --name=server1
+
+```
+. Create a region called `Test`
++
+```
+gfsh>create region --name Test --type=REPLICATE
+```
++
+Use the Shell to create the sample stream.
+
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
++
+Unresolved directive in local.adoc - include::{docs_dir}/maven-access.adoc[]
++
+```
+dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven
+```
+. Create the stream
++
+This example creates an gemfire source to which will publish events on a region
++
+```
+dataflow:>stream create --name events --definition " gemfire --regionName=Test | log" --deploy
+Created and deployed new stream 'events'
+```
+NOTE: If the Geode locator isn't running on default port on `localhost`, add the options `--connect-type=locator --host-addresses=<host>:<port>`. If there are multiple
+locators, you can provide a comma separated list of locator addresses. This is not necessary for the sample but is typical for production environments to enable fail-over.
+
+. Verify the stream is successfully deployed
++
+```
+dataflow:>stream list
+```
+
+. Monitor stdout for the log sink. When you deploy the stream, you will see log messages in the Data Flow server console like this
++
+```
+2017-10-28 17:28:23.275  INFO 15603 --- [nio-9393-exec-2] o.s.c.d.spi.local.LocalAppDeployer       : Deploying app with deploymentId events.log instance 0.
+   Logs will be in /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-dataflow-4093992067314402881/events-1509226103269/events.log
+2017-10-28 17:28:23.277  INFO 15603 --- [nio-9393-exec-2] o.s.c.d.s.c.StreamDeploymentController   : Downloading resource URI [maven://org.springframework.cloud.stream.app:gemfire-source-rabbit:1.2.0.RELEASE]
+2017-10-28 17:28:23.311  INFO 15603 --- [nio-9393-exec-2] o.s.c.d.s.c.StreamDeploymentController   : Deploying application named [gemfire] as part of stream named [events] with resource URI [maven://org.springframework.cloud.stream.app:gemfire-source-rabbit:1.2.0.RELEASE]
+2017-10-28 17:28:23.318  INFO 15603 --- [nio-9393-exec-2] o.s.c.d.spi.local.LocalAppDeployer       : Deploying app with deploymentId events.gemfire instance 0.
+   Logs will be in /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-dataflow-4093992067314402881/events-1509226103311/events.gemfire
+```
++
+Copy the location of the `log` sink logs. This is a directory that ends in `events.log`. The log files will be in `stdout_0.log` under this directory. You can monitor the output of the log sink using `tail`, or something similar:
++
+```
+$tail -f /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-dataflow-4093992067314402881/events-1509226103269/events.log/stdout_0.log
+```
++
+. Using `gfsh`, create and update some cache entries
++
+```
+gfsh>put --region /Test --key 1  --value "value 1"
+gfsh>put --region /Test --key 2  --value "value 2"
+gfsh>put --region /Test --key 3  --value "value 3"
+gfsh>put --region /Test --key 1  --value "new value 1"
+```
++
+. Observe the log output
+You should see messages like:
++
+```
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 1"
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 2"
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 3"
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : new value 1"
+```
++
+By default, the message payload contains the updated value. Depending on your application, you may need additional information. The data comes from https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/EntryEvent.html[EntryEvent]. You
+can access any fields using the source's `cache-event-expression` property. This takes a SpEL expression bound to the EntryEvent. Try something like `--cache-event-expression='{key:'\+key+',new_value:'\+newValue+'}'` (HINT: You will need to destroy the stream and recreate it to
+add this property, an exercise left to the reader). Now you should see log messages like:
++
+```
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log-sink                                 : {key:1,new_value:value 1}
+2017-10-28 17:41:24.466  INFO 18986 --- [emfire.events-1] log-sink                                 : {key:2,new_value:value 2}
+```
++
+. You're done!
 
 
 == Using the Cloud Foundry Server
 
 
-include::pcf.adoc[]
+
+=== Running the Sample in Cloud Foundry
+
+==== Additional Prerequisites
+* The Spring Cloud Data Flow Cloud Foundry Server
+
+Unresolved directive in pcf.adoc - include::{docs_dir}/cloudfoundry-server.adoc[]
+
+* Running instance of a `rabbit` service in Cloud Foundry
+
+* Running instance of the https://docs.pivotal.io/p-cloud-cache/1-0/developer.html[Pivotal Cloud Cache for PCF] (PCC) service `cloudcache` in Cloud Foundry.
+
+
+. Verify that CF instance is reachable (Your endpoint urls will be different from what is shown here).
++
+
+```
+$ cf api
+API endpoint: https://api.system.io (API version: ...)
+
+$ cf apps
+Getting apps in org [your-org] / space [your-space] as user...
+OK
+
+No apps found
+```
+. Follow the instructions to deploy the https://docs.spring.io/spring-cloud-dataflow-server-cloudfoundry/docs/current/reference/htmlsingle[Spring Cloud Data Flow Cloud Foundry server]. Don't worry about creating a Redis service. We won't need it. If you are familiar with Cloud Foundry
+application manifests, we recommend creating a manifest for the the Data Flow server as shown https://docs.spring.io/spring-cloud-dataflow-server-cloudfoundry/docs/current-SNAPSHOT/reference/htmlsingle/#sample-manifest-template[here].
++
+WARNING: As of this writing, there is a typo on the `SPRING_APPLICATION_JSON` entry in the sample manifest. `SPRING_APPLICATION_JSON` must be followed by `:` and The JSON string must be
+wrapped in single quotes. Alternatively, you can replace that line with `MAVEN_REMOTE_REPOSITORIES_REPO1_URL: https://repo.spring.io/libs-snapshot`.  If your Cloud Foundry installation is behind a firewall, you may need to install the stream apps used in this sample in your internal Maven repository and https://docs.spring.io/spring-cloud-dataflow/docs/1.3.0.M2/reference/htmlsingle/#getting-started-maven-configuration[configure] the server to access that repository.
+. Once you have successfully executed `cf push`, verify the dataflow server is running
++
+
+```
+$ cf apps
+Getting apps in org [your-org] / space [your-space] as user...
+OK
+
+name                 requested state   instances   memory   disk   urls
+dataflow-server      started           1/1         1G       1G     dataflow-server.app.io
+```
+
+. Notice that the `dataflow-server` application is started and ready for interaction via the url endpoint
+
+. Connect the `shell` with `server` running on Cloud Foundry, e.g., `http://dataflow-server.app.io`
++
+```
+$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW-SHELL-JAR>
+$ java -jar spring-cloud-dataflow-shell-<VERSION>.jar
+
+  ____                              ____ _                __
+ / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
+ \___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
+  ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
+ |____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
+  ____ |_|    _          __|___/                 __________
+ |  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
+ | | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
+ | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
+ |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
+
+
+Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
+server-unknown:>
+```
++
+```
+server-unknown:>dataflow config server http://dataflow-server.app.io
+Successfully targeted http://dataflow-server.app.io
+dataflow:>
+```
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
++
+Unresolved directive in pcf.adoc - include::{docs_dir}/maven-access.adoc[]
++
+```
+dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven
+```
++
+. Get the PCC connection information
++
+```
+$ cf service-key cloudcache my-service-key
+Getting key my-service-key for service instance cloudcache as <user>...
+
+{
+ "locators": [
+  "10.0.16.9[55221]",
+  "10.0.16.11[55221]",
+  "10.0.16.10[55221]"
+ ],
+ "urls": {
+  "gfsh": "http://...",
+  "pulse": "http://.../pulse"
+ },
+ "users": [
+  {
+   "password": <password>,
+   "username": "cluster_operator"
+  },
+  {
+   "password": <password>,
+   "username": "developer"
+  }
+ ]
+}
+```
++
+. Using `gfsh`, connect to the PCC instance as `cluster_operator` using the service key values and create the Test region.
++
+```
+gfsh>connect --use-http --url=<gfsh-url> --user=cluster_operator --password=<cluster_operator_password>
+gfsh>create region --name Test --type=REPLICATE
+```
++
+. Create the stream, connecting to the PCC instance as developer. This example creates an gemfire source to which will publish events on a region
++
+```
+dataflow stream create --name events --definition " gemfire --username=developer --password=<developer-password> --connect-type=locator --host-addresses=10.0.16.9:55221 --regionName=Test | log" --deploy
+```
+
+. Verify the stream is successfully deployed
++
+```
+dataflow:>stream list
+```
++
+. Monitor stdout for the log sink
++
+```
+cf logs <log-sink-app-name>
+```
++
+. Using `gfsh`, create and update some cache entries
++
+```
+gfsh>connect --use-http --url=<gfsh-url> --user=cluster_operator --password=<cluster_operator_password>
+gfsh>put --region /Test --key 1  --value "value 1"
+gfsh>put --region /Test --key 2  --value "value 2"
+gfsh>put --region /Test --key 3  --value "value 3"
+gfsh>put --region /Test --key 1  --value "new value 1"
+```
++
+. Observe the log output
++
+You should see messages like:
++
+```
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 1"
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 2"
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 3"
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : new value 1"
+```
++
+By default, the message payload contains the updated value. Depending on your application, you may need additional information. The data comes from https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/EntryEvent.html[EntryEvent]. You
+can access any fields using the source's `cache-event-expression` property. This takes a SpEL expression bound to the EntryEvent. Try something like `--cache-event-expression='{key:'\+key+',new_value:'\+newValue+'}'` (HINT: You will need to destroy the stream and recreate it to
+add this property, an exercise left to the reader). Now you should see log messages like:
++
+```
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log-sink                                 : {key:1,new_value:value 1}
+2017-10-28 17:41:24.466  INFO 18986 --- [emfire.events-1] log-sink                                 : {key:2,new_value:value 2}
+```
++
+. You're done!
 
 :!sectnums:
 == Summary

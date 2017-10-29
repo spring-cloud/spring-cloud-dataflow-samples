@@ -1,7 +1,7 @@
 === Running the Sample Locally
 ==== Additional Prerequisites
 * A Running Data Flow Server
-include::../../../local-server.adoc[]
+include::{docs_dir}/local-server.adoc[]
 * A running instance of https://www.rabbitmq.com[Rabbit MQ]
 . Use gfsh to start a locator and server
 +
@@ -20,7 +20,7 @@ Use the Shell to create the sample stream.
 
 . https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
 +
-include::../../../maven-access.adoc[]
+include::{docs_dir}/maven-access.adoc[]
 +
 ```
 dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven

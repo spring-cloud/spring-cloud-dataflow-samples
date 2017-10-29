@@ -4,7 +4,7 @@
 ==== Additional Prerequisites
 * The Spring Cloud Data Flow Cloud Foundry Server
 
-include::../../../cloudfoundry-server.adoc[]
+include::{docs_dir}/cloudfoundry-server.adoc[]
 
 * Running instance of a `rabbit` service in Cloud Foundry
 
@@ -72,7 +72,7 @@ dataflow:>
 ```
 . https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
 +
-include::../../../maven-access.adoc[]
+include::{docs_dir}/maven-access.adoc[]
 +
 ```
 dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven
@@ -107,25 +107,17 @@ Getting key my-service-key for service instance cloudcache as <user>...
 }
 ```
 +
-. Using `gfsh`, connect to the PCC instance as `cluster_operator` using the service key values and create the Stocks region.
+. Using `gfsh`, connect to the PCC instance as `cluster_operator` using the service key values and create the Test region.
 +
 ```
 gfsh>connect --use-http --url=<gfsh-url> --user=cluster_operator --password=<cluster_operator_password>
-gfsh>create region --name Stocks --type=REPLICATE
+gfsh>create region --name Test --type=REPLICATE
 ```
 +
-. Create the stream, connecting to the PCC instance as developer
-+
-This example creates an http endpoint to which we will post stock prices as a JSON document containing `symbol` and `price` fields.
-The property `--json=true` to enable Geode's JSON support and configures the sink to convert JSON String payloads to https://geode.apache.org/releases/latest/javadoc/org/apache/geode/pdx/PdxInstance.html[PdxInstance], the recommended way
-to store JSON documents in Geode. The `keyExpression` property is a SpEL expression used to extract the `symbol` value the PdxInstance to use as an entry key.
-+
-NOTE: PDX serialization is very efficient and supports OQL queries without requiring a custom domain class.
-Use of custom domain types requires these classes to be in the class path of both the stream apps and the cache server.
-For this reason, the use of custom payload types is generally discouraged.
+. Create the stream, connecting to the PCC instance as developer. This example creates an gemfire source to which will publish events on a region
 +
 ```
-dataflow:>stream create --name stocks --definition "http --security.basic.enabled=false | gemfire --username=developer --password=<developer-password> --connect-type=locator --host-addresses=10.0.16.9:55221 --regionName=Stocks --keyExpression=payload.getField('symbol')" --deploy
+dataflow stream create --name events --definition " gemfire --username=developer --password=<developer-password> --connect-type=locator --host-addresses=10.0.16.9:55221 --regionName=Test | log" --deploy
 ```
 
 . Verify the stream is successfully deployed
@@ -133,31 +125,41 @@ dataflow:>stream create --name stocks --definition "http --security.basic.enable
 ```
 dataflow:>stream list
 ```
-
-. Post sample data pointing to the `http` endpoint
 +
-
-Get the url of the http source using `cf apps`
+. Monitor stdout for the log sink
 +
 ```
-dataflow:>http post --target http://<http source url> --contentType application/json --data '{"symbol":"VMW","price":117.06}'
-> POST (application/json) http://... {"symbol":"VMW","price":117.06}
-> 202 ACCEPTED
+cf logs <log-sink-app-name>
 ```
 +
-. Using `gfsh`, connect to the PCC instance as `cluster_operator` using the service key values.
+. Using `gfsh`, create and update some cache entries
 +
 ```
 gfsh>connect --use-http --url=<gfsh-url> --user=cluster_operator --password=<cluster_operator_password>
-gfsh>get --key='VMW' --region=/Stocks
-Result      : true
-Key Class   : java.lang.String
-Key         : VMW
-Value Class : org.apache.geode.pdx.internal.PdxInstanceImpl
-
-symbol | price
------- | ------
-VMW    | 117.06
+gfsh>put --region /Test --key 1  --value "value 1"
+gfsh>put --region /Test --key 2  --value "value 2"
+gfsh>put --region /Test --key 3  --value "value 3"
+gfsh>put --region /Test --key 1  --value "new value 1"
+```
++
+. Observe the log output
++
+You should see messages like:
++
+```
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 1"
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 2"
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 3"
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : new value 1"
+```
++
+By default, the message payload contains the updated value. Depending on your application, you may need additional information. The data comes from https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/EntryEvent.html[EntryEvent]. You
+can access any fields using the source's `cache-event-expression` property. This takes a SpEL expression bound to the EntryEvent. Try something like `--cache-event-expression='{key:'\+key+',new_value:'\+newValue+'}'` (HINT: You will need to destroy the stream and recreate it to
+add this property, an exercise left to the reader). Now you should see log messages like:
++
+```
+2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log-sink                                 : {key:1,new_value:value 1}
+2017-10-28 17:41:24.466  INFO 18986 --- [emfire.events-1] log-sink                                 : {key:2,new_value:value 2}
 ```
 +
 . You're done!

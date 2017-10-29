@@ -1,5 +1,5 @@
 :sectnums:
-:allow-uri-read:
+:docs_dir: ../../../../docs
 = HTTP to Gemfire Demo
 
 In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an `http` endpoint and write to Gemfire using the `gemfire` sink.
@@ -10,7 +10,7 @@ NOTE: For legacy reasons the `gemfire` Spring Cloud Stream Apps are named after 
 
 == Prerequisites
 * A Running Data Flow Shell
-include::../../../shell.adoc[]
+include::{docs_dir}/shell.adoc[]
 * A Geode installation with a locator and cache server running
 include::../geode-setup.adoc[]
 

@@ -12,6 +12,10 @@ A data pipeline demonstration that consumes data from an `http` endpoint and wri
 
 A data pipeline demonstration that consumes data from an `http` endpoint and writes the payload to MySQL database using the `jdbc` sink application.
 
+### link:streaming/gemfire/README.adoc[GemFire examples]
+
+Data pipeline demonstrations using GemFire.
+
 ## Task / Batch
 
 ### link:tasks/simple-batch-job/README.adoc[simple-batch-job]

@@ -3,6 +3,9 @@
 * A Running Data Flow Server
 include::{docs_dir}/local-server.adoc[]
 * A running instance of https://www.rabbitmq.com[Rabbit MQ]
+
+'''
+
 . Use gfsh to start a locator and server
 +
 ```
@@ -10,7 +13,6 @@ gfsh>start locator --name=locator1
 gfsh>start server --name=server1
 
 ```
-'''
 . Create a region called `Test`
 +
 ```

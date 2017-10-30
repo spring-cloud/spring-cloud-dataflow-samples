@@ -97,6 +97,9 @@ $cd  <PATH/TO/SPRING-CLOUD-DATAFLOW-LOCAL-JAR>
 $java -jar spring-cloud-dataflow-server-local-<VERSION>.jar
 ```
 * A running instance of https://www.rabbitmq.com[Rabbit MQ]
+
+'''
+
 . Use gfsh to start a locator and server
 +
 ```
@@ -104,7 +107,6 @@ gfsh>start locator --name=locator1
 gfsh>start server --name=server1
 
 ```
-'''
 . Create a region called `Test`
 +
 ```
@@ -208,7 +210,9 @@ deploy the server to Cloud Foundry as recommended.
 * Running instance of a `rabbit` service in Cloud Foundry
 
 * Running instance of the https://docs.pivotal.io/p-cloud-cache/1-0/developer.html[Pivotal Cloud Cache for PCF] (PCC) service `cloudcache` in Cloud Foundry.
+
 '''
+
 . Verify that CF instance is reachable (Your endpoint urls will be different from what is shown here).
 +
 

@@ -159,7 +159,7 @@ You should see messages like:
 2017-10-30 09:53:53.242  INFO 8563 --- [ire-cq.orders-1] log-sink                                 : CqEvent [CqName=GfCq1; base operation=UPDATE; cq operation=CREATE; key=21234; value=1000]
 ```
 +
-. Another interesting demonstration combines `gemfire-cq` with the link::../http-gemfire/README.adoc[http-gemfire] example.
+. Another interesting demonstration combines `gemfire-cq` with the link:../http-gemfire/README.adoc[http-gemfire] example.
 ```
 dataflow:> stream create --name stocks --definition "http --port=9090 | gemfire-json-server --regionName=Stocks --keyExpression=payload.getField('symbol')" --deploy
 dataflow:> stream create --name stock_watch --definition "gemfire-cq --query='Select * from /Stocks where symbol=''VMW''' | log" --deploy

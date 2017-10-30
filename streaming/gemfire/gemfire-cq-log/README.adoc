@@ -1,9 +1,10 @@
 :sectnums:
 
-= Gemfire to Log Demo
+= Gemfire CQ to Log Demo
 
-In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from a `gemfire` endpoint and write to a log using the `log` sink.
-The `gemfire` source creates a https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/CacheListener.html[CacheListener] to monitor events for a region and publish a message whenever an entry is changed.
+In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from a `gemfire-cq` (Continuous Query) endpoint and write to a log using the `log` sink.
+The `gemfire-cq` source creates a Continuous Query to monitor events for a region that match the query's result set and publish a message whenever such an event is emitted. In this example, we simulate monitoring orders to trigger a process whenever
+the quantity ordered is above a defined limit.
 
 We will take you through the steps to configure and run Spring Cloud Data Flow server in either a https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started/[local] or https://docs.spring.io/spring-cloud-dataflow-server-cloudfoundry/docs/current/reference/htmlsingle/#getting-started[Cloud Foundry] environment.
 
@@ -104,10 +105,10 @@ gfsh>start locator --name=locator1
 gfsh>start server --name=server1
 
 ```
-. Create a region called `Test`
+. Create a region called `Orders`
 +
 ```
-gfsh>create region --name Test --type=REPLICATE
+gfsh>create region --name Orders --type=REPLICATE
 ```
 +
 Use the Shell to create the sample stream.
@@ -127,10 +128,13 @@ dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-rabbi
 ```
 . Create the stream
 +
-This example creates an gemfire source to which will publish events on a region
+This example creates an gemfire-cq source to which will publish events matching a query criteria on a region. In this case we will monitor the `Orders` region. For simplicity, we will avoid creating a data structure for the order.
+Each cache entry contains an integer value representing the quantity of the ordered item. This stream will fire a message whenever the value>999. By default, the source emits only the value. Here we will override that using the
+`cq-event-expression` property.  This accepts a SpEL expression bound to a https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/query/CqEvent.html[CQEvent]. To reference the entire CQEvent instace, we use `#this`.
+In order to display the contents in the log, we will invoke `toString()` on the instance.
 +
 ```
-dataflow:>stream create --name events --definition " gemfire --regionName=Test | log" --deploy
+dataflow:>stream create --name orders --definition " gemfire-cq --query='SELECT * from /Orders o where o > 999' --cq-event-expression=#this.toString() | log" --deploy
 Created and deployed new stream 'events'
 ```
 NOTE: If the Geode locator isn't running on default port on `localhost`, add the options `--connect-type=locator --host-addresses=<host>:<port>`. If there are multiple
@@ -145,51 +149,47 @@ dataflow:>stream list
 . Monitor stdout for the log sink. When you deploy the stream, you will see log messages in the Data Flow server console like this
 +
 ```
-2017-10-28 17:28:23.275  INFO 15603 --- [nio-9393-exec-2] o.s.c.d.spi.local.LocalAppDeployer       : Deploying app with deploymentId events.log instance 0.
-   Logs will be in /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-dataflow-4093992067314402881/events-1509226103269/events.log
-2017-10-28 17:28:23.277  INFO 15603 --- [nio-9393-exec-2] o.s.c.d.s.c.StreamDeploymentController   : Downloading resource URI [maven://org.springframework.cloud.stream.app:gemfire-source-rabbit:1.2.0.RELEASE]
-2017-10-28 17:28:23.311  INFO 15603 --- [nio-9393-exec-2] o.s.c.d.s.c.StreamDeploymentController   : Deploying application named [gemfire] as part of stream named [events] with resource URI [maven://org.springframework.cloud.stream.app:gemfire-source-rabbit:1.2.0.RELEASE]
-2017-10-28 17:28:23.318  INFO 15603 --- [nio-9393-exec-2] o.s.c.d.spi.local.LocalAppDeployer       : Deploying app with deploymentId events.gemfire instance 0.
-   Logs will be in /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-dataflow-4093992067314402881/events-1509226103311/events.gemfire
+2017-10-30 09:39:36.283  INFO 8167 --- [nio-9393-exec-5] o.s.c.d.spi.local.LocalAppDeployer       : Deploying app with deploymentId orders.log instance 0.
+   Logs will be in /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-dataflow-5375107584795488581/orders-1509370775940/orders.log
 ```
 +
-Copy the location of the `log` sink logs. This is a directory that ends in `events.log`. The log files will be in `stdout_0.log` under this directory. You can monitor the output of the log sink using `tail`, or something similar:
+Copy the location of the `log` sink logs. This is a directory that ends in `orders.log`. The log files will be in `stdout_0.log` under this directory. You can monitor the output of the log sink using `tail`, or something similar:
 +
 ```
-$tail -f /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-dataflow-4093992067314402881/events-1509226103269/events.log/stdout_0.log
+$tail -f /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-dataflow-5375107584795488581/orders-1509370775940/orders.log/stdout_0.log
 ```
 +
 . Using `gfsh`, create and update some cache entries
 +
 ```
-gfsh>put --region /Test --key 1  --value "value 1"
-gfsh>put --region /Test --key 2  --value "value 2"
-gfsh>put --region /Test --key 3  --value "value 3"
-gfsh>put --region /Test --key 1  --value "new value 1"
+gfsh>put --region Orders  --value-class java.lang.Integer --key 01234 --value 1000
+gfsh>put --region Orders  --value-class java.lang.Integer --key 11234 --value 1005
+gfsh>put --region Orders  --value-class java.lang.Integer --key 21234 --value 100
+gfsh>put --region Orders  --value-class java.lang.Integer --key 31234 --value 999
+gfsh>put --region Orders  --value-class java.lang.Integer --key 21234 --value 1000
+
 ```
 +
 . Observe the log output
 You should see messages like:
 +
 ```
-2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 1"
-2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 2"
-2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 3"
-2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : new value 1"
+2017-10-30 09:53:02.231  INFO 8563 --- [ire-cq.orders-1] log-sink                                 : CqEvent [CqName=GfCq1; base operation=CREATE; cq operation=CREATE; key=01234; value=1000]
+2017-10-30 09:53:19.732  INFO 8563 --- [ire-cq.orders-1] log-sink                                 : CqEvent [CqName=GfCq1; base operation=CREATE; cq operation=CREATE; key=11234; value=1005]
+2017-10-30 09:53:53.242  INFO 8563 --- [ire-cq.orders-1] log-sink                                 : CqEvent [CqName=GfCq1; base operation=UPDATE; cq operation=CREATE; key=21234; value=1000]
 ```
 +
-By default, the message payload contains the updated value. Depending on your application, you may need additional information. The data comes from https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/EntryEvent.html[EntryEvent]. You
-can access any fields using the source's `cache-event-expression` property. This takes a SpEL expression bound to the EntryEvent. Try something like `--cache-event-expression='{key:'\+key+',new_value:'\+newValue+'}'` (HINT: You will need to destroy the stream and recreate it to
-add this property, an exercise left to the reader). Now you should see log messages like:
-+
+. Another interesting demonstration combines `gemfire-cq` with the link::../http-gemfire/README.adoc[http-gemfire] example.
 ```
-2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log-sink                                 : {key:1,new_value:value 1}
-2017-10-28 17:41:24.466  INFO 18986 --- [emfire.events-1] log-sink                                 : {key:2,new_value:value 2}
+dataflow:> stream create --name stocks --definition "http --port=9090 | gemfire-json-server --regionName=Stocks --keyExpression=payload.getField('symbol')" --deploy
+dataflow:> stream create --name stock_watch --definition "gemfire-cq --query='Select * from /Stocks where symbol=''VMW''' | log" --deploy
 ```
-+
+
 . You're done!
 
+
 == Using the Cloud Foundry Server
+
 
 
 === Running the Sample in Cloud Foundry
@@ -315,15 +315,20 @@ Getting key my-service-key for service instance cloudcache as <user>...
 +
 ```
 gfsh>connect --use-http --url=<gfsh-url> --user=cluster_operator --password=<cluster_operator_password>
-gfsh>create region --name Test --type=REPLICATE
+gfsh>create region --name Orders --type=REPLICATE
 ```
 +
-. Create the stream, connecting to the PCC instance as developer. This example creates an gemfire source to which will publish events on a region
+. Create the stream using the Data Flow Shell
++
+This example creates an gemfire-cq source to which will publish events matching a query criteria on a region. In this case we will monitor the `Orders` region. For simplicity, we will avoid creating a data structure for the order.
+Each cache entry contains an integer value representing the quantity of the ordered item. This stream will fire a message whenever the value>999. By default, the source emits only the value. Here we will override that using the
+`cq-event-expression` property.  This accepts a SpEL expression bound to a https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/query/CqEvent.html[CQEvent]. To reference the entire CQEvent instace, we use `#this`.
+In order to display the contents in the log, we will invoke `toString()` on the instance.
 +
 ```
-dataflow stream create --name events --definition " gemfire --username=developer --password=<developer-password> --connect-type=locator --host-addresses=10.0.16.9:55221 --regionName=Test | log" --deploy
+dataflow:>stream create --name orders --definition " gemfire-cq  --username=developer --password=<developer-password> --connect-type=locator --host-addresses=10.0.16.9:55221 --query='SELECT * from /Orders o where o > 999' --cq-event-expression=#this.toString()  | log" --deploy
+Created and deployed new stream 'events'
 ```
-
 . Verify the stream is successfully deployed
 +
 ```
@@ -340,32 +345,29 @@ cf logs <log-sink-app-name>
 +
 ```
 gfsh>connect --use-http --url=<gfsh-url> --user=cluster_operator --password=<cluster_operator_password>
-gfsh>put --region /Test --key 1  --value "value 1"
-gfsh>put --region /Test --key 2  --value "value 2"
-gfsh>put --region /Test --key 3  --value "value 3"
-gfsh>put --region /Test --key 1  --value "new value 1"
+gfsh>put --region Orders  --value-class java.lang.Integer --key 01234 --value 1000
+gfsh>put --region Orders  --value-class java.lang.Integer --key 11234 --value 1005
+gfsh>put --region Orders  --value-class java.lang.Integer --key 21234 --value 100
+gfsh>put --region Orders  --value-class java.lang.Integer --key 31234 --value 999
+gfsh>put --region Orders  --value-class java.lang.Integer --key 21234 --value 1000
+
 ```
 +
 . Observe the log output
-+
 You should see messages like:
 +
 ```
-2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 1"
-2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 2"
-2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : value 3"
-2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log sink                               : new value 1"
+2017-10-30 09:53:02.231  INFO 8563 --- [ire-cq.orders-1] log-sink                                 : CqEvent [CqName=GfCq1; base operation=CREATE; cq operation=CREATE; key=01234; value=1000]
+2017-10-30 09:53:19.732  INFO 8563 --- [ire-cq.orders-1] log-sink                                 : CqEvent [CqName=GfCq1; base operation=CREATE; cq operation=CREATE; key=11234; value=1005]
+2017-10-30 09:53:53.242  INFO 8563 --- [ire-cq.orders-1] log-sink                                 : CqEvent [CqName=GfCq1; base operation=UPDATE; cq operation=CREATE; key=21234; value=1000]
 ```
 +
-By default, the message payload contains the updated value. Depending on your application, you may need additional information. The data comes from https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/EntryEvent.html[EntryEvent]. You
-can access any fields using the source's `cache-event-expression` property. This takes a SpEL expression bound to the EntryEvent. Try something like `--cache-event-expression='{key:'\+key+',new_value:'\+newValue+'}'` (HINT: You will need to destroy the stream and recreate it to
-add this property, an exercise left to the reader). Now you should see log messages like:
-+
+. Another interesting demonstration combines `gemfire-cq` with the link::../http-gemfire/README.adoc[http-gemfire] example.
 ```
-2017-10-28 17:28:52.893  INFO 18986 --- [emfire.events-1] log-sink                                 : {key:1,new_value:value 1}
-2017-10-28 17:41:24.466  INFO 18986 --- [emfire.events-1] log-sink                                 : {key:2,new_value:value 2}
+dataflow:> stream create --name stocks --definition "http --port=9090 | gemfire-json-server --regionName=Stocks --keyExpression=payload.getField('symbol')" --deploy
+dataflow:> stream create --name stock_watch --definition "gemfire-cq --query='Select * from /Stocks where symbol=''VMW''' | log" --deploy
 ```
-+
+
 . You're done!
 
 :!sectnums:

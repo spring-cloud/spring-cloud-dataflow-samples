@@ -1,9 +1,10 @@
 :sectnums:
 :docs_dir: ../../../../docs
-= Gemfire to Log Demo
+= Gemfire CQ to Log Demo
 
-In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from a `gemfire` endpoint and write to a log using the `log` sink.
-The `gemfire` source creates a https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/CacheListener.html[CacheListener] to monitor events for a region and publish a message whenever an entry is changed.
+In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from a `gemfire-cq` (Continuous Query) endpoint and write to a log using the `log` sink.
+The `gemfire-cq` source creates a Continuous Query to monitor events for a region that match the query's result set and publish a message whenever such an event is emitted. In this example, we simulate monitoring orders to trigger a process whenever
+the quantity ordered is above a defined limit.
 
 We will take you through the steps to configure and run Spring Cloud Data Flow server in either a https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started/[local] or https://docs.spring.io/spring-cloud-dataflow-server-cloudfoundry/docs/current/reference/htmlsingle/#getting-started[Cloud Foundry] environment.
 
@@ -19,7 +20,9 @@ include::../geode-setup.adoc[]
 
 include::local.adoc[]
 
+
 == Using the Cloud Foundry Server
+
 
 include::pcf.adoc[]
 

@@ -1,0 +1,4 @@
+[[spring-cloud-data-flow-samples-task-overview]]
+=== Task Samples
+
+include::simple-batch-job/overview.adoc[]

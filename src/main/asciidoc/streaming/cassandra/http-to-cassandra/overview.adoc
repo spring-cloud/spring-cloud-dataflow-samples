@@ -1,0 +1,26 @@
+[[spring-cloud-data-flow-samples-http-cassandra-overview]]
+:sectnums:
+:docs_dir: ../../..
+==== HTTP to Cassandra Demo
+
+In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an _HTTP_ endpoint and write the payload to a _Cassandra_ database.
+
+We will take you through the steps to configure and Spring Cloud Data Flow server in either a https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started/[local] or https://docs.spring.io/spring-cloud-dataflow-server-cloudfoundry/docs/current/reference/htmlsingle/#getting-started[Cloud Foundry] environment.
+
+===== Prerequisites
+* A Running Data Flow Shell
+include::{docs_dir}/shell.adoc[]
+
+include::local.adoc[]
+
+include::pcf.adoc[]
+
+:!sectnums:
+===== Summary
+
+In this sample, you have learned:
+
+* How to use Spring Cloud Data Flow's `Local` and `Cloud Foundry` servers
+* How to use Spring Cloud Data Flow's `shell`
+* How to create streaming data pipeline to connect and write to `Cassandra`
+* How to scale data microservice applications on `Pivotal Cloud Foundry`

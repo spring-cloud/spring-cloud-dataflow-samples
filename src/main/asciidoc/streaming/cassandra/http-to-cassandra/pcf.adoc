@@ -1,0 +1,97 @@
+[[http-cassandra-cf]]
+===== Using Cloud Foundry Server
+
+====== Additional Prerequisites
+
+* Cloud Foundry instance
+* The Spring Cloud Data Flow Cloud Foundry Server
+include::{docs_dir}/cloudfoundry-server.adoc[]
+
+* Running instance of `cassandra` in Cloud Foundry or from another Cloud provider
+* A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] to connect to the Cassandra instance. You might have to provide `host`, `port`, `username` and `password` depending on the Cassandra configuration you are using.
+* Create a `book` table in your Cassandra keyspace using:
++
+```
+CREATE TABLE book  (
+    id          uuid PRIMARY KEY,
+    isbn        text,
+    author      text,
+    title       text
+);
+```
+
++
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
++
+include::{docs_dir}/maven-access.adoc[]
++
+```
+dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven
+```
++
+. Create the stream
++
+
+```
+dataflow:>stream create cassandrastream --definition "http --spring.cloud.stream.bindings.output.contentType='application/json' | cassandra --ingestQuery='insert into book (id, isbn, title, author) values (uuid(), ?, ?, ?)' --username='<USERNAME>' --password='<PASSWORD>' --port=<PORT> --contact-points=<HOST> --keyspace='<KEYSPACE>'" --deploy
+
+Created and deployed new stream 'cassandrastream'
+```
++
+. Verify the stream is successfully deployed
++
+```
+dataflow:>stream list
+```
++
+. Notice that `cassandrastream-http` and `cassandrastream-cassandra` https://github.com/spring-cloud-stream-app-starters/[Spring Cloud Stream] applications are running as _cloud-native_ (microservice) applications in Cloud Foundry
++
+
+```
+$ cf apps
+Getting apps in org [your-org] / space [your-space] as user...
+OK
+
+name                        requested state   instances   memory   disk   urls
+cassandrastream-cassandra   started           1/1         1G       1G     cassandrastream-cassandra.app.io
+cassandrastream-http        started           1/1         1G       1G     cassandrastream-http.app.io
+dataflow-server             started           1/1         1G       1G     dataflow-server.app.io
+```
++
+. Lookup the `url` for `cassandrastream-http` application from the list above. Post sample data pointing to the `http` endpoint: `<YOUR-cassandrastream-http-APP-URL>`
++
+```
+http post --contentType 'application/json' --data '{"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}' --target http://<YOUR-cassandrastream-http-APP-URL>
+> POST (application/json;charset=UTF-8) http://cassandrastream-http.app.io {"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}
+> 202 ACCEPTED
+```
++
+. Connect to the Cassandra instance and query the table `book` to list the data inserted
++
+```
+select * from book;
+```
+
++
+. Now, let's try to take advantage of Pivotal Cloud Foundry's platform capability. Let's scale the `cassandrastream-http` application from 1 to 3 instances
++
+```
+$ cf scale cassandrastream-http -i 3
+Scaling app cassandrastream-http in org user-dataflow / space development as user...
+OK
+```
++
+. Verify App instances (3/3) running successfully
++
+```
+$ cf apps
+Getting apps in org user-dataflow / space development as user...
+OK
+
+name                        requested state   instances   memory   disk   urls
+cassandrastream-cassandra   started           1/1         1G       1G     cassandrastream-cassandra.app.io
+cassandrastream-http        started           3/3         1G       1G     cassandrastream-http.app.io
+dataflow-server             started           1/1         1G       1G     dataflow-server.app.io
+```
++
+. You're done!

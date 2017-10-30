@@ -1,0 +1,75 @@
+[[http-cassandra-local]]
+===== Using the Local Server
+
+====== Additional Prerequisites
+
+* A running local Data Flow Server
+include::{docs_dir}/local-server.adoc[]
+
+* Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
+* Running instance of link:http://cassandra.apache.org/[Apache Cassandra]
+
+* A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] to connect to the Cassandra instance. You might have to provide `host`, `port`, `username` and `password` depending on the Cassandra configuration you are using.
+* Create a keyspace and a `book` table in Cassandra using:
++
+```
+CREATE KEYSPACE clouddata WITH REPLICATION = { 'class' : 'org.apache.cassandra.locator.SimpleStrategy', 'replication_factor': '1' } AND DURABLE_WRITES = true;
+USE clouddata;
+CREATE TABLE book  (
+    id          uuid PRIMARY KEY,
+    isbn        text,
+    author      text,
+    title       text
+);
+```
++
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Kafka binder
++
+include::{docs_dir}/maven-access.adoc[]
++
+```
+dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-kafka-10-maven
+```
++
+. Create the stream
++
+```
+dataflow:>stream create cassandrastream --definition "http --server.port=8888 --spring.cloud.stream.bindings.output.contentType='application/json' | cassandra --ingestQuery='insert into book (id, isbn, title, author) values (uuid(), ?, ?, ?)' --keyspace=clouddata" --deploy
+
+Created and deployed new stream 'cassandrastream'
+```
+NOTE: If Cassandra isn't running on default port on `localhost` or if you need username and password to connect, use one of the following options to specify the necessary connection parameters: `--username='<USERNAME>' --password='<PASSWORD>' --port=<PORT> --contact-points=<LIST-OF-HOSTS>`
+
++
+. Verify the stream is successfully deployed
++
+```
+dataflow:>stream list
+```
++
+. Notice that `cassandrastream-http` and `cassandrastream-cassandra` link:https://github.com/spring-cloud-stream-app-starters//[Spring Cloud Stream] applications are running as Spring Boot applications within the `server` as a collocated process.
++
+
+```
+2015-12-15 15:52:31.576  INFO 18337 --- [nio-9393-exec-1] o.s.c.d.a.s.l.OutOfProcessModuleDeployer : deploying module org.springframework.cloud.stream.module:cassandra-sink:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-284240942697761420/cassandrastream.cassandra
+2015-12-15 15:52:31.583  INFO 18337 --- [nio-9393-exec-1] o.s.c.d.a.s.l.OutOfProcessModuleDeployer : deploying module org.springframework.cloud.stream.module:http-source:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-284240942697761420/cassandrastream.http
+```
++
+. Post sample data pointing to the `http` endpoint: `http://localhost:8888` (`8888` is the `server.port` we specified for the `http` source in this case)
++
+```
+dataflow:>http post --contentType 'application/json' --data '{"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}' --target http://localhost:8888
+> POST (application/json;charset=UTF-8) http://localhost:8888 {"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}
+> 202 ACCEPTED
+```
++
+. Connect to the Cassandra instance and query the table `clouddata.book` to list the persisted records
++
+```
+select * from clouddata.book;
+```
+
++
+. You're done!

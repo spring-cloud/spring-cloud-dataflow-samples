@@ -1,6 +1,0 @@
-
-The Cloud Foundry Data Flow Server is Spring Boot application available for http://cloud.spring.io/spring-cloud-dataflow/[download] or you can https://github.com/spring-cloud/spring-cloud-dataflow-server-cloudfoundry[build] it yourself.
-If you build it yourself, the executable jar will be in `spring-cloud-dataflow-server-cloudfoundry/target`
-
-NOTE: Although you can run the Data Flow Cloud Foundry Server locally and configure it to deploy to any Cloud Foundry space, we will
-deploy the server to Cloud Foundry as recommended.

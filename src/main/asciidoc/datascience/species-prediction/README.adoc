@@ -1,0 +1,166 @@
+:sectnums:
+= Species Prediction
+
+In this demonstration, you will learn how to use https://en.wikipedia.org/wiki/Predictive_Model_Markup_Language[PMML] model in the context of streaming data pipeline orchestrated by http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow].
+
+We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `Local` server, a Spring Boot application.
+
+== Using Local Server
+
+=== Prerequisites
+
+Make sure that you have the following components:
+
+* Local build of link:https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
+* Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
+
+=== Running the Sample Locally
+
+. Launch the `local-server`
++
+```
+$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
+$ java -jar spring-cloud-dataflow-server-local/target/spring-cloud-dataflow-server-local-<VERSION>.jar
+
+```
++
+
+. Connect to Spring Cloud Data Flow's `shell`
++
+```
+$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
+$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-<VERSION>.jar
+
+  ____                              ____ _                __
+ / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
+ \___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
+  ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
+ |____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
+  ____ |_|    _          __|___/                 __________
+ |  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
+ | | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
+ | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
+ |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
+
+<VERSION>
+
+Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
+dataflow:>version
+<VERSION>
+```
+
++
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] Kafka binder variant of out-of-the-box applications
++
+
+```
+dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-kafka-10-maven
+```
+
++
+. Create and deploy the following stream
++
+```
+
+dataflow:>stream create --name pmmlTest --definition "http --server.port=9001 | pmml --modelLocation=https://raw.githubusercontent.com/spring-cloud/spring-cloud-stream-modules/master/pmml-processor/src/test/resources/iris-flower-classification-naive-bayes-1.pmml.xml --inputs='Sepal.Length=payload.sepalLength,Sepal.Width=payload.sepalWidth,Petal.Length=payload.petalLength,Petal.Width=payload.petalWidth' --outputs='Predicted_Species=payload.predictedSpecies' --inputType='application/x-spring-tuple' --outputType='application/json'| log" --deploy
+Created and deployed new stream 'pmmlTest'
+
+```
+NOTE: The built-in `pmml` processor will load the given PMML model definition and create an internal object representation that can be evaluated quickly. When the stream receives the data, it will be used as the input for the evaluation of the analytical model `iris-flower-classifier-1` contained in the PMML document. The result of this evaluation is a new field `predictedSpecies` that was created from the `pmml` processor by applying a classifier that uses the naiveBayes algorithm.
+
++
+. Verify the stream is successfully deployed
+
++
+```
+dataflow:>stream list
+```
++
+. Notice that `pmmlTest.http`, `pmmlTest.pmml`, and `pmmlTest.log` link:https://github.com/spring-cloud-stream-app-starters/[Spring Cloud Stream] applications are running within the `local-server`.
++
+
+```
+2016-02-18 06:36:45.396  INFO 31194 --- [nio-9393-exec-1] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:log-sink:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-3038434123335455382/pmmlTest-1455806205386/pmmlTest.log
+2016-02-18 06:36:45.402  INFO 31194 --- [nio-9393-exec-1] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:pmml-processor:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-3038434123335455382/pmmlTest-1455806205386/pmmlTest.pmml
+2016-02-18 06:36:45.407  INFO 31194 --- [nio-9393-exec-1] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:http-source:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-3038434123335455382/pmmlTest-1455806205386/pmmlTest.http
+```
++
+. Post sample data pointing to the `http` endpoint: `http://localhost:9001` [`9001` is the `server.port` we specified for the `http` source in this case]
++
+```
+dataflow:>http post --target http://localhost:9001 --contentType application/json --data "{ \"sepalLength\": 6.4, \"sepalWidth\": 3.2, \"petalLength\":4.5, \"petalWidth\":1.5 }"
+> POST (application/json;charset=UTF-8) http://localhost:9001 { "sepalLength": 6.4, "sepalWidth": 3.2, "petalLength":4.5, "petalWidth":1.5 }
+> 202 ACCEPTED
+```
++
+. Verify the predicted outcome by tailing `<PATH/TO/LOGAPP/pmmlTest.log/stdout_0.log` file. The `predictedSpecies` in this case is `versicolor`.
++
+```
+{
+  "sepalLength": 6.4,
+  "sepalWidth": 3.2,
+  "petalLength": 4.5,
+  "petalWidth": 1.5,
+  "Species": {
+    "result": "versicolor",
+    "type": "PROBABILITY",
+    "categoryValues": [
+      "setosa",
+      "versicolor",
+      "virginica"
+    ]
+  },
+  "predictedSpecies": "versicolor",
+  "Probability_setosa": 4.728207706362856E-9,
+  "Probability_versicolor": 0.9133639504608079,
+  "Probability_virginica": 0.0866360448109845
+}
+```
+
++
+. Let's post with a slight variation in data.
++
+
+```
+dataflow:>http post --target http://localhost:9001 --contentType application/json --data "{ \"sepalLength\": 6.4, \"sepalWidth\": 3.2, \"petalLength\":4.5, \"petalWidth\":1.8 }"
+> POST (application/json;charset=UTF-8) http://localhost:9001 { "sepalLength": 6.4, "sepalWidth": 3.2, "petalLength":4.5, "petalWidth":1.8 }
+> 202 ACCEPTED
+```
+NOTE: `petalWidth` value changed from `1.5` to `1.8`
+
++
+. The `predictedSpecies` will now be listed as `virginica`.
++
+
+```
+{
+  "sepalLength": 6.4,
+  "sepalWidth": 3.2,
+  "petalLength": 4.5,
+  "petalWidth": 1.8,
+  "Species": {
+    "result": "virginica",
+    "type": "PROBABILITY",
+    "categoryValues": [
+      "setosa",
+      "versicolor",
+      "virginica"
+    ]
+  },
+  "predictedSpecies": "virginica",
+  "Probability_setosa": 1.0443898084700813E-8,
+  "Probability_versicolor": 0.1750120333571921,
+  "Probability_virginica": 0.8249879561989097
+}
+```
+
+== Summary
+
+In this sample, you have learned:
+
+* How to use Spring Cloud Data Flow's `Local` server
+* How to use Spring Cloud Data Flow's `shell` application
+* How to use `pmml` processor to compute real-time predictions

@@ -1,6 +1,6 @@
 [[spring-cloud-data-flow-samples-overview]]
-
-This repository provides sample starter applications and code for use with the Spring Cloud Data Flow project. The following samples are available:
+== Overview
+This guide contains samples and demonstrations of how to build data microservices applications with https://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow].
 
 == Streaming
 
@@ -10,26 +10,21 @@ include::streaming/jdbc/overview.adoc[]
 
 include::streaming/gemfire/overview.adoc[]
 
+include::streaming/custom-apps/overview.adoc[]
+
 == Task / Batch
 
 include::tasks/overview.adoc[]
 
+== Analytics
+
+include::analytics/twitter-analytics/overview.adoc[]
+
+== Functions
+
+include::functions/overview.adoc[]
+
 ////
-A simple Spring Batch job running as short-lived task in Cloud Foundry.
-
-=== Functions
-
-==== link:functions/README.adoc[functions-in-scdf]
-
-A simple demonstration of Spring Cloud Function and Spring Cloud Data Flow integration.
-
-=== Analytics
-
-==== link:analytics/twitter-analytics/README.adoc[twitter-analytics]
-
-A data pipeline demonstration that consumes data from twitter-firehose using `twitterstream` source application and computes simple analytics over data-in-transit with the help of `field-value-counter` sink application.
-
-=== Data Science
 
 ==== link:datascience/species-prediction/README.adoc[species-prediction]
 

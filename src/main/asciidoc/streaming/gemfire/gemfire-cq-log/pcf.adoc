@@ -61,13 +61,14 @@ gfsh>create region --name Orders --type=REPLICATE
 +
 This example creates an gemfire-cq source to which will publish events matching a query criteria on a region. In this case we will monitor the `Orders` region. For simplicity, we will avoid creating a data structure for the order.
 Each cache entry contains an integer value representing the quantity of the ordered item. This stream will fire a message whenever the value>999. By default, the source emits only the value. Here we will override that using the
-`cq-event-expression` property.  This accepts a SpEL expression bound to a https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/query/CqEvent.html[CQEvent]. To reference the entire CQEvent instace, we use `#this`.
+`cq-event-expression` property.  This accepts a SpEL expression bound to a https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/query/CqEvent.html[CQEvent]. To reference the entire CQEvent instance, we use `#this`.
 In order to display the contents in the log, we will invoke `toString()` on the instance.
 +
 ```
 dataflow:>stream create --name orders --definition " gemfire-cq  --username=developer --password=<developer-password> --connect-type=locator --host-addresses=10.0.16.9:55221 --query='SELECT * from /Orders o where o > 999' --cq-event-expression=#this.toString()  | log" --deploy
 Created and deployed new stream 'events'
 ```
++
 . Verify the stream is successfully deployed
 +
 ```

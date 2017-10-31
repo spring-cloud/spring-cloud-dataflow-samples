@@ -1,0 +1,4 @@
+[[spring-cloud-data-flow-samples-custom-apps-overview]]
+=== Custom Stream Application Samples
+
+include::celsius-converter-processor/overview.adoc[]

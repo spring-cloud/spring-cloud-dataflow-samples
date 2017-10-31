@@ -1,64 +1,29 @@
+[[spring-cloud-data-flow-samples-twitter-analytics-overview]]
 :sectnums:
-= Twitter Analytics
+:docs_dir: ../..
+==== Twitter Analytics
 
-In this demonstration, you will learn how to orchestrate a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from _TwitterStream_ and compute simple analytics over data-in-transit using _Field-Value-Counter_.
+In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from _TwitterStream_ and compute simple analytics over data-in-transit using _Field-Value-Counter_.
 
-We will begin by discussing the steps to prep, configure and operationalize Spring Cloud Data Flow's `Local` server.
+We will take you through the steps to configure Spring Cloud Data Flow's `Local` server.
 
-== Using Local Server
+====== Prerequisites
 
-=== Prerequisites
-
-Make sure that you have the following components:
-
-* Local build of link:https://github.com/spring-cloud/spring-cloud-dataflow[Spring Cloud Data Flow]
+* A Running Data Flow Shell
+include::{docs_dir}/shell.adoc[]
+* A running local Data Flow Server
+include::{docs_dir}/local-server.adoc[]
 * Running instance of link:http://redis.io/[Redis]
 * Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
 * Twitter credentials from link:https://apps.twitter.com/[Twitter Developers] site
 
-=== Running the Sample Locally
-
-. Launch the `local-server`
+. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Kafka binder
 +
-```
-$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
-$ java -jar spring-cloud-dataflow-server-local/target/spring-cloud-dataflow-server-local-<VERSION>.jar
-
-```
+include::{docs_dir}/maven-access.adoc[]
 +
-
-. Connect to Spring Cloud Data Flow's `shell`
-+
-```
-$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW>
-$ java -jar spring-cloud-dataflow-shell/target/spring-cloud-dataflow-shell-<VERSION>.jar
-
-  ____                              ____ _                __
- / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
- \___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
-  ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
- |____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
-  ____ |_|    _          __|___/                 __________
- |  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
- | | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
- | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
- |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
-
-<VERSION>
-
-Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
-dataflow:>version
-<VERSION>
-```
-
-+
-. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] Kafka binder variant of out-of-the-box applications
-+
-
 ```
 dataflow:>app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-kafka-10-maven
 ```
-
 +
 . Create and deploy the following streams
 +
@@ -158,9 +123,9 @@ Displaying values for field value counter 'language'
  .. Stream as `hashtags`
  .. Visualization as `Bubble-Chart` or `Pie-Chart`
 
-image::images/twitter_analytics.png[Twitter Analytics Visualization]
+image::twitter_analytics.png[Twitter Analytics Visualization, scaledwidth="50%"]
 
-== Summary
+====== Summary
 
 In this sample, you have learned:
 

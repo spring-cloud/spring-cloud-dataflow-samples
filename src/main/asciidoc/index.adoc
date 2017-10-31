@@ -29,8 +29,6 @@ endif::backend-html5[]
 
 [[overview]]
 
-This project contains samples and demonstrations for Spring Cloud Data Flow.
-
 include::overview.adoc[]
 
 // ======================================================================================

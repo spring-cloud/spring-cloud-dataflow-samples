@@ -4,7 +4,7 @@
 
 In this demonstration, you will learn how to orchestrate short-lived data processing application (_eg: Spring Batch Jobs_) using http://cloud.spring.io/spring-cloud-task/[Spring Cloud Task] and http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] on Cloud Foundry.
 
-===== Prerequisites
+====== Prerequisites
 
 * Local https://pivotal.io/pcf-dev[PCFDev] instance
 * Local install of https://github.com/cloudfoundry/cli[cf CLI] command line tool
@@ -200,7 +200,7 @@ dataflow:>job execution list
 +
 
 
-==== Summary
+====== Summary
 
 In this sample, you have learned:
 

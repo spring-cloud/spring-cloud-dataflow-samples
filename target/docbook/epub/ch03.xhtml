@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg"><head><title>Chapter 3. Task / Batch</title><link rel="stylesheet" type="text/css" href="docbook-epub.css"/><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"/><link rel="prev" href="ch02s04.xhtml" title="Custom Stream Application Samples"/><link rel="next" href="ch04.xhtml" title="Chapter 4. Analytics"/></head><body><header/><section class="chapter" title="Chapter 3. Task / Batch" epub:type="chapter" id="_task_batch"><div class="titlepage"><div><div><h1 class="title">Chapter 3. Task / Batch</h1></div></div></div><section class="section" title="Task Samples" epub:type="subchapter" id="spring-cloud-data-flow-samples-task-overview"><div class="titlepage"><div><div><h2 class="title" style="clear: both">Task Samples</h2></div></div></div><section class="section" title="Batch Job on Cloud Foundry" epub:type="division" id="_batch_job_on_cloud_foundry"><div class="titlepage"><div><div><h3 class="title">Batch Job on Cloud Foundry</h3></div></div></div><p>In this demonstration, you will learn how to orchestrate short-lived data processing application (<span class="emphasis"><em>eg: Spring Batch Jobs</em></span>) using <a class="link" href="http://cloud.spring.io/spring-cloud-task/" target="_top">Spring Cloud Task</a> and <a class="link" href="http://cloud.spring.io/spring-cloud-dataflow/" target="_top">Spring Cloud Data Flow</a> on Cloud Foundry.</p><section class="section" title="Prerequisites" epub:type="division" id="_prerequisites_7"><div class="titlepage"><div><div><h4 class="title">Prerequisites</h4></div></div></div><div class="itemizedlist" epub:type="list"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem" epub:type="list-item">Local <a class="link" href="https://pivotal.io/pcf-dev" target="_top">PCFDev</a> instance</li><li class="listitem" epub:type="list-item">Local install of <a class="link" href="https://github.com/cloudfoundry/cli" target="_top">cf CLI</a> command line tool</li><li class="listitem" epub:type="list-item">Running instance of mysql in PCFDev</li><li class="listitem" epub:type="list-item">A Running Data Flow Shell</li></ul></div><p>The Spring Cloud Data Flow Shell is available for <a class="link" href="https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started-deploying-spring-cloud-dataflow" target="_top">download</a> or you can <a class="link" href="https://github.com/spring-cloud/spring-cloud-dataflow" target="_top">build</a> it yourself.</p><div class="note" title="Note" epub:type="notice"><table style="border: 0; "><tr><td style="text-align: center; vertical-align: top; width: 25; " rowspan="2"><img alt="[Note]" src="images/note.png"/></td><th style="text-align: left; ">Note</th></tr><tr><td style="text-align: left; vertical-align: top; "><p>the Spring Cloud Data Flow Shell and Local server implementation are in the same repository and are both built by running <code class="literal">./mvnw install</code> from the project root directory. If you have already run the build, use the jar in <code class="literal">spring-cloud-dataflow-shell/target</code></p></td></tr></table></div><p>To run the Shell open a new terminal session:</p><pre class="screen">$ cd &lt;PATH/TO/SPRING-CLOUD-DATAFLOW-SHELL-JAR&gt;
+$ java -jar spring-cloud-dataflow-shell-&lt;VERSION&gt;.jar
+  ____                              ____ _                __
+ / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
+ \___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
+  ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
+ |____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
+  ____ |_|    _          __|___/                 __________
+ |  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
+ | | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
+ | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
+ |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
+
+
+Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
+dataflow:&gt;</pre><div class="note" title="Note" epub:type="notice"><table style="border: 0; "><tr><td style="text-align: center; vertical-align: top; width: 25; " rowspan="2"><img alt="[Note]" src="images/note.png"/></td><th style="text-align: left; ">Note</th></tr><tr><td style="text-align: left; vertical-align: top; "><p>The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
+use the shell. If you prefer, you can use the Data Flow UI <a class="link" href="http://localhost:9393/dashboard" target="_top">localhost:9393/dashboard</a>, (or wherever it the server is hosted) to perform the same operations.</p></td></tr></table></div><div class="itemizedlist" epub:type="list"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem" epub:type="list-item">The Spring Cloud Data Flow Cloud Foundry Server running in PCFDev</li></ul></div><p>The Cloud Foundry Data Flow Server is Spring Boot application available for <a class="link" href="http://cloud.spring.io/spring-cloud-dataflow/" target="_top">download</a> or you can <a class="link" href="https://github.com/spring-cloud/spring-cloud-dataflow-server-cloudfoundry" target="_top">build</a> it yourself.
+If you build it yourself, the executable jar will be in <code class="literal">spring-cloud-dataflow-server-cloudfoundry/target</code></p><div class="note" title="Note" epub:type="notice"><table style="border: 0; "><tr><td style="text-align: center; vertical-align: top; width: 25; " rowspan="2"><img alt="[Note]" src="images/note.png"/></td><th style="text-align: left; ">Note</th></tr><tr><td style="text-align: left; vertical-align: top; "><p>Although you can run the Data Flow Cloud Foundry Server locally and configure it to deploy to any Cloud Foundry instance, we will
+deploy the server to Cloud Foundry as recommended.</p></td></tr></table></div><div class="orderedlist" epub:type="list"><ol class="orderedlist" type="1"><li class="listitem" epub:type="list-item"><p class="simpara">Verify that CF instance is reachable (Your endpoint urls will be different from what is shown here).</p><pre class="screen">$ cf api
+API endpoint: https://api.system.io (API version: ...)
+
+$ cf apps
+Getting apps in org [your-org] / space [your-space] as user...
+OK
+
+No apps found</pre></li><li class="listitem" epub:type="list-item"><p class="simpara">Follow the instructions to deploy the <a class="link" href="https://docs.spring.io/spring-cloud-dataflow-server-cloudfoundry/docs/current/reference/htmlsingle" target="_top">Spring Cloud Data Flow Cloud Foundry server</a>. Don’t worry about creating a Redis service. We won’t need it. If you are familiar with Cloud Foundry
+application manifests, we recommend creating a manifest for the the Data Flow server as shown <a class="link" href="https://docs.spring.io/spring-cloud-dataflow-server-cloudfoundry/docs/current/reference/htmlsingle/#sample-manifest-template" target="_top">here</a>.</p><div class="warning" title="Warning" epub:type="warning"><table style="border: 0; "><tr><td style="text-align: center; vertical-align: top; width: 25; " rowspan="2"><img alt="[Warning]" src="images/warning.png"/></td><th style="text-align: left; ">Warning</th></tr><tr><td style="text-align: left; vertical-align: top; "><p>As of this writing, there is a typo on the <code class="literal">SPRING_APPLICATION_JSON</code> entry in the sample manifest. <code class="literal">SPRING_APPLICATION_JSON</code> must be followed by <code class="literal">:</code> and The JSON string must be
+wrapped in single quotes. Alternatively, you can replace that line with <code class="literal">MAVEN_REMOTE_REPOSITORIES_REPO1_URL: <a class="link" href="https://repo.spring.io/libs-snapshot" target="_top">repo.spring.io/libs-snapshot</a></code>.  If your Cloud Foundry installation is behind a firewall, you may need to install the stream apps used in this sample in your internal Maven repository and <a class="link" href="https://docs.spring.io/spring-cloud-dataflow/docs/1.3.0.M2/reference/htmlsingle/#getting-started-maven-configuration" target="_top">configure</a> the server to access that repository.</p></td></tr></table></div></li><li class="listitem" epub:type="list-item"><p class="simpara">Once you have successfully executed <code class="literal">cf push</code>, verify the dataflow server is running</p><pre class="screen">$ cf apps
+Getting apps in org [your-org] / space [your-space] as user...
+OK
+
+name                 requested state   instances   memory   disk   urls
+dataflow-server      started           1/1         1G       1G     dataflow-server.app.io</pre></li><li class="listitem" epub:type="list-item">Notice that the <code class="literal">dataflow-server</code> application is started and ready for interaction via the url endpoint</li><li class="listitem" epub:type="list-item"><p class="simpara">Connect the <code class="literal">shell</code> with <code class="literal">server</code> running on Cloud Foundry, e.g., <code class="literal"><a class="link" href="http://dataflow-server.app.io" target="_top">dataflow-server.app.io</a></code></p><pre class="screen">$ cd &lt;PATH/TO/SPRING-CLOUD-DATAFLOW-SHELL-JAR&gt;
+$ java -jar spring-cloud-dataflow-shell-&lt;VERSION&gt;.jar
+
+  ____                              ____ _                __
+ / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
+ \___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
+  ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
+ |____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
+  ____ |_|    _          __|___/                 __________
+ |  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
+ | | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
+ | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
+ |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
+
+
+Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
+server-unknown:&gt;</pre><pre class="screen">server-unknown:&gt;dataflow config server http://dataflow-server.app.io
+Successfully targeted http://dataflow-server.app.io
+dataflow:&gt;</pre><div class="note" title="Note" epub:type="notice"><table style="border: 0; "><tr><td style="text-align: center; vertical-align: top; width: 25; " rowspan="2"><img alt="[Note]" src="images/note.png"/></td><th style="text-align: left; ">Note</th></tr><tr><td style="text-align: left; vertical-align: top; "><p>PCF 1.7.12 or greater is required to run Tasks on Spring Cloud Data Flow. As of this writing, PCFDev and PWS supports builds upon this version.</p></td></tr></table></div></li><li class="listitem" epub:type="list-item"><p class="simpara">Task support needs to be enabled on pcf-dev. Being logged as <code class="literal">admin</code>, issue the following command:</p><pre class="screen">cf enable-feature-flag task_creation
+Setting status of task_creation as admin...
+
+OK
+
+Feature task_creation Enabled.</pre><div class="note" title="Note" epub:type="notice"><table style="border: 0; "><tr><td style="text-align: center; vertical-align: top; width: 25; " rowspan="2"><img alt="[Note]" src="images/note.png"/></td><th style="text-align: left; ">Note</th></tr><tr><td style="text-align: left; vertical-align: top; "><p>For this sample, all you need is the <code class="literal">mysql</code> service and in PCFDev, the <code class="literal">mysql</code> service comes with a different plan. From CF CLI, create the service by: <code class="literal">cf create-service p-mysql 512mb mysql</code> and bind this service to <code class="literal">dataflow-server</code> by: <code class="literal">cf bind-service dataflow-server mysql</code>.</p></td></tr></table></div><div class="note" title="Note" epub:type="notice"><table style="border: 0; "><tr><td style="text-align: center; vertical-align: top; width: 25; " rowspan="2"><img alt="[Note]" src="images/note.png"/></td><th style="text-align: left; ">Note</th></tr><tr><td style="text-align: left; vertical-align: top; "><p>All the apps deployed to PCFDev start with low memory by default. It is recommended to change it to at least 768MB for <code class="literal">dataflow-server</code>. Ditto for every app spawned <span class="strong"><strong>by</strong></span> Spring Cloud Data Flow. Change the memory by: <code class="literal">cf set-env dataflow-server SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_MEMORY 512</code>. Likewise, we would have to skip SSL validation by: <code class="literal">cf set-env dataflow-server SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_SKIP_SSL_VALIDATION true</code>.</p></td></tr></table></div></li><li class="listitem" epub:type="list-item"><p class="simpara">Tasks in Spring Cloud Data Flow require an RDBMS to host "task repository" (see <a class="link" href="http://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#spring-cloud-dataflow-task-repository" target="_top">here</a> for more details), so let’s instruct the Spring Cloud Data Flow server to bind the <code class="literal">mysql</code> service to each deployed task:</p><pre class="screen">$ cf set-env dataflow-server SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_TASK_SERVICES mysql
+$ cf restage dataflow-server</pre><div class="note" title="Note" epub:type="notice"><table style="border: 0; "><tr><td style="text-align: center; vertical-align: top; width: 25; " rowspan="2"><img alt="[Note]" src="images/note.png"/></td><th style="text-align: left; ">Note</th></tr><tr><td style="text-align: left; vertical-align: top; "><p>We only need <code class="literal">mysql</code> service for this sample.</p></td></tr></table></div></li><li class="listitem" epub:type="list-item"><p class="simpara">As a recap, here is what you should see as configuration for the Spring Cloud Data Flow server:</p><pre class="screen">cf env dataflow-server
+
+....
+User-Provided:
+SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_DOMAIN: local.pcfdev.io
+SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_MEMORY: 512
+SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_ORG: pcfdev-org
+SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_PASSWORD: pass
+SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_SKIP_SSL_VALIDATION: false
+SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_SPACE: pcfdev-space
+SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_TASK_SERVICES: mysql
+SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_URL: https://api.local.pcfdev.io
+SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_USERNAME: user
+
+No running env variables have been set
+
+No staging env variables have been set</pre></li><li class="listitem" epub:type="list-item">Notice that <code class="literal">dataflow-server</code> application is started and ready for interaction via <code class="literal"><a class="link" href="http://dataflow-server.local.pcfdev.io" target="_top">dataflow-server.local.pcfdev.io</a></code> endpoint</li><li class="listitem" epub:type="list-item"><p class="simpara">Build and register the batch-job <a class="link" href="https://github.com/spring-cloud/spring-cloud-task/tree/master/spring-cloud-task-samples/batch-job" target="_top">example</a> from Spring Cloud Task samples. For convenience, the final <a class="link" href="https://github.com/spring-cloud/spring-cloud-dataflow-samples/raw/master/src/main/asciidoc/tasks/simple-batch-job/batch-job-1.0.0.BUILD-SNAPSHOT.jar" target="_top">uber-jar artifact</a> is provided with this sample.</p><pre class="screen">dataflow:&gt;app register --type task --name simple_batch_job --uri https://github.com/spring-cloud/spring-cloud-dataflow-samples/raw/master/tasks/simple-batch-job/batch-job-1.3.0.BUILD-SNAPSHOT.jar</pre></li><li class="listitem" epub:type="list-item"><p class="simpara">Create the task with <code class="literal">simple-batch-job</code> application</p><pre class="screen">dataflow:&gt;task create foo --definition "simple_batch_job"</pre><div class="note" title="Note" epub:type="notice"><table style="border: 0; "><tr><td style="text-align: center; vertical-align: top; width: 25; " rowspan="2"><img alt="[Note]" src="images/note.png"/></td><th style="text-align: left; ">Note</th></tr><tr><td style="text-align: left; vertical-align: top; "><p>Unlike Streams, the Task definitions don’t require explicit deployment. They can be launched on-demand, scheduled, or triggered by streams.</p></td></tr></table></div></li><li class="listitem" epub:type="list-item"><p class="simpara">Verify there’s <span class="strong"><strong>still</strong></span> no Task applications running on PCFDev - they are listed only after the initial launch/staging attempt on PCF</p><pre class="screen">$ cf apps
+Getting apps in org pcfdev-org / space pcfdev-space as user...
+OK
+
+name              requested state   instances   memory   disk   urls
+dataflow-server   started           1/1         768M     512M   dataflow-server.local.pcfdev.io</pre></li><li class="listitem" epub:type="list-item"><p class="simpara">Let’s launch <code class="literal">foo</code></p><pre class="screen">dataflow:&gt;task launch foo</pre></li><li class="listitem" epub:type="list-item"><p class="simpara">Verify the execution of <code class="literal">foo</code> by tailing the logs</p><pre class="screen">$ cf logs foo
+Retrieving logs for app foo in org pcfdev-org / space pcfdev-space as user...
+
+2016-08-14T18:48:54.22-0700 [APP/TASK/foo/0]OUT Creating container
+2016-08-14T18:48:55.47-0700 [APP/TASK/foo/0]OUT
+
+2016-08-14T18:49:06.59-0700 [APP/TASK/foo/0]OUT 2016-08-15 01:49:06.598  INFO 14 --- [           main] o.s.b.c.l.support.SimpleJobLauncher      : Job: [SimpleJob: [name=job1]] launched with the following parameters: [{}]
+
+...
+...
+
+2016-08-14T18:49:06.78-0700 [APP/TASK/foo/0]OUT 2016-08-15 01:49:06.785  INFO 14 --- [           main] o.s.b.c.l.support.SimpleJobLauncher      : Job: [SimpleJob: [name=job1]] completed with the following parameters: [{}] and the following status: [COMPLETED]
+
+...
+...
+
+2016-08-14T18:49:07.36-0700 [APP/TASK/foo/0]OUT 2016-08-15 01:49:07.363  INFO 14 --- [           main] o.s.b.c.l.support.SimpleJobLauncher      : Job: [SimpleJob: [name=job2]] launched with the following parameters: [{}]
+
+...
+...
+
+2016-08-14T18:49:07.53-0700 [APP/TASK/foo/0]OUT 2016-08-15 01:49:07.536  INFO 14 --- [           main] o.s.b.c.l.support.SimpleJobLauncher      : Job: [SimpleJob: [name=job2]] completed with the following parameters: [{}] and the following status: [COMPLETED]
+
+...
+...
+
+2016-08-14T18:49:07.71-0700 [APP/TASK/foo/0]OUT Exit status 0
+2016-08-14T18:49:07.78-0700 [APP/TASK/foo/0]OUT Destroying container
+2016-08-14T18:49:08.47-0700 [APP/TASK/foo/0]OUT Successfully destroyed container</pre><div class="note" title="Note" epub:type="notice"><table style="border: 0; "><tr><td style="text-align: center; vertical-align: top; width: 25; " rowspan="2"><img alt="[Note]" src="images/note.png"/></td><th style="text-align: left; ">Note</th></tr><tr><td style="text-align: left; vertical-align: top; "><p>Verify <code class="literal">job1</code> and <code class="literal">job2</code> operations embeddded in <code class="literal">simple-batch-job</code> application are launched independently and they returned with the status <code class="literal">COMPLETED</code>.</p></td></tr></table></div><div class="note" title="Note" epub:type="notice"><table style="border: 0; "><tr><td style="text-align: center; vertical-align: top; width: 25; " rowspan="2"><img alt="[Note]" src="images/note.png"/></td><th style="text-align: left; ">Note</th></tr><tr><td style="text-align: left; vertical-align: top; "><p>Unlike LRPs in Cloud Foundry, tasks are short-lived, so the logs aren’t always available. They are generated only when the Task application runs; at the end of Task operation, the container that ran the Task application is destroyed to free-up resources.</p></td></tr></table></div></li><li class="listitem" epub:type="list-item"><p class="simpara">List Tasks in Cloud Foundry</p><pre class="screen">$ cf apps
+Getting apps in org pcfdev-org / space pcfdev-space as user...
+OK
+
+name              requested state   instances   memory   disk   urls
+dataflow-server   started           1/1         768M     512M   dataflow-server.local.pcfdev.io
+foo               stopped           0/1         1G       1G</pre></li><li class="listitem" epub:type="list-item"><p class="simpara">Verify Task execution details</p><pre class="screen">dataflow:&gt;task execution list
+╔══════════════════════════╤══╤════════════════════════════╤════════════════════════════╤═════════╗
+║        Task Name         │ID│         Start Time         │          End Time          │Exit Code║
+╠══════════════════════════╪══╪════════════════════════════╪════════════════════════════╪═════════╣
+║foo                       │1 │Sun Aug 14 18:49:05 PDT 2016│Sun Aug 14 18:49:07 PDT 2016│0        ║
+╚══════════════════════════╧══╧════════════════════════════╧════════════════════════════╧═════════╝</pre></li><li class="listitem" epub:type="list-item"><p class="simpara">Verify Job execution details</p><pre class="screen">dataflow:&gt;job execution list
+╔═══╤═══════╤═════════╤════════════════════════════╤═════════════════════╤══════════════════╗
+║ID │Task ID│Job Name │         Start Time         │Step Execution Count │Definition Status ║
+╠═══╪═══════╪═════════╪════════════════════════════╪═════════════════════╪══════════════════╣
+║2  │1      │job2     │Sun Aug 14 18:49:07 PDT 2016│1                    │Destroyed         ║
+║1  │1      │job1     │Sun Aug 14 18:49:06 PDT 2016│1                    │Destroyed         ║
+╚═══╧═══════╧═════════╧════════════════════════════╧═════════════════════╧══════════════════╝</pre></li></ol></div></section><section class="section" title="Summary" epub:type="division" id="_summary_7"><div class="titlepage"><div><div><h4 class="title">Summary</h4></div></div></div><p>In this sample, you have learned:</p><div class="itemizedlist" epub:type="list"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem" epub:type="list-item">How to register and orchestrate Spring Batch jobs in Spring Cloud Data Flow</li><li class="listitem" epub:type="list-item">How to use the <code class="literal">cf</code> CLI in the context of Task applications orchestrated by Spring Cloud Data Flow</li><li class="listitem" epub:type="list-item">How to verify task executions and task repository</li></ul></div></section></section></section></section><footer/></body></html>

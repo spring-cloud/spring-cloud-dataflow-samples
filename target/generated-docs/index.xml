@@ -4,7 +4,7 @@
 <book xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0" xml:lang="en">
 <info>
 <title>Spring Cloud Data Flow Samples</title>
-<date>2017-10-30</date>
+<date>2017-10-31</date>
 <productname>Spring Cloud Data Flow Samples</productname>
 <releaseinfo>1.2.0.BUILD-SNAPSHOT</releaseinfo>
 <copyright>
@@ -33,11 +33,10 @@
 	</mediaobject>
 </cover>
 </info>
-<preface>
-<title></title>
-<simpara xml:id="overview">This project contains samples and demonstrations for Spring Cloud Data Flow.</simpara>
-<simpara xml:id="spring-cloud-data-flow-samples-overview">This repository provides sample starter applications and code for use with the Spring Cloud Data Flow project. The following samples are available:</simpara>
-</preface>
+<chapter xml:id="spring-cloud-data-flow-samples-overview">
+<title>Overview</title>
+<simpara>This guide contains samples and demonstrations of how to build data microservices applications with <link xlink:href="https://cloud.spring.io/spring-cloud-dataflow/">Spring Cloud Data Flow</link>.</simpara>
+</chapter>
 <chapter xml:id="_streaming">
 <title>Streaming</title>
 <section xml:id="spring-cloud-data-flow-samples-cassandra-overview">
@@ -54,10 +53,6 @@
 </listitem>
 </itemizedlist>
 <simpara>The Spring Cloud Data Flow Shell is available for <link xlink:href="https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started-deploying-spring-cloud-dataflow">download</link> or you can <link xlink:href="https://github.com/spring-cloud/spring-cloud-dataflow">build</link> it yourself.</simpara>
-<note>
-<simpara>The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
-use the shell. If you prefer, you can use the Data Flow UI <link xlink:href="http://localhost:9393/dashboard">localhost:9393/dashboard</link>, (or wherever it the server is hosted) to perform the same operations.</simpara>
-</note>
 <note>
 <simpara>the Spring Cloud Data Flow Shell and Local server implementation are in the same repository and are both built by running <literal>./mvnw install</literal> from the project root directory. If you have already run the build, use the jar in <literal>spring-cloud-dataflow-shell/target</literal></simpara>
 </note>
@@ -79,26 +74,9 @@ $ java -jar spring-cloud-dataflow-shell-&lt;VERSION&gt;.jar
 Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
 dataflow:&gt;</screen>
 <note>
-<simpara>The shell will try to connect to a local server by default. If the Local Dataflow Server is not running you will see:</simpara>
+<simpara>The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
+use the shell. If you prefer, you can use the Data Flow UI <link xlink:href="http://localhost:9393/dashboard">localhost:9393/dashboard</link>, (or wherever it the server is hosted) to perform the same operations.</simpara>
 </note>
-<screen> ____                              ____ _                __
-/ ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
-\___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
- ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
-|____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
- ____ |_|    _          __|___/                 __________
-|  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
-| | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
-| |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
-|____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
-
-
-Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
-server unknown:&gt;</screen>
-<simpara>Connect the <literal>shell</literal> to the <literal>server</literal> running on , e.g., <literal><link xlink:href="http://dataflow-server.app.io">dataflow-server.app.io</link></literal></simpara>
-<screen>server unknown:&gt;dataflow config server http://dataflow-server.app.io
-Successfully targeted http://dataflow-server.app.io
-dataflow:&gt;</screen>
 </section>
 <section xml:id="http-cassandra-local">
 <title>Using the Local Server</title>
@@ -378,10 +356,6 @@ dataflow-server             started           1/1         1G       1G     datafl
 </itemizedlist>
 <simpara>The Spring Cloud Data Flow Shell is available for <link xlink:href="https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started-deploying-spring-cloud-dataflow">download</link> or you can <link xlink:href="https://github.com/spring-cloud/spring-cloud-dataflow">build</link> it yourself.</simpara>
 <note>
-<simpara>The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
-use the shell. If you prefer, you can use the Data Flow UI <link xlink:href="http://localhost:9393/dashboard">localhost:9393/dashboard</link>, (or wherever it the server is hosted) to perform the same operations.</simpara>
-</note>
-<note>
 <simpara>the Spring Cloud Data Flow Shell and Local server implementation are in the same repository and are both built by running <literal>./mvnw install</literal> from the project root directory. If you have already run the build, use the jar in <literal>spring-cloud-dataflow-shell/target</literal></simpara>
 </note>
 <simpara>To run the Shell open a new terminal session:</simpara>
@@ -402,26 +376,9 @@ $ java -jar spring-cloud-dataflow-shell-&lt;VERSION&gt;.jar
 Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
 dataflow:&gt;</screen>
 <note>
-<simpara>The shell will try to connect to a local server by default. If the Local Dataflow Server is not running you will see:</simpara>
+<simpara>The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
+use the shell. If you prefer, you can use the Data Flow UI <link xlink:href="http://localhost:9393/dashboard">localhost:9393/dashboard</link>, (or wherever it the server is hosted) to perform the same operations.</simpara>
 </note>
-<screen> ____                              ____ _                __
-/ ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
-\___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
- ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
-|____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
- ____ |_|    _          __|___/                 __________
-|  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
-| | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
-| |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
-|____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
-
-
-Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
-server unknown:&gt;</screen>
-<simpara>Connect the <literal>shell</literal> to the <literal>server</literal> running on , e.g., <literal><link xlink:href="http://dataflow-server.app.io">dataflow-server.app.io</link></literal></simpara>
-<screen>server unknown:&gt;dataflow config server http://dataflow-server.app.io
-Successfully targeted http://dataflow-server.app.io
-dataflow:&gt;</screen>
 </section>
 <section xml:id="_using_local_server">
 <title>Using Local Server</title>
@@ -711,10 +668,6 @@ dataflow-server             started           1/1         1G       1G     datafl
 </itemizedlist>
 <simpara>The Spring Cloud Data Flow Shell is available for <link xlink:href="https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started-deploying-spring-cloud-dataflow">download</link> or you can <link xlink:href="https://github.com/spring-cloud/spring-cloud-dataflow">build</link> it yourself.</simpara>
 <note>
-<simpara>The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
-use the shell. If you prefer, you can use the Data Flow UI <link xlink:href="http://localhost:9393/dashboard">localhost:9393/dashboard</link>, (or wherever it the server is hosted) to perform the same operations.</simpara>
-</note>
-<note>
 <simpara>the Spring Cloud Data Flow Shell and Local server implementation are in the same repository and are both built by running <literal>./mvnw install</literal> from the project root directory. If you have already run the build, use the jar in <literal>spring-cloud-dataflow-shell/target</literal></simpara>
 </note>
 <simpara>To run the Shell open a new terminal session:</simpara>
@@ -735,26 +688,9 @@ $ java -jar spring-cloud-dataflow-shell-&lt;VERSION&gt;.jar
 Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
 dataflow:&gt;</screen>
 <note>
-<simpara>The shell will try to connect to a local server by default. If the Local Dataflow Server is not running you will see:</simpara>
+<simpara>The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
+use the shell. If you prefer, you can use the Data Flow UI <link xlink:href="http://localhost:9393/dashboard">localhost:9393/dashboard</link>, (or wherever it the server is hosted) to perform the same operations.</simpara>
 </note>
-<screen> ____                              ____ _                __
-/ ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
-\___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
- ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
-|____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
- ____ |_|    _          __|___/                 __________
-|  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
-| | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
-| |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
-|____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
-
-
-Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
-server unknown:&gt;</screen>
-<simpara>Connect the <literal>shell</literal> to the <literal>server</literal> running on , e.g., <literal><link xlink:href="http://dataflow-server.app.io">dataflow-server.app.io</link></literal></simpara>
-<screen>server unknown:&gt;dataflow config server http://dataflow-server.app.io
-Successfully targeted http://dataflow-server.app.io
-dataflow:&gt;</screen>
 <itemizedlist>
 <listitem>
 <simpara>A Geode installation with a locator and cache server running
@@ -1056,10 +992,6 @@ The <literal>gemfire</literal> source creates a <link xlink:href="https://geode.
 </itemizedlist>
 <simpara>The Spring Cloud Data Flow Shell is available for <link xlink:href="https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started-deploying-spring-cloud-dataflow">download</link> or you can <link xlink:href="https://github.com/spring-cloud/spring-cloud-dataflow">build</link> it yourself.</simpara>
 <note>
-<simpara>The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
-use the shell. If you prefer, you can use the Data Flow UI <link xlink:href="http://localhost:9393/dashboard">localhost:9393/dashboard</link>, (or wherever it the server is hosted) to perform the same operations.</simpara>
-</note>
-<note>
 <simpara>the Spring Cloud Data Flow Shell and Local server implementation are in the same repository and are both built by running <literal>./mvnw install</literal> from the project root directory. If you have already run the build, use the jar in <literal>spring-cloud-dataflow-shell/target</literal></simpara>
 </note>
 <simpara>To run the Shell open a new terminal session:</simpara>
@@ -1080,26 +1012,9 @@ $ java -jar spring-cloud-dataflow-shell-&lt;VERSION&gt;.jar
 Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
 dataflow:&gt;</screen>
 <note>
-<simpara>The shell will try to connect to a local server by default. If the Local Dataflow Server is not running you will see:</simpara>
+<simpara>The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
+use the shell. If you prefer, you can use the Data Flow UI <link xlink:href="http://localhost:9393/dashboard">localhost:9393/dashboard</link>, (or wherever it the server is hosted) to perform the same operations.</simpara>
 </note>
-<screen> ____                              ____ _                __
-/ ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
-\___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
- ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
-|____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
- ____ |_|    _          __|___/                 __________
-|  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
-| | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
-| |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
-|____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
-
-
-Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
-server unknown:&gt;</screen>
-<simpara>Connect the <literal>shell</literal> to the <literal>server</literal> running on , e.g., <literal><link xlink:href="http://dataflow-server.app.io">dataflow-server.app.io</link></literal></simpara>
-<screen>server unknown:&gt;dataflow config server http://dataflow-server.app.io
-Successfully targeted http://dataflow-server.app.io
-dataflow:&gt;</screen>
 <itemizedlist>
 <listitem>
 <simpara>A Geode installation with a locator and cache server running
@@ -1405,10 +1320,6 @@ the quantity ordered is above a defined limit.</simpara>
 </itemizedlist>
 <simpara>The Spring Cloud Data Flow Shell is available for <link xlink:href="https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started-deploying-spring-cloud-dataflow">download</link> or you can <link xlink:href="https://github.com/spring-cloud/spring-cloud-dataflow">build</link> it yourself.</simpara>
 <note>
-<simpara>The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
-use the shell. If you prefer, you can use the Data Flow UI <link xlink:href="http://localhost:9393/dashboard">localhost:9393/dashboard</link>, (or wherever it the server is hosted) to perform the same operations.</simpara>
-</note>
-<note>
 <simpara>the Spring Cloud Data Flow Shell and Local server implementation are in the same repository and are both built by running <literal>./mvnw install</literal> from the project root directory. If you have already run the build, use the jar in <literal>spring-cloud-dataflow-shell/target</literal></simpara>
 </note>
 <simpara>To run the Shell open a new terminal session:</simpara>
@@ -1429,26 +1340,9 @@ $ java -jar spring-cloud-dataflow-shell-&lt;VERSION&gt;.jar
 Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
 dataflow:&gt;</screen>
 <note>
-<simpara>The shell will try to connect to a local server by default. If the Local Dataflow Server is not running you will see:</simpara>
+<simpara>The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
+use the shell. If you prefer, you can use the Data Flow UI <link xlink:href="http://localhost:9393/dashboard">localhost:9393/dashboard</link>, (or wherever it the server is hosted) to perform the same operations.</simpara>
 </note>
-<screen> ____                              ____ _                __
-/ ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
-\___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
- ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
-|____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
- ____ |_|    _          __|___/                 __________
-|  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
-| | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
-| |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
-|____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
-
-
-Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
-server unknown:&gt;</screen>
-<simpara>Connect the <literal>shell</literal> to the <literal>server</literal> running on , e.g., <literal><link xlink:href="http://dataflow-server.app.io">dataflow-server.app.io</link></literal></simpara>
-<screen>server unknown:&gt;dataflow config server http://dataflow-server.app.io
-Successfully targeted http://dataflow-server.app.io
-dataflow:&gt;</screen>
 <itemizedlist>
 <listitem>
 <simpara>A Geode installation with a locator and cache server running
@@ -1682,7 +1576,7 @@ gfsh&gt;create region --name Orders --type=REPLICATE</screen>
 <simpara>Create the stream using the Data Flow Shell</simpara>
 <simpara>This example creates an gemfire-cq source to which will publish events matching a query criteria on a region. In this case we will monitor the <literal>Orders</literal> region. For simplicity, we will avoid creating a data structure for the order.
 Each cache entry contains an integer value representing the quantity of the ordered item. This stream will fire a message whenever the value&gt;999. By default, the source emits only the value. Here we will override that using the
-<literal>cq-event-expression</literal> property.  This accepts a SpEL expression bound to a <link xlink:href="https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/query/CqEvent.html">CQEvent</link>. To reference the entire CQEvent instace, we use <literal>#this</literal>.
+<literal>cq-event-expression</literal> property.  This accepts a SpEL expression bound to a <link xlink:href="https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/query/CqEvent.html">CQEvent</link>. To reference the entire CQEvent instance, we use <literal>#this</literal>.
 In order to display the contents in the log, we will invoke <literal>toString()</literal> on the instance.</simpara>
 <screen>dataflow:&gt;stream create --name orders --definition " gemfire-cq  --username=developer --password=&lt;developer-password&gt; --connect-type=locator --host-addresses=10.0.16.9:55221 --query='SELECT * from /Orders o where o &gt; 999' --cq-event-expression=#this.toString()  | log" --deploy
 Created and deployed new stream 'events'</screen>
@@ -1741,35 +1635,18 @@ dataflow:&gt; stream create --name stock_watch --definition "gemfire-cq --query=
 </section>
 </section>
 </section>
-</chapter>
-<chapter xml:id="_task_batch">
-<title>Task / Batch</title>
-<section xml:id="spring-cloud-data-flow-samples-task-overview">
-<title>Task Samples</title>
-<section xml:id="_batch_job_on_cloud_foundry">
-<title>Batch Job on Cloud Foundry</title>
-<simpara>In this demonstration, you will learn how to orchestrate short-lived data processing application (<emphasis>eg: Spring Batch Jobs</emphasis>) using <link xlink:href="http://cloud.spring.io/spring-cloud-task/">Spring Cloud Task</link> and <link xlink:href="http://cloud.spring.io/spring-cloud-dataflow/">Spring Cloud Data Flow</link> on Cloud Foundry.</simpara>
+<section xml:id="spring-cloud-data-flow-samples-custom-apps-overview">
+<title>Custom Stream Application Samples</title>
+<section xml:id="spring-cloud-data-flow-samples-custom-application-overview">
+<title>Custom Spring Cloud Stream Processor</title>
 <section xml:id="_prerequisites_6">
 <title>Prerequisites</title>
 <itemizedlist>
-<listitem>
-<simpara>Local <link xlink:href="https://pivotal.io/pcf-dev">PCFDev</link> instance</simpara>
-</listitem>
-<listitem>
-<simpara>Local install of <link xlink:href="https://github.com/cloudfoundry/cli">cf CLI</link> command line tool</simpara>
-</listitem>
-<listitem>
-<simpara>Running instance of mysql in PCFDev</simpara>
-</listitem>
 <listitem>
 <simpara>A Running Data Flow Shell</simpara>
 </listitem>
 </itemizedlist>
 <simpara>The Spring Cloud Data Flow Shell is available for <link xlink:href="https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started-deploying-spring-cloud-dataflow">download</link> or you can <link xlink:href="https://github.com/spring-cloud/spring-cloud-dataflow">build</link> it yourself.</simpara>
-<note>
-<simpara>The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
-use the shell. If you prefer, you can use the Data Flow UI <link xlink:href="http://localhost:9393/dashboard">localhost:9393/dashboard</link>, (or wherever it the server is hosted) to perform the same operations.</simpara>
-</note>
 <note>
 <simpara>the Spring Cloud Data Flow Shell and Local server implementation are in the same repository and are both built by running <literal>./mvnw install</literal> from the project root directory. If you have already run the build, use the jar in <literal>spring-cloud-dataflow-shell/target</literal></simpara>
 </note>
@@ -1791,26 +1668,227 @@ $ java -jar spring-cloud-dataflow-shell-&lt;VERSION&gt;.jar
 Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
 dataflow:&gt;</screen>
 <note>
-<simpara>The shell will try to connect to a local server by default. If the Local Dataflow Server is not running you will see:</simpara>
+<simpara>The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
+use the shell. If you prefer, you can use the Data Flow UI <link xlink:href="http://localhost:9393/dashboard">localhost:9393/dashboard</link>, (or wherever it the server is hosted) to perform the same operations.</simpara>
 </note>
-<screen> ____                              ____ _                __
-/ ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
-\___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
- ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
-|____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
- ____ |_|    _          __|___/                 __________
-|  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
-| | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
-| |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
-|____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
+<itemizedlist>
+<listitem>
+<simpara>A running local Data Flow Server</simpara>
+</listitem>
+</itemizedlist>
+<simpara>The Local Data Flow Server is Spring Boot application available for <link xlink:href="http://cloud.spring.io/spring-cloud-dataflow/">download</link> or you can <link xlink:href="https://github.com/spring-cloud/spring-cloud-dataflow">build</link> it yourself.
+If you build it yourself, the executable jar will be in <literal>spring-cloud-dataflow-server-local/target</literal></simpara>
+<simpara>To run the Local Data Flow server Open a new terminal session:</simpara>
+<screen>$cd  &lt;PATH/TO/SPRING-CLOUD-DATAFLOW-LOCAL-JAR&gt;
+$java -jar spring-cloud-dataflow-server-local-&lt;VERSION&gt;.jar</screen>
+<itemizedlist>
+<listitem>
+<simpara>A Java IDE</simpara>
+</listitem>
+<listitem>
+<simpara><link xlink:href="https://maven.apache.org/">Maven</link> Installed</simpara>
+</listitem>
+<listitem>
+<simpara>A running instance of <link xlink:href="https://www.rabbitmq.com/">Rabbit MQ</link></simpara>
+</listitem>
+</itemizedlist>
+</section>
+<section xml:id="_create_the_custom_stream_app">
+<title>Create the custom stream app</title>
+<simpara>We will create a custom <link xlink:href="https://cloud.spring.io/spring-cloud-stream/">Spring Cloud Stream</link> application and run it on Spring Cloud Data Flow.
+We&#8217;ll go through the steps to make a simple processor that converts temperature from Fahrenheit to Celsius.
+We will be running the demo locally, but all the steps will work in a Cloud Foundry environment as well.</simpara>
+<orderedlist numeration="arabic">
+<listitem>
+<simpara>Create a new spring cloud stream project</simpara>
+<itemizedlist>
+<listitem>
+<simpara>Create a <link xlink:href="http://start.spring.io/">Spring initializer</link> project</simpara>
+</listitem>
+<listitem>
+<simpara>Set the group to <literal>demo.celsius.converter</literal> and the artifact name as <literal>celsius-converter-processor</literal></simpara>
+</listitem>
+<listitem>
+<simpara>Choose a message transport binding as a dependency for the custom app
+There are options for choosing <literal>Rabbit MQ</literal> or <literal>Kafka</literal> as the message transport.
+For this demo, we will use <literal>rabbit</literal>. Type <emphasis>rabbit</emphasis> in the search bar under <emphasis>Search for dependencies</emphasis> and select <literal>Stream Rabbit</literal>.</simpara>
+</listitem>
+<listitem>
+<simpara>Hit the generate project button and open the new project in an IDE of your choice</simpara>
+</listitem>
+</itemizedlist>
+</listitem>
+<listitem>
+<simpara>Develop the app</simpara>
+<simpara>We can now create our custom app. Our Spring Cloud Stream application is a Spring Boot application that runs as an executable jar. The application will include two Java classes:</simpara>
+<itemizedlist>
+<listitem>
+<simpara><literal>CelsiusConverterProcessorAplication.java</literal> - the main Spring Boot application class, generated by Spring initializr</simpara>
+</listitem>
+<listitem>
+<simpara><literal>CelsiusConverterProcessorConfiguration.java</literal> - the Spring Cloud Stream code that we will write</simpara>
+<simpara>We are creating a transformer that takes a Fahrenheit input and converts it to Celsius.
+Following the same naming convention as the application file, create a new Java class in the same package called <literal>CelsiusConverterProcessorConfiguration.java</literal>.</simpara>
+<formalpara>
+<title>CelsiusConverterProcessorConfiguration.java</title>
+<para>
+<screen>@EnableBinding(Processor.class)
+public class CelsiusConverterProcessorConfiguration {
+
+    @Transformer(inputChannel = Processor.INPUT, outputChannel = Processor.OUTPUT)
+    public int convertToCelsius(String payload) {
+        int fahrenheitTemperature = Integer.parseInt(payload);
+        return (farenheitTemperature-32)*5/9;
+    }
+}</screen>
+</para>
+</formalpara>
+<simpara>Here we introduced two important Spring annotations.
+First we annotated the class with <literal>@EnableBinding(Processor.class)</literal>.
+Second we created a method and annotated it with <literal>@Transformer(inputChannel = Processor.INPUT, outputChannel = Processor.OUTPUT)</literal>.
+By adding these two annotations we have configured this stream app as a <literal>Processor</literal> (as opposed to a <literal>Source</literal> or a <literal>Sink</literal>).
+This means that the application receives input from an upstream application via the <literal>Processor.INPUT</literal> channel and sends its output to a downstream application via the <literal>Processor.OUTPUT</literal> channel.</simpara>
+<simpara>The <literal>convertToCelsius</literal> method takes a <literal>String</literal> as input for Fahrenheit and then returns the converted Celsius as an integer.
+This method is very simple, but that is also the beauty of this programming style.
+We can add as much logic as we want to this method to enrich this processor.
+As long as we annotate it properly and return valid output, it works as a Spring Cloud Stream Processor. Also note that it is straightforward to unit test this code.</simpara>
+</listitem>
+</itemizedlist>
+</listitem>
+<listitem>
+<simpara>Build the Spring Boot application with Maven</simpara>
+<screen>$cd &lt;PROJECT_DIR&gt;
+$./mvnw clean package</screen>
+</listitem>
+<listitem>
+<simpara>Run the Application standalone</simpara>
+<screen>java -jar target/celsius-converter-processor-0.0.1-SNAPSHOT.jar</screen>
+<simpara>If all goes well, we should have a running standalone Spring Boot Application.
+Once we verify that the app is started and running without any errors, we can stop it.</simpara>
+</listitem>
+</orderedlist>
+</section>
+<section xml:id="_deploy_the_app_to_spring_cloud_data_flow">
+<title>Deploy the app to Spring Cloud Data Flow</title>
+<orderedlist numeration="arabic">
+<listitem>
+<simpara><link xlink:href="https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app">Register</link> the out-of-the-box applications for the Rabbit binder</simpara>
+<note>
+<simpara>These samples assume that the Data Flow Server can access a remote Maven repository, <literal><link xlink:href="https://repo.spring.io/libs-release">repo.spring.io/libs-release</link></literal> by default. If your Data Flow server is running behind a firewall, or you are using a maven proxy preventing
+access to public repositories, you will need to install the sample apps in your internal Maven repository and <link xlink:href="https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started-maven-configuration">configure</link>
+the server accordingly.  The sample applications are typically registered using Data Flow&#8217;s bulk import facility. For example, the Shell command <literal>dataflow:&gt;app import --uri <link xlink:href="http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven">bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven</link></literal> (The actual URI is release and binder specific so refer to the sample instructions for the actual URL).
+The bulk import URI references a plain text file containing entries for all of the publicly available Spring Cloud Stream and Task applications published to <literal><link xlink:href="https://repo.spring.io">repo.spring.io</link></literal>. For example,
+<literal>source.http=maven://org.springframework.cloud.stream.app:http-source-rabbit:1.2.0.RELEASE</literal> registers the <literal>http</literal> source app at the corresponding Maven address, relative to the remote repository(ies) configured for the
+Data Flow server. The format is <literal>maven://&lt;groupId&gt;:&lt;artifactId&gt;:&lt;version&gt;</literal>  You will need to <link xlink:href="https://repo.spring.io/libs-release/org/springframework/cloud/stream/app/spring-cloud-stream-app-descriptor/Bacon.RELEASE/spring-cloud-stream-app-descriptor-Bacon.RELEASE.rabbit-apps-maven-repo-url.properties">download</link> the required apps or <link xlink:href="https://github.com/spring-cloud-stream-app-starters">build</link> them and then install them in your Maven repository, using whatever group, artifact, and version you choose. If you do
+this, register individual apps using <literal>dataflow:&gt;app register&#8230;&#8203;</literal> using the <literal>maven://</literal> resource URI format corresponding to your installed app.</simpara>
+</note>
+<screen>dataflow:&gt;app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven</screen>
+</listitem>
+<listitem>
+<simpara>Register the custom processor</simpara>
+<screen>app register --type processor --name convertToCelsius --uri &lt;File URL of the jar file on the local filesystem where you built the project above&gt; --force</screen>
+</listitem>
+<listitem>
+<simpara>Create the stream</simpara>
+<simpara>We will create a stream that uses the out of the box <literal>http</literal> source and <literal>log</literal> sink and our custom transformer.</simpara>
+<screen>dataflow:&gt;stream create --name convertToCelsiusStream --definition "http  --port=9090 | convertToCelsius | log" --deploy
+
+Created and deployed new stream 'convertToCelsiusStream'</screen>
+</listitem>
+<listitem>
+<simpara>Verify the stream is successfully deployed</simpara>
+<screen>dataflow:&gt;stream list</screen>
+</listitem>
+<listitem>
+<simpara>Verify that the apps have successfully deployed</simpara>
+<screen>dataflow:&gt;runtime apps</screen>
+<screen>2016-09-27 10:03:11.988  INFO 95234 --- [nio-9393-exec-9] o.s.c.d.spi.local.LocalAppDeployer       : deploying app convertToCelsiusStream.log instance 0
+   Logs will be in /var/folders/2q/krqwcbhj2d58csmthyq_n1nw0000gp/T/spring-cloud-dataflow-3236898888473815319/convertToCelsiusStream-1474984991968/convertToCelsiusStream.log
+2016-09-27 10:03:12.397  INFO 95234 --- [nio-9393-exec-9] o.s.c.d.spi.local.LocalAppDeployer       : deploying app convertToCelsiusStream.convertToCelsius instance 0
+   Logs will be in /var/folders/2q/krqwcbhj2d58csmthyq_n1nw0000gp/T/spring-cloud-dataflow-3236898888473815319/convertToCelsiusStream-1474984992392/convertToCelsiusStream.convertToCelsius
+2016-09-27 10:03:14.445  INFO 95234 --- [nio-9393-exec-9] o.s.c.d.spi.local.LocalAppDeployer       : deploying app convertToCelsiusStream.http instance 0
+   Logs will be in /var/folders/2q/krqwcbhj2d58csmthyq_n1nw0000gp/T/spring-cloud-dataflow-3236898888473815319/convertToCelsiusStream-1474984994440/convertToCelsiusStream.http</screen>
+</listitem>
+<listitem>
+<simpara>Post sample data to the <literal>http</literal> endpoint: <literal><link xlink:href="http://localhost:9090">localhost:9090</link></literal> (<literal>9090</literal> is the <literal>port</literal> we specified for the <literal>http</literal> source in this case)</simpara>
+<screen>dataflow:&gt;http post --target http://localhost:9090 --data 76
+&gt; POST (text/plain;Charset=UTF-8) http://localhost:9090 76
+&gt; 202 ACCEPTED</screen>
+</listitem>
+<listitem>
+<simpara>Open the log file for the <literal>convertToCelsiusStream.log</literal> app to see the output of our stream</simpara>
+<screen>tail -f /var/folders/2q/krqwcbhj2d58csmthyq_n1nw0000gp/T/spring-cloud-dataflow-7563139704229890655/convertToCelsiusStream-1474990317406/convertToCelsiusStream.log/stdout_0.log</screen>
+<simpara>You should see the temperature you posted converted to Celsius!</simpara>
+</listitem>
+</orderedlist>
+<screen>2016-09-27 10:05:34.933  INFO 95616 --- [CelsiusStream-1] log.sink                                 : 24</screen>
+</section>
+<section xml:id="_summary_6">
+<title>Summary</title>
+<simpara>In this sample, you have learned:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>How to write a custom <literal>Processor</literal> stream application</simpara>
+</listitem>
+<listitem>
+<simpara>How to use Spring Cloud Data Flow&#8217;s <literal>Local</literal> server</simpara>
+</listitem>
+<listitem>
+<simpara>How to use Spring Cloud Data Flow&#8217;s <literal>shell</literal> application</simpara>
+</listitem>
+</itemizedlist>
+</section>
+</section>
+</section>
+</chapter>
+<chapter xml:id="_task_batch">
+<title>Task / Batch</title>
+<section xml:id="spring-cloud-data-flow-samples-task-overview">
+<title>Task Samples</title>
+<section xml:id="_batch_job_on_cloud_foundry">
+<title>Batch Job on Cloud Foundry</title>
+<simpara>In this demonstration, you will learn how to orchestrate short-lived data processing application (<emphasis>eg: Spring Batch Jobs</emphasis>) using <link xlink:href="http://cloud.spring.io/spring-cloud-task/">Spring Cloud Task</link> and <link xlink:href="http://cloud.spring.io/spring-cloud-dataflow/">Spring Cloud Data Flow</link> on Cloud Foundry.</simpara>
+<section xml:id="_prerequisites_7">
+<title>Prerequisites</title>
+<itemizedlist>
+<listitem>
+<simpara>Local <link xlink:href="https://pivotal.io/pcf-dev">PCFDev</link> instance</simpara>
+</listitem>
+<listitem>
+<simpara>Local install of <link xlink:href="https://github.com/cloudfoundry/cli">cf CLI</link> command line tool</simpara>
+</listitem>
+<listitem>
+<simpara>Running instance of mysql in PCFDev</simpara>
+</listitem>
+<listitem>
+<simpara>A Running Data Flow Shell</simpara>
+</listitem>
+</itemizedlist>
+<simpara>The Spring Cloud Data Flow Shell is available for <link xlink:href="https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started-deploying-spring-cloud-dataflow">download</link> or you can <link xlink:href="https://github.com/spring-cloud/spring-cloud-dataflow">build</link> it yourself.</simpara>
+<note>
+<simpara>the Spring Cloud Data Flow Shell and Local server implementation are in the same repository and are both built by running <literal>./mvnw install</literal> from the project root directory. If you have already run the build, use the jar in <literal>spring-cloud-dataflow-shell/target</literal></simpara>
+</note>
+<simpara>To run the Shell open a new terminal session:</simpara>
+<screen>$ cd &lt;PATH/TO/SPRING-CLOUD-DATAFLOW-SHELL-JAR&gt;
+$ java -jar spring-cloud-dataflow-shell-&lt;VERSION&gt;.jar
+  ____                              ____ _                __
+ / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
+ \___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
+  ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
+ |____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
+  ____ |_|    _          __|___/                 __________
+ |  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
+ | | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
+ | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
+ |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
 
 
 Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
-server unknown:&gt;</screen>
-<simpara>Connect the <literal>shell</literal> to the <literal>server</literal> running on , e.g., <literal><link xlink:href="http://dataflow-server.app.io">dataflow-server.app.io</link></literal></simpara>
-<screen>server unknown:&gt;dataflow config server http://dataflow-server.app.io
-Successfully targeted http://dataflow-server.app.io
 dataflow:&gt;</screen>
+<note>
+<simpara>The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
+use the shell. If you prefer, you can use the Data Flow UI <link xlink:href="http://localhost:9393/dashboard">localhost:9393/dashboard</link>, (or wherever it the server is hosted) to perform the same operations.</simpara>
+</note>
 <itemizedlist>
 <listitem>
 <simpara>The Spring Cloud Data Flow Cloud Foundry Server running in PCFDev</simpara>
@@ -2019,8 +2097,7 @@ foo               stopped           0/1         1G       1G</screen>
 </listitem>
 </orderedlist>
 </section>
-</section>
-<section xml:id="_summary_6">
+<section xml:id="_summary_7">
 <title>Summary</title>
 <simpara>In this sample, you have learned:</simpara>
 <itemizedlist>
@@ -2032,6 +2109,372 @@ foo               stopped           0/1         1G       1G</screen>
 </listitem>
 <listitem>
 <simpara>How to verify task executions and task repository</simpara>
+</listitem>
+</itemizedlist>
+</section>
+</section>
+</section>
+</chapter>
+<chapter xml:id="_analytics">
+<title>Analytics</title>
+<section xml:id="spring-cloud-data-flow-samples-twitter-analytics-overview">
+<title>Twitter Analytics</title>
+<simpara>In this demonstration, you will learn how to build a data pipeline using <link xlink:href="http://cloud.spring.io/spring-cloud-dataflow/">Spring Cloud Data Flow</link> to consume data from <emphasis>TwitterStream</emphasis> and compute simple analytics over data-in-transit using <emphasis>Field-Value-Counter</emphasis>.</simpara>
+<simpara>We will take you through the steps to configure Spring Cloud Data Flow&#8217;s <literal>Local</literal> server.</simpara>
+<section xml:id="_prerequisites_8">
+<title>Prerequisites</title>
+<itemizedlist>
+<listitem>
+<simpara>A Running Data Flow Shell</simpara>
+</listitem>
+</itemizedlist>
+<simpara>The Spring Cloud Data Flow Shell is available for <link xlink:href="https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started-deploying-spring-cloud-dataflow">download</link> or you can <link xlink:href="https://github.com/spring-cloud/spring-cloud-dataflow">build</link> it yourself.</simpara>
+<note>
+<simpara>the Spring Cloud Data Flow Shell and Local server implementation are in the same repository and are both built by running <literal>./mvnw install</literal> from the project root directory. If you have already run the build, use the jar in <literal>spring-cloud-dataflow-shell/target</literal></simpara>
+</note>
+<simpara>To run the Shell open a new terminal session:</simpara>
+<screen>$ cd &lt;PATH/TO/SPRING-CLOUD-DATAFLOW-SHELL-JAR&gt;
+$ java -jar spring-cloud-dataflow-shell-&lt;VERSION&gt;.jar
+  ____                              ____ _                __
+ / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
+ \___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
+  ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
+ |____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
+  ____ |_|    _          __|___/                 __________
+ |  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
+ | | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
+ | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
+ |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
+
+
+Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
+dataflow:&gt;</screen>
+<note>
+<simpara>The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
+use the shell. If you prefer, you can use the Data Flow UI <link xlink:href="http://localhost:9393/dashboard">localhost:9393/dashboard</link>, (or wherever it the server is hosted) to perform the same operations.</simpara>
+</note>
+<itemizedlist>
+<listitem>
+<simpara>A running local Data Flow Server</simpara>
+</listitem>
+</itemizedlist>
+<simpara>The Local Data Flow Server is Spring Boot application available for <link xlink:href="http://cloud.spring.io/spring-cloud-dataflow/">download</link> or you can <link xlink:href="https://github.com/spring-cloud/spring-cloud-dataflow">build</link> it yourself.
+If you build it yourself, the executable jar will be in <literal>spring-cloud-dataflow-server-local/target</literal></simpara>
+<simpara>To run the Local Data Flow server Open a new terminal session:</simpara>
+<screen>$cd  &lt;PATH/TO/SPRING-CLOUD-DATAFLOW-LOCAL-JAR&gt;
+$java -jar spring-cloud-dataflow-server-local-&lt;VERSION&gt;.jar</screen>
+<itemizedlist>
+<listitem>
+<simpara>Running instance of <link xlink:href="http://redis.io/">Redis</link></simpara>
+</listitem>
+<listitem>
+<simpara>Running instance of <link xlink:href="http://kafka.apache.org/downloads.html">Kafka</link></simpara>
+</listitem>
+<listitem>
+<simpara>Twitter credentials from <link xlink:href="https://apps.twitter.com/">Twitter Developers</link> site</simpara>
+<orderedlist numeration="arabic">
+<listitem>
+<simpara><link xlink:href="https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app">Register</link> the out-of-the-box applications for the Kafka binder</simpara>
+<note>
+<simpara>These samples assume that the Data Flow Server can access a remote Maven repository, <literal><link xlink:href="https://repo.spring.io/libs-release">repo.spring.io/libs-release</link></literal> by default. If your Data Flow server is running behind a firewall, or you are using a maven proxy preventing
+access to public repositories, you will need to install the sample apps in your internal Maven repository and <link xlink:href="https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started-maven-configuration">configure</link>
+the server accordingly.  The sample applications are typically registered using Data Flow&#8217;s bulk import facility. For example, the Shell command <literal>dataflow:&gt;app import --uri <link xlink:href="http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven">bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven</link></literal> (The actual URI is release and binder specific so refer to the sample instructions for the actual URL).
+The bulk import URI references a plain text file containing entries for all of the publicly available Spring Cloud Stream and Task applications published to <literal><link xlink:href="https://repo.spring.io">repo.spring.io</link></literal>. For example,
+<literal>source.http=maven://org.springframework.cloud.stream.app:http-source-rabbit:1.2.0.RELEASE</literal> registers the <literal>http</literal> source app at the corresponding Maven address, relative to the remote repository(ies) configured for the
+Data Flow server. The format is <literal>maven://&lt;groupId&gt;:&lt;artifactId&gt;:&lt;version&gt;</literal>  You will need to <link xlink:href="https://repo.spring.io/libs-release/org/springframework/cloud/stream/app/spring-cloud-stream-app-descriptor/Bacon.RELEASE/spring-cloud-stream-app-descriptor-Bacon.RELEASE.rabbit-apps-maven-repo-url.properties">download</link> the required apps or <link xlink:href="https://github.com/spring-cloud-stream-app-starters">build</link> them and then install them in your Maven repository, using whatever group, artifact, and version you choose. If you do
+this, register individual apps using <literal>dataflow:&gt;app register&#8230;&#8203;</literal> using the <literal>maven://</literal> resource URI format corresponding to your installed app.</simpara>
+</note>
+<screen>dataflow:&gt;app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-kafka-10-maven</screen>
+</listitem>
+<listitem>
+<simpara>Create and deploy the following streams</simpara>
+<screen>(1) dataflow:&gt;stream create tweets --definition "twitterstream --consumerKey=&lt;CONSUMER_KEY&gt; --consumerSecret=&lt;CONSUMER_SECRET&gt; --accessToken=&lt;ACCESS_TOKEN&gt; --accessTokenSecret=&lt;ACCESS_TOKEN_SECRET&gt; | log"
+Created new stream 'tweets'
+
+(2) dataflow:&gt;stream create tweetlang  --definition ":tweets.twitterstream &gt; field-value-counter --fieldName=lang --name=language" --deploy
+Created and deployed new stream 'tweetlang'
+
+(3) dataflow:&gt;stream create tagcount --definition ":tweets.twitterstream &gt; field-value-counter --fieldName=entities.hashtags.text --name=hashtags" --deploy
+Created and deployed new stream 'tagcount'
+
+(4) dataflow:&gt;stream deploy tweets
+Deployed stream 'tweets'</screen>
+<note>
+<simpara>To get a consumerKey and consumerSecret you need to register a twitter application. If you don’t already have one set up, you can create an app at the <link xlink:href="https://apps.twitter.com/">Twitter Developers</link> site to get these credentials. The tokens <literal>&lt;CONSUMER_KEY&gt;</literal>, <literal>&lt;CONSUMER_SECRET&gt;</literal>, <literal>&lt;ACCESS_TOKEN&gt;</literal>, and <literal>&lt;ACCESS_TOKEN_SECRET&gt;</literal> are required to be replaced with your account credentials.</simpara>
+</note>
+</listitem>
+<listitem>
+<simpara>Verify the streams are successfully deployed. Where: (1) is the primary pipeline; (2) and (3) are tapping the primary pipeline with the DSL syntax <literal>&lt;stream-name&gt;.&lt;label/app name&gt;</literal> [e.x. <literal>:tweets.twitterstream</literal>]; and (4) is the final deployment of primary pipeline</simpara>
+<screen>dataflow:&gt;stream list</screen>
+</listitem>
+<listitem>
+<simpara>Notice that <literal>tweetlang.field-value-counter</literal>, <literal>tagcount.field-value-counter</literal>, <literal>tweets.log</literal> and <literal>tweets.twitterstream</literal> <link xlink:href="https://github.com/spring-cloud-stream-app-starters/">Spring Cloud Stream</link> applications are running as Spring Boot applications within the <literal>local-server</literal>.</simpara>
+<screen>2016-02-16 11:43:26.174  INFO 10189 --- [nio-9393-exec-2] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:field-value-counter-sink:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-6990537012958280418/tweetlang-1455651806160/tweetlang.field-value-counter
+2016-02-16 11:43:26.206  INFO 10189 --- [nio-9393-exec-3] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:field-value-counter-sink:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-6990537012958280418/tagcount-1455651806202/tagcount.field-value-counter
+2016-02-16 11:43:26.806  INFO 10189 --- [nio-9393-exec-4] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:log-sink:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-6990537012958280418/tweets-1455651806800/tweets.log
+2016-02-16 11:43:26.813  INFO 10189 --- [nio-9393-exec-4] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:twitterstream-source:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-6990537012958280418/tweets-1455651806800/tweets.twitterstream</screen>
+</listitem>
+<listitem>
+<simpara>Verify that two <literal>field-value-counter</literal> with the names <literal>hashtags</literal> and <literal>language</literal> is listing successfully</simpara>
+<screen>dataflow:&gt;field-value-counter list
+╔════════════════════════╗
+║Field Value Counter name║
+╠════════════════════════╣
+║hashtags                ║
+║language                ║
+╚════════════════════════╝</screen>
+</listitem>
+<listitem>
+<simpara>Verify you can query individual <literal>field-value-counter</literal> results successfully</simpara>
+<screen>dataflow:&gt;field-value-counter display hashtags
+Displaying values for field value counter 'hashtags'
+╔══════════════════════════════════════╤═════╗
+║                Value                 │Count║
+╠══════════════════════════════════════╪═════╣
+║KCA                                   │   40║
+║PENNYSTOCKS                           │   17║
+║TEAMBILLIONAIRE                       │   17║
+║UCL                                   │   11║
+║...                                   │   ..║
+║...                                   │   ..║
+║...                                   │   ..║
+╚══════════════════════════════════════╧═════╝
+
+dataflow:&gt;field-value-counter display language
+Displaying values for field value counter 'language'
+╔═════╤═════╗
+║Value│Count║
+╠═════╪═════╣
+║en   │1,171║
+║es   │  337║
+║ar   │  296║
+║und  │  251║
+║pt   │  175║
+║ja   │  137║
+║..   │  ...║
+║..   │  ...║
+║..   │  ...║
+╚═════╧═════╝</screen>
+</listitem>
+<listitem>
+<simpara>Go to <literal>Dashboard</literal> accessible at <literal><link xlink:href="http://localhost:9393/dashboard">localhost:9393/dashboard</link></literal> and launch the <literal>Analytics</literal> tab. From the default <literal>Dashboard</literal> menu, select the following combinations to visualize real-time updates on <literal>field-value-counter</literal>.</simpara>
+<itemizedlist>
+<listitem>
+<simpara>For real-time updates on <literal>language</literal> tags, select:</simpara>
+<orderedlist numeration="loweralpha">
+<listitem>
+<simpara>Metric Type as <literal>Field-Value-Counters</literal></simpara>
+</listitem>
+<listitem>
+<simpara>Stream as <literal>language</literal></simpara>
+</listitem>
+<listitem>
+<simpara>Visualization as <literal>Bubble-Chart</literal> or <literal>Pie-Chart</literal></simpara>
+</listitem>
+</orderedlist>
+</listitem>
+<listitem>
+<simpara>For real-time updates on <literal>hashtags</literal> tags, select:</simpara>
+<orderedlist numeration="loweralpha">
+<listitem>
+<simpara>Metric Type as <literal>Field-Value-Counters</literal></simpara>
+</listitem>
+<listitem>
+<simpara>Stream as <literal>hashtags</literal></simpara>
+</listitem>
+<listitem>
+<simpara>Visualization as <literal>Bubble-Chart</literal> or <literal>Pie-Chart</literal></simpara>
+</listitem>
+</orderedlist>
+</listitem>
+</itemizedlist>
+</listitem>
+</orderedlist>
+</listitem>
+</itemizedlist>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/twitter_analytics.png" width="50%" scalefit="1"/>
+</imageobject>
+<textobject><phrase>Twitter Analytics Visualization</phrase></textobject>
+</mediaobject>
+</informalfigure>
+</section>
+<section xml:id="_summary_8">
+<title>Summary</title>
+<simpara>In this sample, you have learned:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>How to use Spring Cloud Data Flow&#8217;s <literal>Local</literal> server</simpara>
+</listitem>
+<listitem>
+<simpara>How to use Spring Cloud Data Flow&#8217;s <literal>shell</literal> application</simpara>
+</listitem>
+<listitem>
+<simpara>How to create streaming data pipeline to compute simple analytics using <literal>Twitter Stream</literal> and <literal>Field Value Counter</literal> applications</simpara>
+</listitem>
+</itemizedlist>
+</section>
+</section>
+</chapter>
+<chapter xml:id="_functions">
+<title>Functions</title>
+<section xml:id="_functions_in_spring_cloud_data_flow">
+<title>Functions in Spring Cloud Data Flow</title>
+<simpara>In this sample, you will learn how to use <link xlink:href="https://github.com/spring-cloud/spring-cloud-function">Spring Cloud Function</link> based streaming applications in Spring Cloud Data Flow. To learn more about Spring Cloud Function, check out the <link xlink:href="http://cloud.spring.io/spring-cloud-function/">project page</link>.</simpara>
+<section xml:id="_prerequisites_9">
+<title>Prerequisites</title>
+<itemizedlist>
+<listitem>
+<simpara>A Running Data Flow Shell</simpara>
+</listitem>
+</itemizedlist>
+<simpara>The Spring Cloud Data Flow Shell is available for <link xlink:href="https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started-deploying-spring-cloud-dataflow">download</link> or you can <link xlink:href="https://github.com/spring-cloud/spring-cloud-dataflow">build</link> it yourself.</simpara>
+<note>
+<simpara>the Spring Cloud Data Flow Shell and Local server implementation are in the same repository and are both built by running <literal>./mvnw install</literal> from the project root directory. If you have already run the build, use the jar in <literal>spring-cloud-dataflow-shell/target</literal></simpara>
+</note>
+<simpara>To run the Shell open a new terminal session:</simpara>
+<screen>$ cd &lt;PATH/TO/SPRING-CLOUD-DATAFLOW-SHELL-JAR&gt;
+$ java -jar spring-cloud-dataflow-shell-&lt;VERSION&gt;.jar
+  ____                              ____ _                __
+ / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
+ \___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
+  ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
+ |____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
+  ____ |_|    _          __|___/                 __________
+ |  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
+ | | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
+ | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
+ |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
+
+
+Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
+dataflow:&gt;</screen>
+<note>
+<simpara>The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
+use the shell. If you prefer, you can use the Data Flow UI <link xlink:href="http://localhost:9393/dashboard">localhost:9393/dashboard</link>, (or wherever it the server is hosted) to perform the same operations.</simpara>
+</note>
+<itemizedlist>
+<listitem>
+<simpara>A running local Data Flow Server</simpara>
+</listitem>
+</itemizedlist>
+<simpara>The Local Data Flow Server is Spring Boot application available for <link xlink:href="http://cloud.spring.io/spring-cloud-dataflow/">download</link> or you can <link xlink:href="https://github.com/spring-cloud/spring-cloud-dataflow">build</link> it yourself.
+If you build it yourself, the executable jar will be in <literal>spring-cloud-dataflow-server-local/target</literal></simpara>
+<simpara>To run the Local Data Flow server Open a new terminal session:</simpara>
+<screen>$cd  &lt;PATH/TO/SPRING-CLOUD-DATAFLOW-LOCAL-JAR&gt;
+$java -jar spring-cloud-dataflow-server-local-&lt;VERSION&gt;.jar</screen>
+<itemizedlist>
+<listitem>
+<simpara>A local build of <link xlink:href="https://github.com/spring-cloud/spring-cloud-function">Spring Cloud Function</link></simpara>
+</listitem>
+<listitem>
+<simpara>A running instance of <link xlink:href="https://www.rabbitmq.com/">Rabbit MQ</link></simpara>
+</listitem>
+<listitem>
+<simpara>General understanding of the out-of-the-box <link xlink:href="https://github.com/spring-cloud-stream-app-starters/function/blob/master/spring-cloud-starter-stream-app-function/README.adoc">function-runner</link> application</simpara>
+<orderedlist numeration="arabic">
+<listitem>
+<simpara><link xlink:href="https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app">Register</link> the out-of-the-box applications for the Rabbit binder</simpara>
+<note>
+<simpara>These samples assume that the Data Flow Server can access a remote Maven repository, <literal><link xlink:href="https://repo.spring.io/libs-release">repo.spring.io/libs-release</link></literal> by default. If your Data Flow server is running behind a firewall, or you are using a maven proxy preventing
+access to public repositories, you will need to install the sample apps in your internal Maven repository and <link xlink:href="https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started-maven-configuration">configure</link>
+the server accordingly.  The sample applications are typically registered using Data Flow&#8217;s bulk import facility. For example, the Shell command <literal>dataflow:&gt;app import --uri <link xlink:href="http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven">bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven</link></literal> (The actual URI is release and binder specific so refer to the sample instructions for the actual URL).
+The bulk import URI references a plain text file containing entries for all of the publicly available Spring Cloud Stream and Task applications published to <literal><link xlink:href="https://repo.spring.io">repo.spring.io</link></literal>. For example,
+<literal>source.http=maven://org.springframework.cloud.stream.app:http-source-rabbit:1.2.0.RELEASE</literal> registers the <literal>http</literal> source app at the corresponding Maven address, relative to the remote repository(ies) configured for the
+Data Flow server. The format is <literal>maven://&lt;groupId&gt;:&lt;artifactId&gt;:&lt;version&gt;</literal>  You will need to <link xlink:href="https://repo.spring.io/libs-release/org/springframework/cloud/stream/app/spring-cloud-stream-app-descriptor/Bacon.RELEASE/spring-cloud-stream-app-descriptor-Bacon.RELEASE.rabbit-apps-maven-repo-url.properties">download</link> the required apps or <link xlink:href="https://github.com/spring-cloud-stream-app-starters">build</link> them and then install them in your Maven repository, using whatever group, artifact, and version you choose. If you do
+this, register individual apps using <literal>dataflow:&gt;app register&#8230;&#8203;</literal> using the <literal>maven://</literal> resource URI format corresponding to your installed app.</simpara>
+</note>
+<screen>dataflow:&gt;app import --uri http://bit.ly/Bacon-RELEASE-stream-applications-rabbit-maven</screen>
+</listitem>
+<listitem>
+<simpara>Register the out-of-the-box <link xlink:href="https://github.com/spring-cloud-stream-app-starters/function/blob/master/spring-cloud-starter-stream-app-function/README.adoc">function-runner</link> application (<emphasis>we will use the <literal>1.0.0.BUILD-SNAPSHOT</literal> built by the Spring CI system</emphasis>)</simpara>
+<screen>dataflow:&gt;app register --name function-runner --type processor --uri http://repo.spring.io/libs-snapshot/org/springframework/cloud/stream/app/function-app-rabbit/1.0.0.BUILD-SNAPSHOT/function-app-rabbit-1.0.0.BUILD-SNAPSHOT.jar --metadata-uri http://repo.spring.io/libs-snapshot/org/springframework/cloud/stream/app/function-app-rabbit/1.0.0.BUILD-SNAPSHOT/function-app-rabbit-1.0.0.BUILD-SNAPSHOT-metadata.jar</screen>
+</listitem>
+<listitem>
+<simpara>Create and deploy the following stream</simpara>
+<screen>dataflow:&gt;stream create foo --definition "http --server.port=9001 | function-runner --function.className=com.example.functions.CharCounter --function.location=file:///&lt;PATH/TO/SPRING-CLOUD-FUNCTION&gt;/spring-cloud-function-samples/function-sample/target/spring-cloud-function-sample-1.0.0.BUILD-SNAPSHOT.jar | log" --deploy</screen>
+<note>
+<simpara>Replace the <literal>&lt;PATH/TO/SPRING-CLOUD-FUNCTION&gt;</literal> with the correct path.</simpara>
+</note>
+<note>
+<simpara>The source core of <literal>CharCounter</literal> function is in Spring cloud Function&#8217;s <link xlink:href="https://github.com/spring-cloud/spring-cloud-function/blob/master/spring-cloud-function-samples/function-sample/src/main/java/com/example/functions/CharCounter.java">samples repo</link>.</simpara>
+</note>
+</listitem>
+<listitem>
+<simpara>Verify the stream is successfully deployed.</simpara>
+<programlisting language="bash" linenumbering="unnumbered">dataflow:&gt;stream list
+╔══════╤══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╤════════════╗
+║Stream│                                                                                        Stream Definition                                                                                         │   Status   ║
+║ Name │                                                                                                                                                                                                  │            ║
+╠══════╪══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╪════════════╣
+║foo   │http --server.port=9001 | function-runner --function.className=com.example.functions.CharCounter                                                                                                  │All apps    ║
+║      │--function.location=file:///&lt;PATH/TO/SPRING-CLOUD-FUNCTION&gt;/spring-cloud-function-samples/function-sample/target/spring-cloud-function-sample-1.0.0.BUILD-&lt;SNAPSHOT class="jar"&gt;&lt;/SNAPSHOT&gt;		    │have been   ║
+║      │| log                                                                                                                                                                                             │successfully║
+║      │                                                                                                                                                                                                  │deployed    ║
+╚══════╧══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╧════════════╝</programlisting>
+</listitem>
+<listitem>
+<simpara>Notice that <literal>foo-http</literal>, <literal>foo-function-runner</literal>, and <literal>foo-log</literal> <link xlink:href="https://github.com/spring-cloud-stream-app-starters/">Spring Cloud Stream</link> applications are running as Spring Boot applications and the log locations will be printed in the Local-server console.</simpara>
+<programlisting language="bash" linenumbering="unnumbered">....
+....
+2017-10-17 11:43:03.714  INFO 18409 --- [nio-9393-exec-7] o.s.c.d.s.s.AppDeployerStreamDeployer    : Deploying application named [log] as part of stream named [foo] with resource URI [maven://org.springframework.cloud.stream.app:log-sink-rabbit:jar:1.2.0.RELEASE]
+2017-10-17 11:43:04.379  INFO 18409 --- [nio-9393-exec-7] o.s.c.d.spi.local.LocalAppDeployer       : Deploying app with deploymentId foo.log instance 0.
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gs/T/spring-cloud-dataflow-6549025456609489200/foo-1508265783715/foo.log
+2017-10-17 11:43:04.380  INFO 18409 --- [nio-9393-exec-7] o.s.c.d.s.s.AppDeployerStreamDeployer    : Deploying application named [function-runner] as part of stream named [foo] with resource URI [file:/var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gs/T/deployer-resource-cache8941581850579153886/http-c73a62adae0abd7ec0dee91d891575709f02f8c9]
+2017-10-17 11:43:04.384  INFO 18409 --- [nio-9393-exec-7] o.s.c.d.spi.local.LocalAppDeployer       : Deploying app with deploymentId foo.function-runner instance 0.
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gs/T/spring-cloud-dataflow-6549025456609489200/foo-1508265784380/foo.function-runner
+2017-10-17 11:43:04.385  INFO 18409 --- [nio-9393-exec-7] o.s.c.d.s.s.AppDeployerStreamDeployer    : Deploying application named [http] as part of stream named [foo] with resource URI [maven://org.springframework.cloud.stream.app:http-source-rabbit:jar:1.2.0.RELEASE]
+2017-10-17 11:43:04.391  INFO 18409 --- [nio-9393-exec-7] o.s.c.d.spi.local.LocalAppDeployer       : Deploying app with deploymentId foo.http instance 0.
+   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gs/T/spring-cloud-dataflow-6549025456609489200/foo-1508265784385/foo.http
+....
+....</programlisting>
+</listitem>
+<listitem>
+<simpara>Post sample data pointing to the <literal>http</literal> endpoint: <literal><link xlink:href="http://localhost:9001">localhost:9001</link></literal> (<literal>9001</literal> is the <literal>port</literal> we specified for the <literal>http</literal> source in this case)</simpara>
+<screen>dataflow:&gt;http post --target http://localhost:9001 --data "hello world"
+&gt; POST (text/plain) http://localhost:9001 hello world
+&gt; 202 ACCEPTED
+
+
+dataflow:&gt;http post --target http://localhost:9001 --data "hmm, yeah, it works now!"
+&gt; POST (text/plain) http://localhost:9001 hmm, yeah, it works now!
+&gt; 202 ACCEPTED</screen>
+</listitem>
+<listitem>
+<simpara>Tail the log-sink&#8217;s standard-out logs to see the character counts</simpara>
+<programlisting language="bash" linenumbering="unnumbered">$ tail -f /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gs/T/spring-cloud-dataflow-6549025456609489200/foo-1508265783715/foo.log/stdout_0.log
+
+....
+....
+....
+....
+2017-10-17 11:45:39.363  INFO 19193 --- [on-runner.foo-1] log-sink                                 : 11
+2017-10-17 11:46:40.997  INFO 19193 --- [on-runner.foo-1] log-sink                                 : 24
+....
+....</programlisting>
+</listitem>
+</orderedlist>
+</listitem>
+</itemizedlist>
+</section>
+<section xml:id="_summary_9">
+<title>Summary</title>
+<simpara>In this sample, you have learned:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>How to use Spring Cloud Data Flow&#8217;s <literal>Local</literal> server</simpara>
+</listitem>
+<listitem>
+<simpara>How to use Spring Cloud Data Flow&#8217;s <literal>shell</literal> application</simpara>
+</listitem>
+<listitem>
+<simpara>How to use the out-of-the-box <literal>function-runner</literal> application in Spring Cloud Data Flow</simpara>
 </listitem>
 </itemizedlist>
 </section>

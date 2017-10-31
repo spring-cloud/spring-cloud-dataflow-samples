@@ -42,20 +42,25 @@ NOTE: The source core of `CharCounter` function is in Spring cloud Function's ht
 +
 . Verify the stream is successfully deployed.
 +
+```
+dataflow:>stream list
+```
++
+////
+TODO: Doesn't render correctly in PDF
 [source,bash,options="nowrap"]
 ----
-dataflow:>stream list
 ╔══════╤══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╤════════════╗
 ║Stream│                                                                                        Stream Definition                                                                                         │   Status   ║
 ║ Name │                                                                                                                                                                                                  │            ║
 ╠══════╪══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╪════════════╣
 ║foo   │http --server.port=9001 | function-runner --function.className=com.example.functions.CharCounter                                                                                                  │All apps    ║
-║      │--function.location=file:///<PATH/TO/SPRING-CLOUD-FUNCTION>/spring-cloud-function-samples/function-sample/target/spring-cloud-function-sample-1.0.0.BUILD-<SNAPSHOT class="jar"></SNAPSHOT>		    │have been   ║
+║      │--function.location=file:///<PATH/TO/SPRING-CLOUD-FUNCTION>/spring-cloud-function-samples/function-sample/target/spring-cloud-function-sample-1.0.0.BUILD-<SNAPSHOT class="jar"></SNAPSHOT>       │have been   ║
 ║      │| log                                                                                                                                                                                             │successfully║
 ║      │                                                                                                                                                                                                  │deployed    ║
 ╚══════╧══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╧════════════╝
 ----
-
+////
 +
 . Notice that `foo-http`, `foo-function-runner`, and `foo-log` link:https://github.com/spring-cloud-stream-app-starters/[Spring Cloud Stream] applications are running as Spring Boot applications and the log locations will be printed in the Local-server console.
 +
@@ -77,7 +82,7 @@ dataflow:>stream list
 ----
 
 +
-. Post sample data pointing to the `http` endpoint: `http://localhost:9001` (`9001` is the `port` we specified for the `http` source in this case)
+. Post sample data to the `http` endpoint: `http://localhost:9001` (`9001` is the `port` we specified for the `http` source in this case)
 +
 ```
 dataflow:>http post --target http://localhost:9001 --data "hello world"

@@ -3,30 +3,19 @@
 This guide contains samples and demonstrations of how to build data microservices applications with https://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow].
 
 == Streaming
-
 include::streaming/cassandra/overview.adoc[]
-
 include::streaming/jdbc/overview.adoc[]
-
 include::streaming/gemfire/overview.adoc[]
-
 include::streaming/custom-apps/overview.adoc[]
 
 == Task / Batch
-
 include::tasks/overview.adoc[]
 
 == Analytics
-
 include::analytics/twitter-analytics/overview.adoc[]
 
+== Data Science
+include::datascience/species-prediction/overview.adoc[]
+
 == Functions
-
 include::functions/overview.adoc[]
-
-////
-
-==== link:datascience/species-prediction/README.adoc[species-prediction]
-
-A simple demonstration to walkthrough the steps to compute real-time predictions using https://en.wikipedia.org/wiki/Predictive_Model_Markup_Language[PMML] application.
-////

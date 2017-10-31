@@ -7,29 +7,3 @@ To build the documents
 ```
 $mvn package
 ```
-
-The samples include:
-
-## Streaming
-
-* A data pipeline demonstration that consumes data from an `http` endpoint and writes the payload to Cassandra database using the `cassandra` sink application.
-
-* A data pipeline demonstration that consumes data from an `http` endpoint and writes the payload to MySQL database using the `jdbc` sink application.
-
-* Data pipeline demonstrations using GemFire.
-
-## Task / Batch
-
-* A simple Spring Batch job running as short-lived task in Cloud Foundry.
-
-## Functions
-
-* A simple demonstration of Spring Cloud Function and Spring Cloud Data Flow integration.
-
-## Analytics
-
-* A data pipeline demonstration that consumes data from twitter-firehose using `twitterstream` source application and computes simple analytics over data-in-transit with the help of `field-value-counter` sink application.
-
-## Data Science
-
-* A simple demonstration to walkthrough the steps to compute real-time predictions using https://en.wikipedia.org/wiki/Predictive_Model_Markup_Language[PMML] application.

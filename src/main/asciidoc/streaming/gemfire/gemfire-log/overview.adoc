@@ -1,6 +1,7 @@
 [[spring-cloud-data-flow-samples-gemfire-log-overview]]
 :sectnums:
 :docs_dir: ../../..
+
 ==== Gemfire to Log Demo
 
 In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from a `gemfire` endpoint and write to a log using the `log` sink.

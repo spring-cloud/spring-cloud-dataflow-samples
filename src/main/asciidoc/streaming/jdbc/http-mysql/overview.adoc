@@ -1,5 +1,6 @@
 :sectnums:
 :docs_dir: ../../..
+
 ==== HTTP to MySQL Demo
 
 In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an `http` endpoint and write to MySQL database using `jdbc` sink.
@@ -15,7 +16,7 @@ include::local.adoc[]
 include::pcf.adoc[]
 
 :!sectnums:
-==== Summary
+===== Summary
 
 In this sample, you have learned:
 

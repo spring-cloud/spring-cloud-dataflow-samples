@@ -1,4 +1,0 @@
-[[spring-cloud-data-flow-samples-cassandra-overview]]
-=== Cassandra Samples
-
-include::http-to-cassandra/overview.adoc[]

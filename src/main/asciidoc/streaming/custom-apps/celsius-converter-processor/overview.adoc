@@ -1,7 +1,9 @@
 [[spring-cloud-data-flow-samples-custom-application-overview]]
 :sectnums:
 :docs_dir: ../../..
+
 ==== Custom Spring Cloud Stream Processor
+
 ===== Prerequisites
 * A Running Data Flow Shell
 include::{docs_dir}/shell.adoc[]

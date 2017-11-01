@@ -1,4 +1,4 @@
-===== Using Local Server
+===== Using the Local Server
 
 ====== Additional Prerequisites
 

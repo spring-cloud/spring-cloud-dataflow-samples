@@ -1,5 +1,5 @@
 
-===== Using Cloud Foundry Server
+===== Using the Cloud Foundry Server
 
 ====== Additional Prerequisites
 

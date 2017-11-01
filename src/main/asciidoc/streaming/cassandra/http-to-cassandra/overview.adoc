@@ -23,4 +23,4 @@ In this sample, you have learned:
 * How to use Spring Cloud Data Flow's `Local` and `Cloud Foundry` servers
 * How to use Spring Cloud Data Flow's `shell`
 * How to create streaming data pipeline to connect and write to `Cassandra`
-* How to scale data microservice applications on `Pivotal Cloud Foundry`
+* How to scale applications on `Pivotal Cloud Foundry`

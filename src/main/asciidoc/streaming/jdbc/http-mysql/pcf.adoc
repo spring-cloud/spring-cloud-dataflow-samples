@@ -4,8 +4,6 @@
 ====== Additional Prerequisites
 
 * Cloud Foundry instance
-* The Spring Cloud Data Flow Cloud Foundry Server
-include::{docs_dir}/cloudfoundry-server.adoc[]
 
 * Running instance of `rabbit` in Cloud Foundry
 * Running instance of `mysql` in Cloud Foundry
@@ -18,6 +16,9 @@ CREATE TABLE names
 	name varchar(255)
 );
 ```
++
+* The Spring Cloud Data Flow Cloud Foundry Server
+include::{docs_dir}/cloudfoundry-server.adoc[]
 
 +
 . https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder

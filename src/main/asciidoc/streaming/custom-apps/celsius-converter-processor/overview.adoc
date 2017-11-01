@@ -120,14 +120,15 @@ dataflow:>runtime apps
 +
 .Note the file location of the application logs
 +
-```
+[source,console,options=nowrap]
+----
 2016-09-27 10:03:11.988  INFO 95234 --- [nio-9393-exec-9] o.s.c.d.spi.local.LocalAppDeployer       : deploying app convertToCelsiusStream.log instance 0
    Logs will be in /var/folders/2q/krqwcbhj2d58csmthyq_n1nw0000gp/T/spring-cloud-dataflow-3236898888473815319/convertToCelsiusStream-1474984991968/convertToCelsiusStream.log
 2016-09-27 10:03:12.397  INFO 95234 --- [nio-9393-exec-9] o.s.c.d.spi.local.LocalAppDeployer       : deploying app convertToCelsiusStream.convertToCelsius instance 0
    Logs will be in /var/folders/2q/krqwcbhj2d58csmthyq_n1nw0000gp/T/spring-cloud-dataflow-3236898888473815319/convertToCelsiusStream-1474984992392/convertToCelsiusStream.convertToCelsius
 2016-09-27 10:03:14.445  INFO 95234 --- [nio-9393-exec-9] o.s.c.d.spi.local.LocalAppDeployer       : deploying app convertToCelsiusStream.http instance 0
    Logs will be in /var/folders/2q/krqwcbhj2d58csmthyq_n1nw0000gp/T/spring-cloud-dataflow-3236898888473815319/convertToCelsiusStream-1474984994440/convertToCelsiusStream.http
-```
+----
 +
 . Post sample data to the `http` endpoint: `http://localhost:9090` (`9090` is the `port` we specified for the `http` source in this case)
 +
@@ -140,9 +141,10 @@ dataflow:>http post --target http://localhost:9090 --data 76
 +
 . Open the log file for the `convertToCelsiusStream.log` app to see the output of our stream
 +
-```
+[source,console,options=nowrap]
+----
 tail -f /var/folders/2q/krqwcbhj2d58csmthyq_n1nw0000gp/T/spring-cloud-dataflow-7563139704229890655/convertToCelsiusStream-1474990317406/convertToCelsiusStream.log/stdout_0.log
-```
+----
 +
 You should see the temperature you posted converted to Celsius!
 ```

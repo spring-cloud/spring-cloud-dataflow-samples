@@ -53,7 +53,8 @@ dataflow:>stream list
 . Notice that `tweetlang.field-value-counter`, `tagcount.field-value-counter`, `tweets.log` and `tweets.twitterstream` link:https://github.com/spring-cloud-stream-app-starters/[Spring Cloud Stream] applications are running as Spring Boot applications within the `local-server`.
 +
 
-```
+[source,console,options=nowrap]
+----
 2016-02-16 11:43:26.174  INFO 10189 --- [nio-9393-exec-2] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:field-value-counter-sink:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
    Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-6990537012958280418/tweetlang-1455651806160/tweetlang.field-value-counter
 2016-02-16 11:43:26.206  INFO 10189 --- [nio-9393-exec-3] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:field-value-counter-sink:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
@@ -62,7 +63,7 @@ dataflow:>stream list
    Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-6990537012958280418/tweets-1455651806800/tweets.log
 2016-02-16 11:43:26.813  INFO 10189 --- [nio-9393-exec-4] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:twitterstream-source:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
    Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-6990537012958280418/tweets-1455651806800/tweets.twitterstream
-```
+----
 +
 . Verify that two `field-value-counter` with the names `hashtags` and `language` is listing successfully
 +

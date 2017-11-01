@@ -6,8 +6,6 @@
 include::{docs_dir}/local-server.adoc[]
 * A running instance of https://www.rabbitmq.com[Rabbit MQ]
 
-'''
-
 . Use gfsh to start a locator and server
 +
 ```
@@ -20,9 +18,9 @@ gfsh>start server --name=server1
 ```
 gfsh>create region --name Stocks --type=REPLICATE
 ```
-
-====== Use the Shell to create the sample stream
-
++
+*Use the Shell to create the sample stream*
++
 . https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
 +
 include::{docs_dir}/maven-access.adoc[]

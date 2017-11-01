@@ -1,6 +1,6 @@
 [[spring-cloud-data-flow-samples-overview]]
 == Overview
-This guide contains samples and demonstrations of how to build data microservices applications with https://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow].
+This guide contains samples and demonstrations of how to build data pipelines with https://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow].
 
 == Streaming
 include::streaming/cassandra/overview.adoc[]

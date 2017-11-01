@@ -46,12 +46,13 @@ dataflow:>stream list
 . Notice that `mysqlstream-http` and `mysqlstream-jdbc` https://github.com/spring-cloud-stream-app-starters//[Spring Cloud Stream] applications are running as Spring Boot applications within the Local `server` as collocated processes.
 +
 
-```
+[source,console,options=nowrap]
+----
 2016-05-03 09:29:55.918  INFO 65162 --- [nio-9393-exec-3] o.s.c.d.spi.local.LocalAppDeployer       : deploying app mysqlstream.jdbc instance 0
    Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-dataflow-6850863945840320040/mysqlstream1-1462292995903/mysqlstream.jdbc
 2016-05-03 09:29:55.939  INFO 65162 --- [nio-9393-exec-3] o.s.c.d.spi.local.LocalAppDeployer       : deploying app mysqlstream.http instance 0
    Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-dataflow-6850863945840320040/mysqlstream-1462292995934/mysqlstream.http
-```
+----
 
 . Post sample data pointing to the `http` endpoint: `http://localhost:8787` [`8787` is the `server.port` we specified for the `http` source in this case]
 

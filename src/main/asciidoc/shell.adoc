@@ -23,7 +23,7 @@ Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "hel
 dataflow:>
 ```
 NOTE: The Spring Cloud Data Flow Shell is a Spring Boot application that connects to the Data Flow Server’s REST API and supports a DSL that simplifies the process of defining a stream or task and managing its lifecycle. Most of these samples
-use the shell. If you prefer, you can use the Data Flow UI http://localhost:9393/dashboard, (or wherever it the server is hosted) to perform the same operations.
+use the shell. If you prefer, you can use the Data Flow UI http://localhost:9393/dashboard, (or wherever it the server is hosted) to perform equivalent operations.
 
 ifdef::backend-pdf[]
 image::scdf-dashboard.png[SCDF Dashboard, scaledwidth="50%"]

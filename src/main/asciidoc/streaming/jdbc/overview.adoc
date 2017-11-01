@@ -1,4 +1,5 @@
 [[spring-cloud-data-flow-samples-jdbc-overview]]
+
 === JDBC Samples
 
 include::http-mysql/overview.adoc[]

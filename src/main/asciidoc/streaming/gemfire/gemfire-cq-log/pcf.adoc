@@ -4,13 +4,14 @@
 
 * A Cloud Foundry instance
 
+* Running instance of a `rabbit` service in Cloud Foundry
+
+* Running instance of the https://docs.pivotal.io/p-cloud-cache/1-0/developer.html[Pivotal Cloud Cache for PCF] (PCC) service `cloudcache` in Cloud Foundry.
+
 * The Spring Cloud Data Flow Cloud Foundry Server
 
 include::{docs_dir}/cloudfoundry-server.adoc[]
 
-* Running instance of a `rabbit` service in Cloud Foundry
-
-* Running instance of the https://docs.pivotal.io/p-cloud-cache/1-0/developer.html[Pivotal Cloud Cache for PCF] (PCC) service `cloudcache` in Cloud Foundry.
 
 +
 . https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
@@ -96,16 +97,18 @@ gfsh>put --region Orders  --value-class java.lang.Integer --key 21234 --value 10
 . Observe the log output
 You should see messages like:
 +
-```
+[source,console,options=nowrap]
+----
 2017-10-30 09:53:02.231  INFO 8563 --- [ire-cq.orders-1] log-sink                                 : CqEvent [CqName=GfCq1; base operation=CREATE; cq operation=CREATE; key=01234; value=1000]
 2017-10-30 09:53:19.732  INFO 8563 --- [ire-cq.orders-1] log-sink                                 : CqEvent [CqName=GfCq1; base operation=CREATE; cq operation=CREATE; key=11234; value=1005]
 2017-10-30 09:53:53.242  INFO 8563 --- [ire-cq.orders-1] log-sink                                 : CqEvent [CqName=GfCq1; base operation=UPDATE; cq operation=CREATE; key=21234; value=1000]
-```
+----
 +
 . Another interesting demonstration combines `gemfire-cq` with the link:../http-gemfire/README.adoc[http-gemfire] example.
++
 ```
 dataflow:> stream create --name stocks --definition "http --port=9090 | gemfire-json-server --regionName=Stocks --keyExpression=payload.getField('symbol')" --deploy
 dataflow:> stream create --name stock_watch --definition "gemfire-cq --query='Select * from /Stocks where symbol=''VMW''' | log" --deploy
 ```
-
++
 . You're done!

@@ -13,7 +13,7 @@ NOTE: For legacy reasons the `gemfire` Spring Cloud Stream Apps are named after 
 * A Running Data Flow Shell
 include::{docs_dir}/shell.adoc[]
 * A Geode installation with a locator and cache server running
-include::geode-setup.adoc[]
+include::{docs_dir}/geode-setup.adoc[]
 
 include::local.adoc[]
 

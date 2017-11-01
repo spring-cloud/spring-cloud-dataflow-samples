@@ -50,12 +50,13 @@ dataflow:>stream list
 . Notice that `cassandrastream-http` and `cassandrastream-cassandra` link:https://github.com/spring-cloud-stream-app-starters//[Spring Cloud Stream] applications are running as Spring Boot applications within the `server` as a collocated process.
 +
 
-```
+[source,console,options=nowrap]
+----
 2015-12-15 15:52:31.576  INFO 18337 --- [nio-9393-exec-1] o.s.c.d.a.s.l.OutOfProcessModuleDeployer : deploying module org.springframework.cloud.stream.module:cassandra-sink:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
    Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-284240942697761420/cassandrastream.cassandra
 2015-12-15 15:52:31.583  INFO 18337 --- [nio-9393-exec-1] o.s.c.d.a.s.l.OutOfProcessModuleDeployer : deploying module org.springframework.cloud.stream.module:http-source:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
    Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-284240942697761420/cassandrastream.http
-```
+----
 +
 . Post sample data pointing to the `http` endpoint: `http://localhost:8888` (`8888` is the `server.port` we specified for the `http` source in this case)
 +

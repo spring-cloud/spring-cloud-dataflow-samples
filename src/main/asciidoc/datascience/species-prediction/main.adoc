@@ -14,6 +14,8 @@ include::{docs_dir}/shell.adoc[]
 include::{docs_dir}/local-server.adoc[]
 * Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
 
+====== Building and Running the Demo
+
 . https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Kafka binder
 +
 include::{docs_dir}/maven-access.adoc[]

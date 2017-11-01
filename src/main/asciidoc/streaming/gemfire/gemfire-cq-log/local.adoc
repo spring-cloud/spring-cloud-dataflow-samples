@@ -5,6 +5,8 @@
 include::{docs_dir}/local-server.adoc[]
 * A running instance of https://www.rabbitmq.com[Rabbit MQ]
 
+====== Building and Running the Demo
+
 . Use gfsh to start a locator and server
 +
 ```

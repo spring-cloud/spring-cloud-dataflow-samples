@@ -11,7 +11,7 @@ include::{docs_dir}/local-server.adoc[]
 
 * A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] to connect to the Cassandra instance. You might have to provide `host`, `port`, `username` and `password` depending on the Cassandra configuration you are using.
 * Create a keyspace and a `book` table in Cassandra using:
-+
+
 ```
 CREATE KEYSPACE clouddata WITH REPLICATION = { 'class' : 'org.apache.cassandra.locator.SimpleStrategy', 'replication_factor': '1' } AND DURABLE_WRITES = true;
 USE clouddata;
@@ -22,7 +22,9 @@ CREATE TABLE book  (
     title       text
 );
 ```
-+
+
+====== Building and Running the Demo
+
 . https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Kafka binder
 +
 include::{docs_dir}/maven-access.adoc[]

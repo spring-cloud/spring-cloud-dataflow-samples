@@ -14,6 +14,8 @@ include::{docs_dir}/local-server.adoc[]
 * A running instance of https://www.rabbitmq.com/[Rabbit MQ]
 * General understanding of the out-of-the-box https://github.com/spring-cloud-stream-app-starters/function/blob/master/spring-cloud-starter-stream-app-function/README.adoc[function-runner] application
 
+====== Building and Running the Demo
+
 . https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
 +
 include::{docs_dir}/maven-access.adoc[]

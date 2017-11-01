@@ -14,10 +14,10 @@ include::{docs_dir}/shell.adoc[]
 * The Spring Cloud Data Flow Cloud Foundry Server running in PCFDev
 include::{docs_dir}/cloudfoundry-server.adoc[]
 
+====== Building and Running the Demo
 
-+
 NOTE: PCF 1.7.12 or greater is required to run Tasks on Spring Cloud Data Flow. As of this writing, PCFDev and PWS supports builds upon this version.
-+
+
 . Task support needs to be enabled on pcf-dev. Being logged as `admin`, issue the following command:
 +
 ```
@@ -117,7 +117,8 @@ dataflow:>task launch foo
 
 +
 
-```
+[source,console,options=nowrap]
+----
 $ cf logs foo
 Retrieving logs for app foo in org pcfdev-org / space pcfdev-space as user...
 
@@ -147,12 +148,13 @@ Retrieving logs for app foo in org pcfdev-org / space pcfdev-space as user...
 2016-08-14T18:49:07.71-0700 [APP/TASK/foo/0]OUT Exit status 0
 2016-08-14T18:49:07.78-0700 [APP/TASK/foo/0]OUT Destroying container
 2016-08-14T18:49:08.47-0700 [APP/TASK/foo/0]OUT Successfully destroyed container
-
-```
-NOTE: Verify `job1` and `job2` operations embeddded in `simple-batch-job` application are launched independently and they returned with the status `COMPLETED`.
+----
 
 +
+NOTE: Verify `job1` and `job2` operations embeddded in `simple-batch-job` application are launched independently and they returned with the status `COMPLETED`.
++
 
++
 NOTE: Unlike LRPs in Cloud Foundry, tasks are short-lived, so the logs aren't always available. They are generated only when the Task application runs; at the end of Task operation, the container that ran the Task application is destroyed to free-up resources.
 +
 
@@ -175,20 +177,22 @@ foo               stopped           0/1         1G       1G
 
 +
 
-```
+[source,console,options=nowrap]
+----
 dataflow:>task execution list
 ╔══════════════════════════╤══╤════════════════════════════╤════════════════════════════╤═════════╗
 ║        Task Name         │ID│         Start Time         │          End Time          │Exit Code║
 ╠══════════════════════════╪══╪════════════════════════════╪════════════════════════════╪═════════╣
 ║foo                       │1 │Sun Aug 14 18:49:05 PDT 2016│Sun Aug 14 18:49:07 PDT 2016│0        ║
 ╚══════════════════════════╧══╧════════════════════════════╧════════════════════════════╧═════════╝
-```
+----
 
 . Verify Job execution details
 
 +
 
-```
+[source,console,options=nowrap]
+----
 dataflow:>job execution list
 ╔═══╤═══════╤═════════╤════════════════════════════╤═════════════════════╤══════════════════╗
 ║ID │Task ID│Job Name │         Start Time         │Step Execution Count │Definition Status ║
@@ -196,7 +200,7 @@ dataflow:>job execution list
 ║2  │1      │job2     │Sun Aug 14 18:49:07 PDT 2016│1                    │Destroyed         ║
 ║1  │1      │job1     │Sun Aug 14 18:49:06 PDT 2016│1                    │Destroyed         ║
 ╚═══╧═══════╧═════════╧════════════════════════════╧═════════════════════╧══════════════════╝
-```
+----
 +
 
 

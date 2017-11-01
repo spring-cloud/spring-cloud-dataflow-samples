@@ -21,7 +21,8 @@ CREATE TABLE book  (
 * The Spring Cloud Data Flow Cloud Foundry Server
 include::{docs_dir}/cloudfoundry-server.adoc[]
 
-+
+====== Building and Running the Demo
+
 . https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
 +
 include::{docs_dir}/maven-access.adoc[]

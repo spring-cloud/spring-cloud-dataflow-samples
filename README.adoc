@@ -1,6 +1,6 @@
 # Spring Cloud Data Flow Samples
 
-This repository provides various developer tutorials and samples for building data pipelines with Spring Cloud Data Flow. The samples are included in a document available in HTML and PDF.
+This repository provides various developer tutorials and samples for building data pipelines with Spring Cloud Data Flow. The samples are included in a document available in https://docs.spring.io/spring-cloud-dataflow-samples/docs/current/reference/html/[multi-page] and https://docs.spring.io/spring-cloud-dataflow-samples/docs/current/reference/htmlsingle/[single-page] HTML.
 
 To build the documents
 

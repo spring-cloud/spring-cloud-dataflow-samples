@@ -12,6 +12,7 @@ include::streaming/custom-apps/celsius-converter-processor/main.adoc[]
 
 == Task / Batch
 include::tasks/simple-batch-job/main.adoc[]
+include::tasks/file-ingest/main.adoc[]
 
 == Analytics
 include::analytics/twitter-analytics/main.adoc[]

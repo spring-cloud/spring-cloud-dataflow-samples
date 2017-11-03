@@ -1,0 +1,78 @@
+= Batch file ingest sample
+
+This sample demonstrates how to read from a flat file, process and store the data into a database.
+
+== Run standalone
+
+```
+$ mvn spring-boot:run
+```
+
+== Build JAR for registering with Data Flow as well as standalone execution
+
+```
+$ mvn clean package && java -jar target/ingest-1.0.0.jar filePath=classpath:data.csv
+```
+
+== Run local Data Flow server and connect shell with built ingest JAR:
+
+Terminal 1:
+```
+$ java -jar spring-cloud-dataflow-server-local-1.2.3.RELEASE.jar
+```
+
+Terminal 2:
+```
+$ java -jar spring-cloud-dataflow-shell-1.2.3.RELEASE.jar
+```
+
+== Run via Data Flow shell
+
+Register the task:
+```
+dataflow:>app register --name fileIngest --type task --uri file:////path/to/target/ingest-1.0.0.jar
+Successfully registered application 'task:fileIngest'
+dataflow:>
+```
+
+Create the task:
+```
+dataflow:>task create fileIngestTask --definition fileIngest
+Created new task 'fileIngestTask'
+dataflow:>
+```
+
+Launch the task:
+```
+dataflow:>task launch fileIngestTask --arguments "filePath=classpath:data.csv"
+Launched task 'fileIngestTask'
+dataflow:>
+```
+
+Inspect logs:
+
+The log file path for the launched task can be found in the local server output, for example:
+
+```
+2017-10-27 14:58:18.112  INFO 19485 --- [nio-9393-exec-6] o.s.c.d.spi.local.LocalTaskLauncher      : launching task fileIngestTask-8932f73d-f17a-4bba-b44d-3fd9df042ac0
+   Logs will be in /var/folders/6x/tgtx9xbn0x16xq2sx1j2rld80000gn/T/spring-cloud-dataflow-983191515779755562/fileIngestTask-1509130698071/fileIngestTask-8932f73d-f17a-4bba-b44d-3fd9df042ac0
+```
+
+Inspect job and task executions:
+```
+dataflow:>job execution list
+╔═══╤═══════╤═════════╤════════════════════════════╤═════════════════════╤══════════════════╗
+║ID │Task ID│Job Name │         Start Time         │Step Execution Count │Definition Status ║
+╠═══╪═══════╪═════════╪════════════════════════════╪═════════════════════╪══════════════════╣
+║1  │1      │ingestJob│Fri Oct 27 14:58:20 EDT 2017│1                    │Created           ║
+╚═══╧═══════╧═════════╧════════════════════════════╧═════════════════════╧══════════════════╝
+
+dataflow:>task execution list
+╔══════════════╤══╤════════════════════════════╤════════════════════════════╤═════════╗
+║  Task Name   │ID│         Start Time         │          End Time          │Exit Code║
+╠══════════════╪══╪════════════════════════════╪════════════════════════════╪═════════╣
+║fileIngestTask│1 │Fri Oct 27 14:58:20 EDT 2017│Fri Oct 27 14:58:20 EDT 2017│0        ║
+╚══════════════╧══╧════════════════════════════╧════════════════════════════╧═════════╝
+
+dataflow:>
+```

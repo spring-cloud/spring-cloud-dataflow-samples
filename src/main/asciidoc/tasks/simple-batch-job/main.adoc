@@ -1,10 +1,10 @@
 :sectnums:
 :docs_dir: ../..
-==== Batch Job on Cloud Foundry
+=== Batch Job on Cloud Foundry
 
 In this demonstration, you will learn how to orchestrate short-lived data processing application (_eg: Spring Batch Jobs_) using http://cloud.spring.io/spring-cloud-task/[Spring Cloud Task] and http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] on Cloud Foundry.
 
-====== Prerequisites
+==== Prerequisites
 
 * Local https://pivotal.io/pcf-dev[PCFDev] instance
 * Local install of https://github.com/cloudfoundry/cli[cf CLI] command line tool
@@ -14,7 +14,7 @@ include::{docs_dir}/shell.adoc[]
 * The Spring Cloud Data Flow Cloud Foundry Server running in PCFDev
 include::{docs_dir}/cloudfoundry-server.adoc[]
 
-====== Building and Running the Demo
+==== Building and Running the Demo
 
 NOTE: PCF 1.7.12 or greater is required to run Tasks on Spring Cloud Data Flow. As of this writing, PCFDev and PWS supports builds upon this version.
 
@@ -204,7 +204,7 @@ dataflow:>job execution list
 +
 
 
-====== Summary
+==== Summary
 
 In this sample, you have learned:
 

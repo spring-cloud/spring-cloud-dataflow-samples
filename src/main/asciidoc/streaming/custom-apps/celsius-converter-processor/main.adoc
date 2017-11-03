@@ -2,9 +2,9 @@
 :sectnums:
 :docs_dir: ../../..
 
-==== Custom Spring Cloud Stream Processor
+=== Custom Spring Cloud Stream Processor
 
-===== Prerequisites
+==== Prerequisites
 * A Running Data Flow Shell
 include::{docs_dir}/shell.adoc[]
 * A running local Data Flow Server
@@ -13,7 +13,7 @@ include::{docs_dir}/local-server.adoc[]
 * https://maven.apache.org/[Maven] Installed
 * A running instance of https://www.rabbitmq.com/[Rabbit MQ]
 
-===== Creating the Custom Stream App
+==== Creating the Custom Stream App
 We will create a custom https://cloud.spring.io/spring-cloud-stream/[Spring Cloud Stream] application and run it on Spring Cloud Data Flow.
 We'll go through the steps to make a simple processor that converts temperature from Fahrenheit to Celsius.
 We will be running the demo locally, but all the steps will work in a Cloud Foundry environment as well.
@@ -82,7 +82,7 @@ java -jar target/celsius-converter-processor-0.0.1-SNAPSHOT.jar
 If all goes well, we should have a running standalone Spring Boot Application.
 Once we verify that the app is started and running without any errors, we can stop it.
 
-===== Deploying the App to Spring Cloud Data Flow
+==== Deploying the App to Spring Cloud Data Flow
 
 . https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
 +
@@ -153,7 +153,7 @@ You should see the temperature you posted converted to Celsius!
 2016-09-27 10:05:34.933  INFO 95616 --- [CelsiusStream-1] log.sink                                 : 24
 ```
 
-===== Summary
+==== Summary
 In this sample, you have learned:
 
 * How to write a custom `Processor` stream application

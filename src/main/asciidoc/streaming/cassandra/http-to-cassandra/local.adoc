@@ -1,7 +1,7 @@
 [[http-cassandra-local]]
-===== Using the Local Server
+==== Using the Local Server
 
-====== Additional Prerequisites
+===== Additional Prerequisites
 
 * A running local Data Flow Server
 include::{docs_dir}/local-server.adoc[]
@@ -23,7 +23,7 @@ CREATE TABLE book  (
 );
 ```
 
-====== Building and Running the Demo
+===== Building and Running the Demo
 
 . https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Kafka binder
 +

@@ -145,7 +145,7 @@
 									</postProcess>
 								</configuration>
 							</execution>
-							<execution>
+							<!-- <execution>
 								<id>pdf</id>
 								<goals>
 									<goal>generate-pdf</goal>
@@ -163,9 +163,9 @@
 										<move file="${basedir}/target/contents/reference/pdf/index.pdf" tofile="${basedir}/target/contents/reference/pdf/spring-cloud-dataflow-samples.pdf" />
 									</postProcess>
 								</configuration>
-							</execution>
+							</execution> -->
 
-							<execution>
+							<!-- <execution>
 								<id>epub</id>
 								<goals>
 									<goal>generate-epub3</goal>
@@ -191,7 +191,7 @@
 										<move file="${basedir}/target/contents/reference/epub/index.epub" tofile="${basedir}/target/contents/reference/epub/spring-cloud-dataflow-samples.epub" />
 									</postProcess>
 								</configuration>
-							</execution>
+							</execution> -->
 						</executions>
 					</plugin>
 					<plugin>
@@ -212,6 +212,100 @@
 											<failIfFound>true</failIfFound>
 										</grep>
 									</greps>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.8</version>
+						<dependencies>
+							<dependency>
+								<groupId>ant-contrib</groupId>
+								<artifactId>ant-contrib</artifactId>
+								<version>1.0b3</version>
+								<exclusions>
+									<exclusion>
+										<groupId>ant</groupId>
+										<artifactId>ant</artifactId>
+									</exclusion>
+								</exclusions>
+							</dependency>
+							<dependency>
+								<groupId>org.apache.ant</groupId>
+								<artifactId>ant-nodeps</artifactId>
+								<version>1.8.1</version>
+							</dependency>
+							<dependency>
+								<groupId>org.tigris.antelope</groupId>
+								<artifactId>antelopetasks</artifactId>
+								<version>3.2.10</version>
+							</dependency>
+						</dependencies>
+						<executions>
+							<execution>
+								<id>package-and-attach-docs-zip</id>
+								<phase>package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<zip destfile="${project.build.directory}/${project.artifactId}-${project.version}.zip">
+
+											<fileset dir="${project.build.directory}/contents" />
+											<zipfileset dir="${project.build.directory}/generated-docs" prefix="reference/htmlsingle">
+												<include name="index.html" />
+												<include name="images/**" />
+											</zipfileset>
+										</zip>
+									</target>
+								</configuration>
+							</execution>
+							<execution>
+								<id>setup-maven-properties</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<exportAntProperties>true</exportAntProperties>
+									<target>
+										<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+										<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask" />
+										<var name="version-type" value="${project.version}" />
+										<propertyregex property="version-type" override="true" input="${version-type}" regexp=".*\.(.*)" replace="\1" />
+										<propertyregex property="version-type" override="true" input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
+										<propertyregex property="version-type" override="true" input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
+										<propertyregex property="version-type" override="true" input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
+										<stringutil string="${version-type}" property="version-type-lowercase">
+											<lowercase />
+										</stringutil>
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>1.9.1</version>
+						<executions>
+							<execution>
+								<id>attach-zip</id>
+								<goals>
+									<goal>attach-artifact</goal>
+								</goals>
+								<configuration>
+									<artifacts>
+										<artifact>
+											<file>
+												${project.build.directory}/${project.artifactId}-${project.version}.zip
+											</file>
+											<type>zip;zip.type=docs;zip.deployed=false</type>
+										</artifact>
+									</artifacts>
 								</configuration>
 							</execution>
 						</executions>

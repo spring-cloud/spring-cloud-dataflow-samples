@@ -1,6 +1,6 @@
 [[gemfire-cq-log-cf]]
-===== Using the Cloud Foundry Server
-====== Additional Prerequisites
+==== Using the Cloud Foundry Server
+===== Additional Prerequisites
 
 * A Cloud Foundry instance
 
@@ -12,7 +12,7 @@
 
 include::{docs_dir}/cloudfoundry-server.adoc[]
 
-====== Building and Running the Demo
+===== Building and Running the Demo
 
 . https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
 +

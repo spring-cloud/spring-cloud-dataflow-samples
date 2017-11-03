@@ -1,13 +1,13 @@
 [[spring-cloud-data-flow-samples-twitter-analytics-overview]]
 :sectnums:
 :docs_dir: ../..
-==== Twitter Analytics
+=== Twitter Analytics
 
 In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from _TwitterStream_ and compute simple analytics over data-in-transit using _Field-Value-Counter_.
 
 We will take you through the steps to configure Spring Cloud Data Flow's `Local` server.
 
-====== Prerequisites
+==== Prerequisites
 
 * A Running Data Flow Shell
 include::{docs_dir}/shell.adoc[]
@@ -17,7 +17,7 @@ include::{docs_dir}/local-server.adoc[]
 * Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
 * Twitter credentials from link:https://apps.twitter.com/[Twitter Developers] site
 
-====== Building and Running the Demo
+==== Building and Running the Demo
 
 . https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Kafka binder
 +
@@ -139,7 +139,7 @@ Displaying values for field value counter 'language'
 
 image::twitter_analytics.png[Twitter Analytics Visualization, scaledwidth="50%"]
 
-====== Summary
+==== Summary
 
 In this sample, you have learned:
 

@@ -1,10 +1,10 @@
 :sectnums:
 :docs_dir: ..
-===== Functions in Spring Cloud Data Flow
+=== Functions in Spring Cloud Data Flow
 
 In this sample, you will learn how to use https://github.com/spring-cloud/spring-cloud-function[Spring Cloud Function] based streaming applications in Spring Cloud Data Flow. To learn more about Spring Cloud Function, check out the http://cloud.spring.io/spring-cloud-function/[project page].
 
-====== Prerequisites
+==== Prerequisites
 
 * A Running Data Flow Shell
 include::{docs_dir}/shell.adoc[]
@@ -14,7 +14,7 @@ include::{docs_dir}/local-server.adoc[]
 * A running instance of https://www.rabbitmq.com/[Rabbit MQ]
 * General understanding of the out-of-the-box https://github.com/spring-cloud-stream-app-starters/function/blob/master/spring-cloud-starter-stream-app-function/README.adoc[function-runner] application
 
-====== Building and Running the Demo
+==== Building and Running the Demo
 
 . https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Rabbit binder
 +
@@ -114,7 +114,7 @@ $ tail -f /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gs/T/spring-cloud-dataflow
 ....
 ----
 
-====== Summary
+==== Summary
 
 In this sample, you have learned:
 

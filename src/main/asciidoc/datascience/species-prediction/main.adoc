@@ -1,12 +1,12 @@
 :sectnums:
 :docs_dir: ../..
-===== Species Prediction
+=== Species Prediction
 
 In this demonstration, you will learn how to use https://en.wikipedia.org/wiki/Predictive_Model_Markup_Language[PMML] model in the context of streaming data pipeline orchestrated by http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow].
 
 We will present the steps to prep, configure and rub Spring Cloud Data Flow's `Local` server, a Spring Boot application.
 
-====== Prerequisites
+==== Prerequisites
 
 * A Running Data Flow Shell
 include::{docs_dir}/shell.adoc[]
@@ -14,7 +14,7 @@ include::{docs_dir}/shell.adoc[]
 include::{docs_dir}/local-server.adoc[]
 * Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
 
-====== Building and Running the Demo
+==== Building and Running the Demo
 
 . https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Kafka binder
 +
@@ -124,7 +124,7 @@ NOTE: `petalWidth` value changed from `1.5` to `1.8`
 }
 ```
 
-====== Summary
+==== Summary
 
 In this sample, you have learned:
 

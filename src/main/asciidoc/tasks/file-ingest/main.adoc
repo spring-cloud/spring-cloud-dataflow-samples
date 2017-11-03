@@ -1,0 +1,121 @@
+
+=== Batch File Ingest
+
+In this demonstration, you will learn how to create a data processing application using http://projects.spring.io/spring-batch/[Spring Batch] which will then be run within http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow].
+
+==== Prerequisites
+
+* A Running Data Flow Server
+include::{docs_dir}/local-server.adoc[]
+
+* A Running Data Flow Shell
+include::{docs_dir}/shell.adoc[]
+
+==== Batch File Ingest Demo Overview
+
+The source for the demo project is located in the `batch/file-ingest` directory at the top-level of this repository. The sample is a Spring Boot application that demonstrates how to read data from a flat file, perform processing on the records, and store the transformed data into a database using Spring Batch.
+
+The key classes for creating the batch job are:
+
+* `BatchConfiguration.java` - this is where we define our batch job, the step and components that are used read, process, and write our data. In the sample we use a `FlatFileItemReader` which reads a delimited file, a custom `PersonItemProcessor` to transform the data, and a `JdbcBatchItemWriter` to write our data to a database.
+
+* `Person.java` - the domain object representing the data we are reading and processing in our batch job. The sample data contains records made up of a persons first and last name.
+
+* `PersonItemProcessor.java` - this class is an `ItemProcessor` implementation which receives records after they have been read and before they are written. This allows us to transform the data between these two steps. In our sample `ItemProcessor` implementation, we simply transform the first and last name of each `Person` to uppercase characters.
+
+* `Application.java` - the main entry point into the Spring Boot application which is used to launch the batch job
+
+Resource files are included to set up the database and provide sample data:
+
+* `schema-all.sql` - this is the database schema that will be created when the application starts up. In this sample, an in-memory database is created on start up and destroyed when the application exits.
+
+* `data.csv` - sample data file containing person records used in the demo
+
+
+==== Building and Running the Demo
+
+. Build the demo JAR
++
+```
+$ mvn clean package
+```
+
++
+
+. Register the task
++
+```
+dataflow:>app register --name fileIngest --type task --uri file:////path/to/target/ingest-X.X.X.jar
+Successfully registered application 'task:fileIngest'
+dataflow:>
+```
+
++
+
+. Create the task
++
+```
+dataflow:>task create fileIngestTask --definition fileIngest
+Created new task 'fileIngestTask'
+dataflow:>
+```
+
++
+
+. Launch the task
++
+```
+dataflow:>task launch fileIngestTask --arguments "filePath=classpath:data.csv"
+Launched task 'fileIngestTask'
+dataflow:>
+```
+
++
+
+. Inspect logs
++
+The log file path for the launched task can be found in the local server output, for example:
++
+
+[source,console,options=nowrap]
+----
+2017-10-27 14:58:18.112  INFO 19485 --- [nio-9393-exec-6] o.s.c.d.spi.local.LocalTaskLauncher      : launching task fileIngestTask-8932f73d-f17a-4bba-b44d-3fd9df042ac0
+   Logs will be in /var/folders/6x/tgtx9xbn0x16xq2sx1j2rld80000gn/T/spring-cloud-dataflow-983191515779755562/fileIngestTask-1509130698071/fileIngestTask-8932f73d-f17a-4bba-b44d-3fd9df042ac0
+----
+
+. Verify Task execution details
+
++
+
+[source,console,options=nowrap]
+----
+dataflow:>task execution list
+╔══════════════╤══╤════════════════════════════╤════════════════════════════╤═════════╗
+║  Task Name   │ID│         Start Time         │          End Time          │Exit Code║
+╠══════════════╪══╪════════════════════════════╪════════════════════════════╪═════════╣
+║fileIngestTask│1 │Fri Oct 27 14:58:20 EDT 2017│Fri Oct 27 14:58:20 EDT 2017│0        ║
+╚══════════════╧══╧════════════════════════════╧════════════════════════════╧═════════╝
+----
+
+. Verify Job execution details
+
++
+
+[source,console,options=nowrap]
+----
+dataflow:>job execution list
+╔═══╤═══════╤═════════╤════════════════════════════╤═════════════════════╤══════════════════╗
+║ID │Task ID│Job Name │         Start Time         │Step Execution Count │Definition Status ║
+╠═══╪═══════╪═════════╪════════════════════════════╪═════════════════════╪══════════════════╣
+║1  │1      │ingestJob│Fri Oct 27 14:58:20 EDT 2017│1                    │Created           ║
+╚═══╧═══════╧═════════╧════════════════════════════╧═════════════════════╧══════════════════╝
+----
+
+
+==== Summary
+
+In this sample, you have learned:
+
+* How to create a data processing batch job application
+* How to register and orchestrate Spring Batch jobs in Spring Cloud Data Flow
+* How to verify status via logs and shell commands

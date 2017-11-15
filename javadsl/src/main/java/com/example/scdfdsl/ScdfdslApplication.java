@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.dataflow.rest.client.DataFlowOperations;
 import org.springframework.cloud.dataflow.rest.client.DataFlowTemplate;
 import org.springframework.cloud.dataflow.rest.client.dsl.Stream;
+import org.springframework.cloud.dataflow.rest.client.dsl.StreamApplication;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -43,9 +44,31 @@ public class ScdfdslApplication implements CommandLineRunner {
 
 		System.out.println("Letting the stream run for 2 minutes.");
 		// Let woodchuck run for 2 minutes
-		Thread.sleep(120000*4);
+		Thread.sleep(120000);
 
 		System.out.println("Destroying stream");
 		woodchuck.destroy();
+
+		// Fluent
+		Stream woodchuck2 = Stream.Builder(dataFlowOperations).name("woodchuck")
+				.source(new StreamApplication("http").addProperty("server.port", 9900))
+				.processor(new StreamApplication("splitter")
+						.addProperty("producer.partitionKeyExpression", "payload"))
+				.sink(new StreamApplication("log")
+						.addDeploymentProperty("count", 2))
+				.create().deploy();
+
+		while(!woodchuck2.getStatus().equals("deployed")){
+			System.out.println("Wating for deployment of stream.");
+			Thread.sleep(5000);
+		}
+
+		System.out.println("Letting the stream run for 2 minutes.");
+		// Let woodchuck run for 2 minutes
+		Thread.sleep(120000);
+
+		System.out.println("Destroying stream");
+		woodchuck2.destroy();
+
 	}
 }

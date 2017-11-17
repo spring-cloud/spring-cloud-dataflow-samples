@@ -1,0 +1,20 @@
+Tested using
+
+```
+$ curl http://localhost:9900 -H "Content-Type:text/plain"   -X POST -D "how much wood would a woodchuck chuck if a woodchuck would chuck wood"
+```
+
+Only got a blank line in log instance 1 and nothing in log instance 2
+
+```
+2017-11-15 16:05:24.191  INFO 1229 --- [           main] o.s.c.s.a.l.s.r.LogSinkRabbitApplication : Started LogSinkRabbitApplication in 23.037 seconds (JVM running for 24.39)
+2017-11-15 16:05:37.918  INFO 1229 --- [r.woodchuck-0-1] log-sink                                 :
+```
+and
+```
+2017-11-15 16:05:23.565  INFO 1236 --- [           main] o.s.c.s.a.l.s.r.LogSinkRabbitApplication : Started LogSinkRabbitApplication in 22.392 seconds (JVM running for 23.757)
+```
+
+Note that something else went wrong using Bacon GA... so docs need to ensure using Celcius or adjust the stream def so it works, I guess something with output types.
+
+

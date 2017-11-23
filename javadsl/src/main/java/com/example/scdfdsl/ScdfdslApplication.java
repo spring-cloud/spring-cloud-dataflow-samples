@@ -3,13 +3,13 @@ package com.example.scdfdsl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.dataflow.rest.client.DataFlowOperations;
 import org.springframework.cloud.dataflow.rest.client.DataFlowTemplate;
 import org.springframework.cloud.dataflow.rest.client.dsl.Stream;
 import org.springframework.cloud.dataflow.rest.client.dsl.StreamApplication;
+import org.springframework.cloud.dataflow.rest.client.dsl.StreamBuilder;
 import org.springframework.context.annotation.Bean;
 
 import java.net.URI;
@@ -61,7 +61,7 @@ public class ScdfdslApplication implements ApplicationRunner {
 				definitionStyle(dataFlowOperations);
 			} else if (style.equalsIgnoreCase("fluent")) {
 				// FLUENT STYLE
-				fluentApplicationSytle(dataFlowOperations);
+				fluentStyle(dataFlowOperations);
 			} else {
 				System.out.println("Style [" + style + "] not supported");
 			}
@@ -88,8 +88,7 @@ public class ScdfdslApplication implements ApplicationRunner {
 
 
 
-	private void fluentApplicationSytle(DataFlowOperations dataFlowOperations) throws InterruptedException {
-		Map<String, String> deploymentProperties = createDeploymentProperties();
+	private void fluentStyle(DataFlowOperations dataFlowOperations) throws InterruptedException {
 
 		System.out.println("Deploying stream.");
 
@@ -98,7 +97,7 @@ public class ScdfdslApplication implements ApplicationRunner {
 				.processor(processor)
 				.sink(sink)
 				.create()
-				.deploy(deploymentProperties);
+				.deploy();
 
 		waitAndDestroy(woodchuck);
 	}
@@ -125,8 +124,8 @@ public class ScdfdslApplication implements ApplicationRunner {
 		return dataFlowOperations;
 	}
 
-	private void waitAndDestroy(Stream woodchuck) throws InterruptedException {
-		while(!woodchuck.getStatus().equals("deployed")){
+	private void waitAndDestroy(Stream stream) throws InterruptedException {
+		while(!stream.getStatus().equals("deployed")){
 			System.out.println("Wating for deployment of stream.");
 			Thread.sleep(5000);
 		}
@@ -136,7 +135,7 @@ public class ScdfdslApplication implements ApplicationRunner {
 		Thread.sleep(120000);
 
 		System.out.println("Destroying stream");
-		woodchuck.destroy();
+		stream.destroy();
 	}
 
 }

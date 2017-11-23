@@ -20,6 +20,7 @@ import org.springframework.cloud.dataflow.rest.client.DataFlowOperations;
 import org.springframework.cloud.dataflow.rest.client.DataFlowTemplate;
 import org.springframework.cloud.dataflow.rest.client.dsl.Stream;
 import org.springframework.cloud.dataflow.rest.client.dsl.StreamBuilder;
+import org.springframework.cloud.dataflow.rest.client.dsl.StreamDefinition;
 
 import java.net.URI;
 
@@ -36,8 +37,8 @@ public class SimpleUsageTests {
 	public void doStuff() {
 		URI dataFlowUri = URI.create("http://localhost:9393");
 		DataFlowOperations dataFlowOperations = new DataFlowTemplate(dataFlowUri);
-		StreamBuilder streamBuilder = Stream.builder(dataFlowOperations).name("ticktock").definition("time | log").create();
-		Stream stream = streamBuilder.deploy();
+		StreamDefinition streamDefinition = Stream.builder(dataFlowOperations).name("ticktock").definition("time | log").create();
+		Stream stream = streamDefinition.deploy();
 	}
 
 

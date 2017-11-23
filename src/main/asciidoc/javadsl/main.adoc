@@ -1,0 +1,106 @@
+[[spring-cloud-data-flow-samples-javadsl]]
+:docs_dir: ../..
+=== Deploying a stream programmaticaly
+This sample shows the two usage styles of the Java DSL to create and deploy a stream.
+You should look in the https://github.com/spring-cloud/spring-cloud-dataflow-samples/tree/master/batch/javadsl/src/main[source code] to get a feel for the different styles.
+
+1) Build the sample application
+
+[source,bash]
+----
+./mvnw clean package
+----
+With no command line options, the application will deploy the stream `http --server.port=9900 | splitter --expression=payload.split(' ') | log` using the URI `http://localhost:9393` to connect to the Data Flow server.
+There is also a command line option `--style` whose value can be either `definition` or `fluent`.
+This options picks which JavaDSL style will execute.
+Both are identical in terms of behavior.
+The `definition` style has code of the style
+[source,java,options="nowrap"]
+----
+Stream woodchuck = Stream.builder(dataFlowOperations)
+        .name("woodchuck")
+        .definition("http --server.port=9900 | splitter --expression=payload.split(' ') | log")
+        .create()
+        .deploy(deploymentProperties);
+----
+while the `fluent` style has code of the style
+[source,java]
+----
+Stream woodchuck = Stream.builder(dataFlowOperations).name("woodchuck")
+        .source(source)
+        .processor(processor)
+        .sink(sink)
+        .create()
+        .deploy(deploymentProperties);
+----
+where `source`, `processor`, and `sink` variables were defined as `@Bean`s of the type `StreamApplication`
+[source,java]
+----
+@Bean
+public StreamApplication source() {
+  return new StreamApplication("http").addProperty("server.port", 9900);
+}
+----
+2) Run a local Data Flow Server and run the sample application.
+This sample demonstrates the use of the local Data Flow Server, but you can pass in the option `--uri` to point to another Data Flow server instance that is running elsewhere.
+[source,bash]
+----
+$ java -jar target/scdfdsl-0.0.1-SNAPSHOT.jar
+----
+You will then see the following output.
+[source,bash]
+----
+Deploying stream.
+Wating for deployment of stream.
+Wating for deployment of stream.
+Wating for deployment of stream.
+Wating for deployment of stream.
+Wating for deployment of stream.
+Letting the stream run for 2 minutes.
+----
+To verify that the application has been deployed successfully, will tail the logs of one of the log sinks and post some data to the http source.
+You can find the location for the logs of one of the log sink applications by looking in the Data Flow server's log file.
+
+3) Post some data to the server
+
+```
+curl http://localhost:9900 -H "Content-Type:text/plain"   -X POST -d "how much wood would a woodchuck chuck if a woodchuck could chuck wood"
+```
+
+5) Verify the output
+Tailing the log file of the first instance
+[source,bash,options="nowrap"]
+----
+cd /tmp/spring-cloud-dataflow-4323595028663837160/woodchuck-1511390696355/woodchuck.log
+tail -f stdout_0.log
+----
+[source,bash,options="nowrap"]
+----
+2017-11-22 18:04:08.631  INFO 26652 --- [r.woodchuck-0-1] log-sink          : how
+2017-11-22 18:04:08.632  INFO 26652 --- [r.woodchuck-0-1] log-sink          : chuck
+2017-11-22 18:04:08.634  INFO 26652 --- [r.woodchuck-0-1] log-sink          : chuck
+----
+
+Tailing the log file of the second instance
+[source,bash,options="nowrap"]
+----
+cd /tmp/spring-cloud-dataflow-4323595028663837160/woodchuck-1511390696355/woodchuck.log
+tail -f stdout_1.log
+----
+
+You should see the output
+[source,bash,options="nowrap"]
+----
+$ tail -f stdout_1.log
+2017-11-22 18:04:08.636  INFO 26655 --- [r.woodchuck-1-1] log-sink          : much
+2017-11-22 18:04:08.638  INFO 26655 --- [r.woodchuck-1-1] log-sink          : wood
+2017-11-22 18:04:08.639  INFO 26655 --- [r.woodchuck-1-1] log-sink          : would
+2017-11-22 18:04:08.640  INFO 26655 --- [r.woodchuck-1-1] log-sink          : a
+2017-11-22 18:04:08.641  INFO 26655 --- [r.woodchuck-1-1] log-sink          : woodchuck
+2017-11-22 18:04:08.642  INFO 26655 --- [r.woodchuck-1-1] log-sink          : if
+2017-11-22 18:04:08.644  INFO 26655 --- [r.woodchuck-1-1] log-sink          : a
+2017-11-22 18:04:08.645  INFO 26655 --- [r.woodchuck-1-1] log-sink          : woodchuck
+2017-11-22 18:04:08.646  INFO 26655 --- [r.woodchuck-1-1] log-sink          : could
+2017-11-22 18:04:08.647  INFO 26655 --- [r.woodchuck-1-1] log-sink          : wood
+----
+Note that the partitioning is done based on the hash of the `java.lang.String` object.

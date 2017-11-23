@@ -2,6 +2,9 @@
 == Overview
 This guide contains samples and demonstrations of how to build data pipelines with https://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow].
 
+== Java DSL
+include::javadsl/main.adoc[]
+
 == Streaming
 include::streaming/cassandra/http-to-cassandra/main.adoc[]
 include::streaming/jdbc/http-mysql/main.adoc[]

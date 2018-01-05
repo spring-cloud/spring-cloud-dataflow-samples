@@ -13,7 +13,7 @@ include::{docs_dir}/shell.adoc[]
 
 ==== Batch File Ingest Demo Overview
 
-The source for the demo project is located in the `batch/file-ingest` directory at the top-level of this repository. The sample is a Spring Boot application that demonstrates how to read data from a flat file, perform processing on the records, and store the transformed data into a database using Spring Batch.
+The source for the demo project is located in {github-code}/tree/master/batch/file-ingest[here]. The sample is a Spring Boot application that demonstrates how to read data from a flat file, perform processing on the records, and store the transformed data into a database using Spring Batch.
 
 The key classes for creating the batch job are:
 

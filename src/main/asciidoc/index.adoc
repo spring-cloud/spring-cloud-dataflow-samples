@@ -11,7 +11,9 @@ Sabby Anandan; David Turanski; Glenn Renfro; Eric Bottard; Mark Pollack; Chris S
 
 :spring-cloud-stream-docs: http://docs.spring.io/spring-cloud-stream/docs/{scst-core-version}/reference/htmlsingle/index.html
 :github-code: https://github.com/spring-cloud/spring-cloud-dataflow-samples
-
+:scdf-release-train-name: Bacon
+:app-import-kafka-maven: http://bit.ly/{scdf-release-train-name}-RELEASE-stream-applications-kafka-10-maven
+:app-import-rabbit-maven: http://bit.ly/{scdf-release-train-name}-RELEASE-stream-applications-rabbit-maven
 
 ifdef::backend-html5[]
 

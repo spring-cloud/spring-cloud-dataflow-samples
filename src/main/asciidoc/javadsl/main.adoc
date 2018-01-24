@@ -14,10 +14,22 @@ With no command line options, the application will deploy the stream `http --ser
 There is also a command line option `--style` whose value can be either `definition` or `fluent`.
 This options picks which JavaDSL style will execute.
 Both are identical in terms of behavior.
+The `spring-cloud-dataflow-rest-client` project provides instances of `DataFlowOperations` and  `StreamBuilder` 
+
+[source,java,options="nowrap"]
+----
+@Autowired
+private DataFlowOperations dataFlowOperations;
+
+@Autowired
+private StreamBuilder builder;
+----
+You can use those beans to build streams as well as work directly with `DataFlowOperations" REST client.
+
 The `definition` style has code of the style
 [source,java,options="nowrap"]
 ----
-Stream woodchuck = Stream.builder(dataFlowOperations)
+Stream woodchuck = builder
         .name("woodchuck")
         .definition("http --server.port=9900 | splitter --expression=payload.split(' ') | log")
         .create()
@@ -26,7 +38,7 @@ Stream woodchuck = Stream.builder(dataFlowOperations)
 while the `fluent` style has code of the style
 [source,java]
 ----
-Stream woodchuck = Stream.builder(dataFlowOperations).name("woodchuck")
+Stream woodchuck = builder.name("woodchuck")
         .source(source)
         .processor(processor)
         .sink(sink)
@@ -40,6 +52,18 @@ where `source`, `processor`, and `sink` variables were defined as `@Bean`s of th
 public StreamApplication source() {
   return new StreamApplication("http").addProperty("server.port", 9900);
 }
+----
+
+Another useful class is the `DeploymentPropertiesBuilder` which aids in the creation of the Map of properties required to deploy stream applications.
+[source,java]
+----
+	private Map<String, String> createDeploymentProperties() {
+		DeploymentPropertiesBuilder propertiesBuilder = new DeploymentPropertiesBuilder();
+		propertiesBuilder.memory("log", 512);
+		propertiesBuilder.count("log",2);
+		propertiesBuilder.put("app.splitter.producer.partitionKeyExpression", "payload");
+		return propertiesBuilder.build();
+	}
 ----
 2) Run a local Data Flow Server and run the sample application.
 This sample demonstrates the use of the local Data Flow Server, but you can pass in the option `--uri` to point to another Data Flow server instance that is running elsewhere.

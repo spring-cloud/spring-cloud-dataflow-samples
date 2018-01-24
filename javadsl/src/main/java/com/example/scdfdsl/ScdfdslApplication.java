@@ -5,8 +5,10 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.dataflow.core.ApplicationType;
 import org.springframework.cloud.dataflow.rest.client.DataFlowOperations;
 import org.springframework.cloud.dataflow.rest.client.DataFlowTemplate;
+import org.springframework.cloud.dataflow.rest.client.dsl.DeploymentPropertiesBuilder;
 import org.springframework.cloud.dataflow.rest.client.dsl.Stream;
 import org.springframework.cloud.dataflow.rest.client.dsl.StreamApplication;
 import org.springframework.cloud.dataflow.rest.client.dsl.StreamBuilder;
@@ -16,12 +18,17 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @SpringBootApplication
 public class ScdfdslApplication implements ApplicationRunner {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ScdfdslApplication.class, args);
 	}
+
+	private final Logger logger = LoggerFactory.getLogger(ScdfdslApplication.class);
 
 	@Autowired
 	private StreamApplication source;
@@ -31,6 +38,12 @@ public class ScdfdslApplication implements ApplicationRunner {
 
 	@Autowired
 	private StreamApplication sink;
+
+	@Autowired
+	private DataFlowOperations dataFlowOperations;
+
+	@Autowired
+	private StreamBuilder builder;
 
 	// Using @Bean defintions makes it easier to reuse an application in multiple streams
 	@Bean
@@ -52,8 +65,7 @@ public class ScdfdslApplication implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments applicationArguments) throws Exception {
-		DataFlowOperations dataFlowOperations = createDataFlowOperations(applicationArguments);
-
+		importApplications();
 		if (applicationArguments.containsOption("style")) {
 			String style = applicationArguments.getOptionValues("style").get(0);
 			if (style.equalsIgnoreCase("definition")) {
@@ -63,7 +75,7 @@ public class ScdfdslApplication implements ApplicationRunner {
 				// FLUENT STYLE
 				fluentStyle(dataFlowOperations);
 			} else {
-				System.out.println("Style [" + style + "] not supported");
+				logger.info("Style [" + style + "] not supported");
 			}
 		} else {
 			definitionStyle(dataFlowOperations);
@@ -74,9 +86,9 @@ public class ScdfdslApplication implements ApplicationRunner {
 	private void definitionStyle(DataFlowOperations dataFlowOperations) throws InterruptedException {
 		Map<String, String> deploymentProperties = createDeploymentProperties();
 
-		System.out.println("Deploying stream.");
+		logger.info("Deploying stream.");
 
-		Stream woodchuck = Stream.builder(dataFlowOperations)
+		Stream woodchuck = builder
 				.name("woodchuck")
 				.definition(
 				"http --server.port=9900 | splitter --expression=payload.split(' ') | log")
@@ -86,13 +98,27 @@ public class ScdfdslApplication implements ApplicationRunner {
 		waitAndDestroy(woodchuck);
 	}
 
-
+	private void importApplications() {
+		this.dataFlowOperations.appRegistryOperations().register("log", ApplicationType.sink,
+				"maven://org.springframework.cloud.stream.app:log-sink-rabbit:1.3.1.RELEASE",
+				"maven://org.springframework.cloud.stream.app:log-sink-rabbit:jar:metadata:1.3.1.RELEASE",
+				true);
+		this.dataFlowOperations.appRegistryOperations().register("splitter", ApplicationType.processor,
+				"maven://org.springframework.cloud.stream.app:splitter-processor-rabbit:1.3.1.RELEASE",
+				"maven://org.springframework.cloud.stream.app:splitter-processor-rabbit:jar:metadata:1.3.1.RELEASE",
+				true);
+		this.dataFlowOperations.appRegistryOperations().register("http", ApplicationType.source,
+				"maven://org.springframework.cloud.stream.app:http-source-rabbit:1.3.1.RELEASE",
+				"maven://org.springframework.cloud.stream.app:http-source-rabbit:jar:metadata:1.3.1.RELEASE",
+				true);
+	}
 
 	private void fluentStyle(DataFlowOperations dataFlowOperations) throws InterruptedException {
 
-		System.out.println("Deploying stream.");
+		logger.info("Deploying stream.");
 
-		Stream woodchuck = Stream.builder(dataFlowOperations).name("woodchuck")
+		Stream woodchuck = builder
+				.name("woodchuck")
 				.source(source)
 				.processor(processor)
 				.sink(sink)
@@ -103,38 +129,25 @@ public class ScdfdslApplication implements ApplicationRunner {
 	}
 
 	private Map<String, String> createDeploymentProperties() {
-		Map<String, String> deploymentProperties = new HashMap<>();
-		deploymentProperties.put("app.splitter.producer.partitionKeyExpression", "payload");
-		deploymentProperties.put("deployer.log.count", "2");
-		return deploymentProperties;
+		DeploymentPropertiesBuilder propertiesBuilder = new DeploymentPropertiesBuilder();
+		propertiesBuilder.memory("log", 512);
+		propertiesBuilder.count("log",2);
+		propertiesBuilder.put("app.splitter.producer.partitionKeyExpression", "payload");
+		return propertiesBuilder.build();
 	}
 
-
-	private DataFlowOperations createDataFlowOperations(ApplicationArguments applicationArguments) {
-		DataFlowOperations dataFlowOperations;
-		if (applicationArguments.containsOption("uri")) {
-			URI dataFlowUri = URI.create(applicationArguments.getOptionValues("uri").get(0));
-			dataFlowOperations = new DataFlowTemplate(dataFlowUri);
-		} else {
-			dataFlowOperations = new DataFlowTemplate(URI.create("http://localhost:9393"));
-		}
-
-		dataFlowOperations.appRegistryOperations().importFromResource(
-				"http://bit.ly/Celsius-RC1-stream-applications-rabbit-maven", true);
-		return dataFlowOperations;
-	}
 
 	private void waitAndDestroy(Stream stream) throws InterruptedException {
 		while(!stream.getStatus().equals("deployed")){
-			System.out.println("Wating for deployment of stream.");
+			logger.info("Wating for deployment of stream.");
 			Thread.sleep(5000);
 		}
 
-		System.out.println("Letting the stream run for 2 minutes.");
+		logger.info("Letting the stream run for 2 minutes.");
 		// Let woodchuck run for 2 minutes
 		Thread.sleep(120000);
 
-		System.out.println("Destroying stream");
+		logger.info("Destroying stream");
 		stream.destroy();
 	}
 

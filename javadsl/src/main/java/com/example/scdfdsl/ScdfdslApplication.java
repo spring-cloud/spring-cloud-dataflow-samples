@@ -64,8 +64,9 @@ public class ScdfdslApplication implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments applicationArguments) throws Exception {
-//		dataFlowOperations.appRegistryOperations().importFromResource(
-//				"http://bit.ly/Celsius-SR1-stream-applications-rabbit-maven", true);
+		dataFlowOperations.appRegistryOperations().importFromResource(
+				"http://bit.ly/Celsius-SR1-stream-applications-rabbit-maven", true);
+		Thread.sleep(15_000);
 		if (applicationArguments.containsOption("style")) {
 			String style = applicationArguments.getOptionValues("style").get(0);
 			if (style.equalsIgnoreCase("definition")) {

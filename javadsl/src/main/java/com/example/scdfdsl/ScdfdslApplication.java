@@ -5,6 +5,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.dataflow.core.ApplicationType;
 import org.springframework.cloud.dataflow.rest.client.DataFlowOperations;
 import org.springframework.cloud.dataflow.rest.client.DataFlowTemplate;
 import org.springframework.cloud.dataflow.rest.client.dsl.DeploymentPropertiesBuilder;
@@ -64,9 +65,7 @@ public class ScdfdslApplication implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments applicationArguments) throws Exception {
-		dataFlowOperations.appRegistryOperations().importFromResource(
-				"http://bit.ly/Celsius-SR1-stream-applications-rabbit-maven", true);
-		Thread.sleep(15_000);
+		importApplications();
 		if (applicationArguments.containsOption("style")) {
 			String style = applicationArguments.getOptionValues("style").get(0);
 			if (style.equalsIgnoreCase("definition")) {
@@ -99,7 +98,20 @@ public class ScdfdslApplication implements ApplicationRunner {
 		waitAndDestroy(woodchuck);
 	}
 
-
+	private void importApplications() {
+		this.dataFlowOperations.appRegistryOperations().register("log", ApplicationType.sink,
+				"maven://org.springframework.cloud.stream.app:log-sink-rabbit:1.3.1.RELEASE",
+				"maven://org.springframework.cloud.stream.app:log-sink-rabbit:jar:metadata:1.3.1.RELEASE",
+				true);
+		this.dataFlowOperations.appRegistryOperations().register("splitter", ApplicationType.processor,
+				"maven://org.springframework.cloud.stream.app:splitter-processor-rabbit:1.3.1.RELEASE",
+				"maven://org.springframework.cloud.stream.app:splitter-processor-rabbit:jar:metadata:1.3.1.RELEASE",
+				true);
+		this.dataFlowOperations.appRegistryOperations().register("http", ApplicationType.source,
+				"maven://org.springframework.cloud.stream.app:http-source-rabbit:1.3.1.RELEASE",
+				"maven://org.springframework.cloud.stream.app:http-source-rabbit:jar:metadata:1.3.1.RELEASE",
+				true);
+	}
 
 	private void fluentStyle(DataFlowOperations dataFlowOperations) throws InterruptedException {
 

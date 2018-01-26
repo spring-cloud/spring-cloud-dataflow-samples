@@ -14,7 +14,9 @@ With no command line options, the application will deploy the stream `http --ser
 There is also a command line option `--style` whose value can be either `definition` or `fluent`.
 This options picks which JavaDSL style will execute.
 Both are identical in terms of behavior.
-The `spring-cloud-dataflow-rest-client` project provides instances of `DataFlowOperations` and  `StreamBuilder` 
+The `spring-cloud-dataflow-rest-client` project provides auto-configuration for `DataFlowOperations` and  `StreamBuilder`
+
+The properties in https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-rest-client/src/main/java/org/springframework/cloud/dataflow/rest/client/config/DataFlowClientProperties.java[DataFlowClientProperties] can be used to configure the connection to the Data Flow server.  The common property to start using is `spring.cloud.dataflow.client.uri`
 
 [source,java,options="nowrap"]
 ----

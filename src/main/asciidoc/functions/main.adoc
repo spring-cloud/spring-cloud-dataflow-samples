@@ -10,7 +10,7 @@ In this sample, you will learn how to use https://github.com/spring-cloud/spring
 
 * A Running Data Flow Shell
 include::{docs_dir}/shell.adoc[]
-* A running local Data Flow Server [make sure to also set the Spring's milestone (i.e., `http://repo.spring.io/libs-milestone`) repo while starting the server - see https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#howto[how-to-guides] for more details]
+* A running local Data Flow Server
 include::{docs_dir}/local-server.adoc[]
 
 IMPORTANT: This sample requires access to both Spring's snapshot and milestone repos. Please follow https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#howto[how-to-guides] on how to set `http://repo.spring.io/libs-release` and `http://repo.spring.io/libs-milestone` as remote repositories in SCDF.

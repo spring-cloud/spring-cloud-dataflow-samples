@@ -41,6 +41,10 @@ dataflow:>stream create cassandrastream --definition "http --spring.cloud.stream
 
 Created and deployed new stream 'cassandrastream'
 ```
+
+You may want to change the `cassandrastream` name in `PCF` if you have enabled random application name prefix, you could run into issues with the route name being too long.
+
+
 +
 . Verify the stream is successfully deployed
 +

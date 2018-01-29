@@ -39,13 +39,13 @@ dataflow:>app import --uri {app-import-rabbit-maven}
 dataflow:>stream create --name mysqlstream --definition "http | jdbc --tableName=names --columns=name"
 Created new stream 'mysqlstream'
 
-dataflow:>stream deploy --name mysqlstream --properties "app.jdbc.spring.cloud.deployer.cloudfoundry.services=mysql"
+dataflow:>stream deploy --name mysqlstream --properties "deployer.jdbc.cloudfoundry.services=mysql"
 Deployed stream 'mysqlstream'
 
 ```
 +
 
-NOTE: By supplying  the `app.jdbc.spring.cloud.deployer.cloudfoundry.services=mysql` property, we are deploying the stream with `jdbc-sink` to automatically bind to `mysql` service and only this application in the stream gets the service binding. This also eliminates the requirement to supply `datasource` credentials in stream definition.
+NOTE: By supplying  the `deployer.jdbc.cloudfoundry.services=mysql` property, we are deploying the stream with `jdbc-sink` to automatically bind to `mysql` service and only this application in the stream gets the service binding. This also eliminates the requirement to supply `datasource` credentials in stream definition.
 +
 . Verify the stream is successfully deployed
 +
@@ -70,7 +70,7 @@ dataflow-server             started           1/1         1G       1G     datafl
 . Lookup the `url` for `mysqlstream-http` application from the list above. Post sample data pointing to the `http` endpoint: `<YOUR-mysqlstream-http-APP-URL>`
 +
 ```
-http post --contentType 'application/json' --target http://mysqlstream-http.app.io --data "{\"name\": \"Bar"}"
+http post --contentType 'application/json' --data "{\"name\": \"Bar"} --target http://mysqlstream-http.app.io "
 > POST (application/json;charset=UTF-8) http://mysqlstream-http.app.io {"name": "Bar"}
 > 202 ACCEPTED
 ```

@@ -2,6 +2,8 @@
 :docs_dir: ..
 === Functions in Spring Cloud Data Flow
 
+This is a experiment to run Spring Cloud Function workload in Spring Cloud Data Flow. The current release of `function-runner` used in this sample is at 1.0 M1 release and it is not recommended to be used in production.
+
 In this sample, you will learn how to use https://github.com/spring-cloud/spring-cloud-function[Spring Cloud Function] based streaming applications in Spring Cloud Data Flow. To learn more about Spring Cloud Function, check out the http://cloud.spring.io/spring-cloud-function/[project page].
 
 ==== Prerequisites
@@ -10,6 +12,9 @@ In this sample, you will learn how to use https://github.com/spring-cloud/spring
 include::{docs_dir}/shell.adoc[]
 * A running local Data Flow Server
 include::{docs_dir}/local-server.adoc[]
+
+IMPORTANT: This sample requires access to both Spring's snapshot and milestone repos. Please follow https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#howto[how-to-guides] on how to set `http://repo.spring.io/libs-release` and `http://repo.spring.io/libs-milestone` as remote repositories in SCDF.
+
 * A local build of link:https://github.com/spring-cloud/spring-cloud-function[Spring Cloud Function]
 * A running instance of https://www.rabbitmq.com/[Rabbit MQ]
 * General understanding of the out-of-the-box https://github.com/spring-cloud-stream-app-starters/function/blob/master/spring-cloud-starter-stream-app-function/README.adoc[function-runner] application
@@ -26,10 +31,10 @@ dataflow:>app import --uri {app-import-rabbit-maven}
 ```
 +
 +
-. Register the out-of-the-box https://github.com/spring-cloud-stream-app-starters/function/blob/master/spring-cloud-starter-stream-app-function/README.adoc[function-runner] application (_we will use the `1.0.0.BUILD-SNAPSHOT` built by the Spring CI system_)
+. Register the out-of-the-box https://github.com/spring-cloud-stream-app-starters/function/blob/master/spring-cloud-starter-stream-app-function/README.adoc[function-runner] application (_current release is at 1.0.0.M1_)
 +
 ```
-dataflow:>app register --name function-runner --type processor --uri http://repo.spring.io/libs-snapshot/org/springframework/cloud/stream/app/function-app-rabbit/1.0.0.BUILD-SNAPSHOT/function-app-rabbit-1.0.0.BUILD-SNAPSHOT.jar --metadata-uri http://repo.spring.io/libs-snapshot/org/springframework/cloud/stream/app/function-app-rabbit/1.0.0.BUILD-SNAPSHOT/function-app-rabbit-1.0.0.BUILD-SNAPSHOT-metadata.jar
+dataflow:>app register --name function-runner --type processor --uri maven://org.springframework.cloud.stream.app:function-app-rabbit:1.0.0.M1 --metadata-uri maven://org.springframework.cloud.stream.app:function-app-rabbit:jar:metadata:1.0.0.M1
 ```
 +
 . Create and deploy the following stream
@@ -110,8 +115,8 @@ $ tail -f /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gs/T/spring-cloud-dataflow
 ....
 ....
 ....
-2017-10-17 11:45:39.363  INFO 19193 --- [on-runner.foo-1] log-sink                                 : 11
-2017-10-17 11:46:40.997  INFO 19193 --- [on-runner.foo-1] log-sink                                 : 24
+2017-10-17 11:45:39.363  INFO 19193 --- [on-runner.foo-1] log-sink       : 11
+2017-10-17 11:46:40.997  INFO 19193 --- [on-runner.foo-1] log-sink       : 24
 ....
 ....
 ----

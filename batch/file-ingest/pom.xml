@@ -8,13 +8,13 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.0.M5</version>
+        <version>2.0.0.M7</version>
     </parent>
     <properties>
         <java.version>1.8</java.version>
         <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
         <spring.cloud.task.version>1.2.2.RELEASE</spring.cloud.task.version>
-        <spring.batch.starter.version>2.0.0.M5</spring.batch.starter.version>
+        <spring.batch.starter.version>2.0.0.M7</spring.batch.starter.version>
         <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
         <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
     </properties>

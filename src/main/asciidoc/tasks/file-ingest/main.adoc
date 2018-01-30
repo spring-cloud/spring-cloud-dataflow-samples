@@ -31,6 +31,7 @@ Resource files are included to set up the database and provide sample data:
 
 * `data.csv` - sample data file containing person records used in the demo
 
+NOTE: This example expects to use the Spring Cloud Data Flow Server's embedded H2 database.  If you wish to use another repository, be sure to add the correct dependencies to the pom.xml and update the schema-all.sql.
 
 ==== Building and Running the Demo
 
@@ -45,7 +46,7 @@ $ mvn clean package
 . Register the task
 +
 ```
-dataflow:>app register --name fileIngest --type task --uri file:////path/to/target/ingest-X.X.X.jar
+dataflow:>app register --name fileIngest --type task --uri file:///path/to/target/ingest-X.X.X.jar
 Successfully registered application 'task:fileIngest'
 dataflow:>
 ```
@@ -65,7 +66,7 @@ dataflow:>
 . Launch the task
 +
 ```
-dataflow:>task launch fileIngestTask --arguments "filePath=classpath:data.csv"
+dataflow:>task launch fileIngestTask --arguments "filePath=classpath:data.csv --spring.cloud.task.closecontext_enable=false"
 Launched task 'fileIngestTask'
 dataflow:>
 ```

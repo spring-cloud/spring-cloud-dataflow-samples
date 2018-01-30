@@ -73,11 +73,11 @@ No staging env variables have been set
 . Notice that `dataflow-server` application is started and ready for interaction via `http://dataflow-server.local.pcfdev.io` endpoint
 
 +
-. Build and register the batch-job https://github.com/spring-cloud/spring-cloud-task/tree/master/spring-cloud-task-samples/batch-job[example] from Spring Cloud Task samples. For convenience, the final https://github.com/spring-cloud/spring-cloud-dataflow-samples/raw/master/src/main/asciidoc/tasks/simple-batch-job/batch-job-1.0.0.BUILD-SNAPSHOT.jar[uber-jar artifact] is provided with this sample.
+. Build and register the batch-job https://github.com/spring-cloud/spring-cloud-task/tree/master/spring-cloud-task-samples/batch-job[example] from Spring Cloud Task samples. For convenience, the final https://github.com/spring-cloud/spring-cloud-dataflow-samples/raw/master/src/main/asciidoc/tasks/simple-batch-job/batch-job-1.3.0.BUILD-SNAPSHOT.jar[uber-jar artifact] is provided with this sample.
 
 +
 ```
-dataflow:>app register --type task --name simple_batch_job --uri https://github.com/spring-cloud/spring-cloud-dataflow-samples/raw/master/tasks/simple-batch-job/batch-job-1.3.0.BUILD-SNAPSHOT.jar
+dataflow:>app register --type task --name simple_batch_job --uri https://github.com/spring-cloud/spring-cloud-dataflow-samples/raw/master/src/main/asciidoc/tasks/simple-batch-job/batch-job-1.3.0.BUILD-SNAPSHOT.jar
 ```
 +
 
@@ -151,7 +151,7 @@ Retrieving logs for app foo in org pcfdev-org / space pcfdev-space as user...
 ----
 
 +
-NOTE: Verify `job1` and `job2` operations embeddded in `simple-batch-job` application are launched independently and they returned with the status `COMPLETED`.
+NOTE: Verify `job1` and `job2` operations embedded in `simple-batch-job` application are launched independently and they returned with the status `COMPLETED`.
 +
 
 +

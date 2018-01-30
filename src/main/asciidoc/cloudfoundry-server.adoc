@@ -21,7 +21,7 @@ No apps found
 . Follow the instructions to deploy the https://docs.spring.io/spring-cloud-dataflow-server-cloudfoundry/docs/current/reference/htmlsingle[Spring Cloud Data Flow Cloud Foundry server]. Don't worry about creating a Redis service. We won't need it. If you are familiar with Cloud Foundry
 application manifests, we recommend creating a manifest for the the Data Flow server as shown https://docs.spring.io/spring-cloud-dataflow-server-cloudfoundry/docs/current/reference/htmlsingle/#sample-manifest-template[here].
 +
-WARNING: As of this writing, there is a typo on the `SPRING_APPLICATION_JSON` entry in the sample manifest. `SPRING_APPLICATION_JSON` must be followed by `:` and The JSON string must be
+WARNING: As of this writing, there is a typo on the `SPRING_APPLICATION_JSON` entry in the sample manifest. `SPRING_APPLICATION_JSON` must be followed by `:` and the JSON string must be
 wrapped in single quotes. Alternatively, you can replace that line with `MAVEN_REMOTE_REPOSITORIES_REPO1_URL: https://repo.spring.io/libs-snapshot`.  If your Cloud Foundry installation is behind a firewall, you may need to install the stream apps used in this sample in your internal Maven repository and https://docs.spring.io/spring-cloud-dataflow/docs/1.3.0.M2/reference/htmlsingle/#getting-started-maven-configuration[configure] the server to access that repository.
 . Once you have successfully executed `cf push`, verify the dataflow server is running
 +

@@ -35,12 +35,11 @@ dataflow:>app import --uri {app-import-rabbit-maven}
 +
 This example creates an gemfire-cq source to which will publish events matching a query criteria on a region. In this case we will monitor the `Orders` region. For simplicity, we will avoid creating a data structure for the order.
 Each cache entry contains an integer value representing the quantity of the ordered item. This stream will fire a message whenever the value>999. By default, the source emits only the value. Here we will override that using the
-`cq-event-expression` property.  This accepts a SpEL expression bound to a https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/query/CqEvent.html[CQEvent]. To reference the entire CQEvent instace, we use `#this`.
+`cq-event-expression` property.  This accepts a SpEL expression bound to a https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/query/CqEvent.html[CQEvent]. To reference the entire CQEvent instance, we use `#this`.
 In order to display the contents in the log, we will invoke `toString()` on the instance.
 +
 ```
 dataflow:>stream create --name orders --definition " gemfire-cq --query='SELECT * from /Orders o where o > 999' --cq-event-expression=#this.toString() | log" --deploy
-Created and deployed new stream 'events'
 ```
 NOTE: If the Geode locator isn't running on default port on `localhost`, add the options `--connect-type=locator --host-addresses=<host>:<port>`. If there are multiple
 locators, you can provide a comma separated list of locator addresses. This is not necessary for the sample but is typical for production environments to enable fail-over.

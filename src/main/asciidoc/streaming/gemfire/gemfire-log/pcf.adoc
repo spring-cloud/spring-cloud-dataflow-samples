@@ -62,7 +62,7 @@ gfsh>create region --name Test --type=REPLICATE
 . Create the stream, connecting to the PCC instance as developer. This example creates an gemfire source to which will publish events on a region
 +
 ```
-dataflow stream create --name events --definition " gemfire --username=developer --password=<developer-password> --connect-type=locator --host-addresses=10.0.16.9:55221 --regionName=Test | log" --deploy
+dataflow>stream create --name events --definition " gemfire --username=developer --password=<developer-password> --connect-type=locator --host-addresses=10.0.16.9:55221 --regionName=Test | log" --deploy
 ```
 
 . Verify the stream is successfully deployed

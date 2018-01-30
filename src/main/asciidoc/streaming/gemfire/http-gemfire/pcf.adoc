@@ -70,7 +70,7 @@ Use of custom domain types requires these classes to be in the class path of bot
 For this reason, the use of custom payload types is generally discouraged.
 +
 ```
-dataflow:>stream create --name stocks --definition "http --security.basic.enabled=false | gemfire --username=developer --password=<developer-password> --connect-type=locator --host-addresses=10.0.16.9:55221 --regionName=Stocks --keyExpression=payload.getField('symbol')" --deploy
+dataflow:>stream create --name stocks --definition "http --security.basic.enabled=false | gemfire --username=developer --password=<developer-password> --connect-type=locator --host-addresses=10.0.16.9:55221 --json=true --regionName=Stocks --keyExpression=payload.getField('symbol')" --deploy
 ```
 
 . Verify the stream is successfully deployed

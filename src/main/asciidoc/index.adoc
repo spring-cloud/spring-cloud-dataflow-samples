@@ -1,5 +1,5 @@
 = Spring Cloud Data Flow Samples
-Sabby Anandan; David Turanski; Glenn Renfro; Eric Bottard; Mark Pollack; Chris Schaefer
+Sabby Anandan; David Turanski; Glenn Renfro; Eric Bottard; Mark Pollack; Chris Schaefer; Christian Tzolov
 :doctype: book
 :toc:
 :toclevels: 4

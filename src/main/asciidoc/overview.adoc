@@ -28,3 +28,7 @@ include::datascience/species-prediction/main.adoc[]
 
 == Functions
 include::functions/main.adoc[]
+
+== Micrometer
+include::micrometer/influx/main.adoc[]
+include::micrometer/prometheus/main.adoc[]

@@ -1,0 +1,123 @@
+[[spring-cloud-data-flow-samples-micrometer-influx-overview]]
+:sectnums:
+:docs_dir: ../..
+
+=== SCDF metrics with InfluxDB and Grafana
+
+In this demonstration, you will learn how http://micrometer.io[Micrometer] can help to monitor your  http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] (SCDF) streams using  https://docs.influxdata.com/influxdb/v1.5/[InfluxDB] and https://grafana.com/grafana[Grafana].
+
+https://docs.influxdata.com/influxdb/v1.5/[InfluxDB] is a real-time storage for time-series data, such as SCDF metrics. It supports downsampling, automatically expiring and deleting unwanted data, as well as backup and restore. Analysis of data is done via a  https://docs.influxdata.com/influxdb/v1.5/query_language/[SQL-like query] language.
+
+https://grafana.com/grafana[Grafana] is open source metrics Dashboard platform. It supports multiple backend time-series databases including InluxDB.
+
+The architecture (Fig.1) builds on the https://docs.spring.io/spring-boot/docs/2.0.1.RELEASE/reference/htmlsingle/#production-ready-metrics-getting-started[Spring Boot Micrometer] functionality. When a http://micrometer.io/docs/registry/influx[micrometer-registry-influx] dependency is found on the classpath the Spring Boot auto-configures the metrics export for `InfluxDB`.
+
+The https://cloud.spring.io/spring-cloud-stream-app-starters/[Spring Cloud Stream] (SCSt) applications inherit the mircometer functionality, allowing them to compute and send various application metrics to the configured time-series database.
+
+image::scdf-micrometer-influxdb-grafana-architecture.png[scaledwidth="100%", title="SCDF metrics analyzis with InfluxDB and Grafana"]
+
+Out of the box, SCSt sends https://docs.spring.io/spring-boot/docs/2.0.1.RELEASE/reference/htmlsingle/#production-ready-metrics-meter[core metrics] such as `CPU`, `Memory`, `MVC` and `Health` to name some. Among those the https://docs.spring.io/spring-integration/docs/current/reference/html/system-management-chapter.html#micrometer-integration[Spring Integration metrics] allows computing the `Rate` and the `Latency` of the messages in the SCDF streams.
+
+NOTE: Unlike Spring Cloud Data Flow Metrics Collector, metrics here are sent synchronously over HTTP not through a Binder channel topic.
+
+All Spring Cloud Stream App Starers enrich the standard  http://micrometer.io/docs/concepts#_supported_monitoring_systems[dimensional tags] with the following SCDF specific tags:
+[width="100%",options="header"]
+|====================
+| tag name | SCDF property | default value
+| stream.name |  spring.cloud.dataflow.stream.name | unknown
+| application.name | spring.cloud.dataflow.stream.app.label | unknown  
+| instance.index | instance.index | 0 
+| application.guid | spring.cloud.application.guid | unknown 
+| application.type | spring.cloud.dataflow.stream.app.type | unknown
+|====================
+
+NOTE: For custom app starters that don't extend from the https://github.com/spring-cloud-stream-app-starters/core[core] parent, you should add the `app-starters-common` : `org.springframework.cloud.stream.app` dependency to enable the SCDF tags.
+
+Below we will present the steps to prep, configure the demo of Spring Cloud Data Flow's `Local` server integration with `InfluxDB`. For other deployment environment, such as `Cloud Foundry` or `Kubernetes`, additional configurations might be required.
+
+==== Prerequisites
+
+* A Running Data Flow Shell
+include::{docs_dir}/shell.adoc[]
+* A running local Data Flow Server
+include::{docs_dir}/local-server.adoc[]
+* Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
+* Spring Cloud Stream 2.x based https://github.com/spring-cloud-stream-app-starters/time/blob/master/spring-cloud-starter-stream-source-time/README.adoc[Time] and  https://github.com/spring-cloud-stream-app-starters/log/blob/master/spring-cloud-starter-stream-sink-log/README.adoc[Log] applications starters, pre-built with `io.micrometer:micrometer-registry-influx` dependency.
++
+NOTE: Next versions of the https://start-scs.cfapps.io/[SCSt App Initializr] utility would add support for Micrometer dependencies to facilitate the injection of micrometer-registries with SCSt apps.
+
+==== Building and Running the Demo
+
+. Register `time` and `log` applications that are pre-built with `io.micrometer:micrometer-registry-influx`. The next version of https://start-scs.cfapps.io/[SCSt App Initializr] allows adding Micrometer registry dependencies as well.
++
+```bash
+app register --name time2 --type source --uri file://<path-to-your-time-app>/time-source-kafka-2.0.0.BUILD-SNAPSHOT.jar --metadata-uri file://<path-to-your-time-app>/time-source-kafka-2.0.0.BUILD-SNAPSHOT-metadata.jar
+
+app register --name log2 --type sink --uri file://<path-to-your-log-app>/log-sink-kafka-2.0.0.BUILD-SNAPSHOT.jar --metadata-uri file://<path-to-your-log-app>/log-sink-kafka-2.0.0.BUILD-SNAPSHOT-metadata.jar
+```
++
+. Create InfluxDB and Grafana Docker containers
++
+```bash
+docker run -d --name grafana -p 3000:3000 grafana/grafana:5.1.0
+
+docker run -d --name influxdb -p 8086:8086 influxdb:1.5.2-alpine
+```
++
+. Create and deploy the following stream
++
+```bash
+dataflow:>stream create --name t2 --definition "time2 | log2"
+
+dataflow:>stream deploy --name t2 --properties "app.*.management.metrics.export.influx.db=myinfluxdb"
+```
+The `app.*.management.metrics.export.influx.db=myinfluxdb` instructs the `time2` and `log2` apps to use the `myinfluxdb` database (created automatically).
++
+By default, the InfluxDB server runs on `http://localhost:8086`. You can add the `app.*.management.metrics.export.influx.uri={influxbb-server-url}` property to alter the default location.
++
+You can connect to the InfluxDB and explore the measurements
++
+[source,bash]
+----
+docker exec -it influxdb /bin/bash
+root:/# influx
+> show databases
+> use myinfluxdb
+> show measurements
+> select * from spring_integration_send limit 10
+----
+
++
+. Configure Grafana
++
+* Open Grafana UI (http://localhost:3000) and log-in (user: `admin`, password: `admin`).
+* Create InfluxDB datasource called: `influx_auto_DataFlowMetricsCollector` that  connects to our `myinfluxdb` influx database.
++
+[.left]
+image::grafana-influxdb-datasource.png[InfluxDB DataSource]
++ 
+.DataSource Properties
+[height="50%", width="60%",options=""]
+|====================
+| Name |  influx_auto_DataFlowMetricsCollector
+| Type |  InfluxDB
+| Host |  http://localhost:8086
+| Access | Browser  
+| Database | myinfluxdb 
+| User (DB) | admin
+| Password (DB) | admin 
+|====================
++
+NOTE: For previous `Grafana 4.x` set the `Access` property to `direct` instead.
++
+* Import the link:micrometer/influx/scdf-influxdb-dashboard.json[scdf-influxdb-dashboard.json] dashboard
++
+image::grafana-influx-dashboard.png[]
+
+==== Summary
+
+In this sample, you have learned:
+
+* How to use Spring Cloud Data Flow's `Local` server
+* How to use Spring Cloud Data Flow's `shell` application
+* How to use `InfluxDB` and `Grafana` to monitor and visualize Spring Cloud Stream application metrics.

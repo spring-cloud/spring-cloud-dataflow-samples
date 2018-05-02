@@ -17,6 +17,9 @@ include::streaming/custom-apps/celsius-converter-processor/main.adoc[]
 include::tasks/simple-batch-job/main.adoc[]
 include::tasks/file-ingest/main.adoc[]
 
+== Stream Launching Batch Job
+include::batch/file-ingest-sftp/main.adoc[]
+
 == Analytics
 include::analytics/twitter-analytics/main.adoc[]
 

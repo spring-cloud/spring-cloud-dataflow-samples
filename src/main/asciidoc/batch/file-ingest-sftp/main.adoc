@@ -1,0 +1,236 @@
+
+=== Batch File Ingest - SFTP
+
+In the <<Batch File Ingest>> demonstration we built a link:https://projects.spring.io/spring-batch[Spring Batch] application that would deploy into link:https://cloud.spring.io/spring-cloud-dataflow[Spring Cloud Data Flow] as a task and process a file embedded in the batch job JAR. This time we will build upon that sample but rather than deploying as a task in Spring Cloud Data Flow, we will create a link:https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#spring-cloud-dataflow-streams[Stream]. This stream will poll an SFTP server and for each new file that it finds it launches	 the batch job to download the file and process it.
+
+==== Prerequisites
+
+* Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
+
+* Running instance of link:https://redis.io/download[Redis]
+
+* A Running Data Flow Server
+include::{docs_dir}/local-server.adoc[]
+
+* A Running Data Flow Shell
+include::{docs_dir}/shell.adoc[]
+
+* Either a remote or local host accepting SFTP connections.
+
+* A database tool such as link:https://dbeaver.jkiss.org/download/[DBeaver] to inspect the database contents
+
+NOTE: To simplify the dependencies and configuration in this example, we will use our local machine acting as an SFTP server.
+
+==== Batch File Ingest SFTP Demo Overview
+
+The source for the demo project is located in the `batch/file-ingest-sftp` directory at the top-level of this repository. The code in this directory is built upon the same code found in <<Batch File Ingest>>.
+
+The key modifications from the <<Batch File Ingest>> sample are:
+
+* `BatchConfiguration` - The main change to this class is the addition of a link:https://docs.spring.io/spring-batch/trunk/apidocs/org/springframework/batch/core/StepExecutionListener.html[`StepExecutionLister`]. This listener gets set into the configuration of `step1` so on execution of the step, the listener will fetch the provided file. Since we are now fetching a file from a remote resource and downloading it for processing, we obtain the remote file location from a link:https://docs.spring.io/spring-batch/trunk/apidocs/org/springframework/batch/core/JobParameter.html[`JobParameter`] named `remoteFilePath` and the path to where the downloaded file will be stored as under the `JobParameter` named `localFilePath`.
+
+* `SftpRemoteResource` - To obtain the file from SFTP, this class was created utilizing the link:https://docs.spring.io/spring-integration/api/org/springframework/integration/sftp/session/SftpRemoteFileTemplate.html[`SftpRemoteFileTemplate`] class from link:https://projects.spring.io/spring-integration/[Spring Integration]. We create a new bean from this class in `BatchConfiguration` and the `StepExecutionListener` uses it to fetch files.
+
+Additionally we use Redis to persist the paths of files we have seen on the SFTP server. We persist this data rather than storing it in memory so the the seen files won't be sent for processing in the event of a failure.
+
+==== Building and Running the Demo
+
+. Build the demo JAR
++
+From the root of this project:
++
+```
+$ cd batch/file-ingest-sftp
+$ mvn clean package
+```
++
+
+. Create the data directories
++
+Now we create directories where the batch job expects to find files that would be on the remote SFTP server as well as where they should be transferred locally. These paths must exist prior to running the batch job.
++
+NOTE: If you are using a non-local SFTP server, the `/tmp/remote-files` directory would be created on the SFTP server and `/tmp/local-files` would be created on your local machine.
++
+```
+$ mkdir -p /tmp/remote-files /tmp/local-files
+```
++
+
+. Register the the SFTP source and the Task Launcher Local sink
++
+With our Spring Cloud Data Flow server running, we register the `SFTP` source and `task-launcher-local` sink. The `SFTP` source application will do the work of polling for new files and when received, it sends a message to the `task-launcher-local` to launch the batch job for that file.
++
+In the Spring Cloud Data Flow shell:
++
+[source,console,options=nowrap]
+----
+dataflow:>app register --name sftp --type source --uri maven://org.springframework.cloud.stream.app:sftp-source-kafka:2.0.0.BUILD-SNAPSHOT
+Successfully registered application 'source:sftp'
+dataflow:>app register --name task-launcher-local --type sink --uri maven://org.springframework.cloud.stream.app:task-launcher-local-sink-kafka:2.0.0.M1
+Successfully registered application 'sink:task-launcher-local'
+----
++
+
+. Create and deploy the stream
++
+Now lets create and deploy the stream which will start polling the SFTP server and when new files arrive launch the batch job.
++
+NOTE: you must replace `--username=user`, `--password=pass` and `--batch-resource-uri=file:////path/to/sftp-ingest.jar` below to their respective values. The `--username=` and `--password=` parameters are the credentials for your local (or remote) user and `--batch-resource-uri=` is the fully qualified path to the sample ingest JAR we built above. If rather than using the local system as an SFTP server, to specify the host use the `--host=` parameter and optionally `--port=`. If not defined, `--host` defaults to `127.0.0.1` and port defaults to `22`.
++
+[source,console,options=nowrap]
+----
+dataflow:>stream create --name inboundSftp --definition "sftp --username=user --password=pass --allow-unknown-keys=true --task-launcher-output=true --remote-dir=/tmp/remote-files/ --batch-resource-uri=file:////path/to/sftp-ingest.jar --data-source-url=jdbc:h2:tcp://localhost:19092/mem:dataflow --data-source-user-name=sa --local-file-path-job-parameter-value=/tmp/local-files/ | task-launcher-local" --deploy
+Created new stream 'inboundSftp'
+Deployment request has been sent
+----
++
+
+. Verify Stream deployment
++
+We can see the status of the streams to be deployed with `stream list`, for example:
++
+[source,console,options=nowrap]
+----
+dataflow:>stream list
+╔═══════════╤═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╤═════════════╗
+║Stream Name│                                                                     Stream Definition                                                                     │   Status    ║
+╠═══════════╪═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╪═════════════╣
+║inboundSftp│sftp --username=user --password=****** --allow-unknown-keys=true --task-launcher-output=true --remote-dir=/tmp/remote-files/                               │The stream   ║
+║           │--batch-resource-uri=file:///path/to/spring-cloud-dataflow-samples/batch/file-ingest-sftp/target/ingest-sftp-1.0.0.jar                                     │has been     ║
+║           │--data-source-url=jdbc:h2:tcp://localhost:19092/mem:dataflow --data-source-user-name=sa --local-file-path-job-parameter-value=/tmp/local-files/ |          │successfully ║
+║           │task-launcher-local                                                                                                                                        │deployed     ║
+╚═══════════╧═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╧═════════════╝
+----
++
+
+. Inspecting logs
++
+In the event the stream failed to deploy, or you would like to inspect the logs for any reason, the log paths to applications created within the `inboundSftp` stream will be printed to console where the Spring Cloud Data Flow server was launched from, for example:
++
+[source,console,options=nowrap]
+----
+2018-04-27 11:13:50.361  INFO 46308 --- [nio-9393-exec-8] o.s.c.d.spi.local.LocalAppDeployer       : Deploying app with deploymentId inboundSftp.task-launcher-local instance 0.
+   Logs will be in /var/folders/6x/tgtx9xbn0x16xq2sx1j2rld80000gn/T/spring-cloud-deployer-1671726770179703111/inboundSftp-1524842030314/inboundSftp.task-launcher-local
+...
+...
+2018-04-27 11:13:50.369  INFO 46308 --- [nio-9393-exec-8] o.s.c.d.spi.local.LocalAppDeployer       : Deploying app with deploymentId inboundSftp.sftp instance 0.
+   Logs will be in /var/folders/6x/tgtx9xbn0x16xq2sx1j2rld80000gn/T/spring-cloud-deployer-1671726770179703111/inboundSftp-1524842030363/inboundSftp.sftp
+----
++
+In this example, the logs for the `SFTP` application would be in:
++
+```
+/var/folders/6x/tgtx9xbn0x16xq2sx1j2rld80000gn/T/spring-cloud-deployer-1671726770179703111/inboundSftp-1524842030363/inboundSftp.sftp
+```
++
+The log files contained in this directory would be useful to debug issues such as SFTP connection failures.
++
+Additionally, the logs for the `task-launcher-local` application would be in:
++
+```
+/var/folders/6x/tgtx9xbn0x16xq2sx1j2rld80000gn/T/spring-cloud-deployer-1671726770179703111/inboundSftp-1524842030314/inboundSftp.task-launcher-local
+```
++
+Since we utilize the `task-launcher-local` application to launch batch jobs upon receiving new files, this file would contain the start up logs of the `task-launcher-local` application but also print out the log paths to all applications deployed from it. The log files for each launched task can also be inspected as needed for debugging or verification.
++
+
+. Add data
++
+Normally data would be arriving on an SFTP server, but since we are running this sample locally we will simulate that by adding data into the path specified by `--remote-dir`. A sample data file can be found in the `data/` directory of the sample project.
++
+Lets copy `data/people.csv` into the `/tmp/remote-files` directory which is acting as the remote SFTP server directory. This file will be detected by the SFTP application that is polling the remote directory and launch a batch job for processing.
++
+```
+$ cp data/people.csv /tmp/remote-files
+```
++
+
+. Inspect Job Executions
++
+After data is received and the batch job runs, it will be recorded as a Job Execution. We can view job executions by for example issuing the following command in the Spring Cloud Data Flow shell:
++
+[source,console,options=nowrap]
+----
+dataflow:>job execution list
+╔═══╤═══════╤═════════╤════════════════════════════╤═════════════════════╤══════════════════╗
+║ID │Task ID│Job Name │         Start Time         │Step Execution Count │Definition Status ║
+╠═══╪═══════╪═════════╪════════════════════════════╪═════════════════════╪══════════════════╣
+║1  │1      │ingestJob│Tue May 01 23:34:05 EDT 2018│1                    │Destroyed         ║
+╚═══╧═══════╧═════════╧════════════════════════════╧═════════════════════╧══════════════════╝
+----
++
+As well as list more details about that specific job execution:
++
+[source,console,options=nowrap]
+----
+dataflow:>job execution display --id 1
+╔═══════════════════════╤════════════════════════════╗
+║          Key          │           Value            ║
+╠═══════════════════════╪════════════════════════════╣
+║Job Execution Id       │1                           ║
+║Task Execution Id      │1                           ║
+║Task Instance Id       │1                           ║
+║Job Name               │ingestJob                   ║
+║Create Time            │Tue May 01 23:34:05 EDT 2018║
+║Start Time             │Tue May 01 23:34:05 EDT 2018║
+║End Time               │Tue May 01 23:34:06 EDT 2018║
+║Running                │false                       ║
+║Stopping               │false                       ║
+║Step Execution Count   │1                           ║
+║Execution Status       │COMPLETED                   ║
+║Exit Status            │COMPLETED                   ║
+║Exit Message           │                            ║
+║Definition Status      │Destroyed                   ║
+║Job Parameters         │                            ║
+║run.id(LONG)           │1                           ║
+║remoteFilePath(STRING) │/tmp/remote-files/people.csv║
+║localFilePath(STRING)  │/tmp/local-files/people.csv ║
+╚═══════════════════════╧════════════════════════════╝
+----
++
+. Verify data
++
+When the the batch job runs, we download the file to the local directory of `/tmp/local-files` and then transform that data into uppercase names and store the data in the database.
++
+You may use any database tool that supports the H2 database to inspect the data. In this example we use the database tool `DBeaver`. Lets inspect the table to ensure our data was processed correctly.
++
+Within DBeaver, create a connection to the database using the JDBC URL of `jdbc:h2:tcp://localhost:19092/mem:dataflow`. Upon connection expand the `PUBLIC` schema, then expand `Tables` and then double click on the table `PEOPLE`. When the table data loads, click the "Data" tab and the transformed data from the CSV file will appear containing the records from the file uppercased.
++
+. Seen file caching
++
+Since we are storing file paths that have been seen on the SFTP server, updating or adding to `/tmp/remote-files/people.csv` will not cause a new batch job to run. If using the example data file above simply copy the file as a new name, for example:
++
+```
+$ cp data/people.csv /tmp/remote-files/people2.csv
+```
++
+Refreshing the contents of the database table will show the new data that was transformed and stored. The `job execution list`, `job execution display --id X` and database inspection commands above will let you view details about subsequent runs spawned from new files arriving.
++
+Alternatively you can delete a single seen files from Redis by for example:
++
+```
+127.0.0.1:6379> DEL sftpSource "/tmp/remote-files/people.csv"
+(integer) 1
+127.0.0.1:6379>
+```
++
+Or delete all seen files, for example:
++
+```
+127.0.0.1:6379> DEL sftpSource
+(integer) 1
+127.0.0.1:6379>
+```
++
+These files should be deleted from `/tmp/remote-files` prior to deleting them from Redis, otherwise they will be seen again and re-processed.
++
+
+
+==== Summary
+
+In this sample, you have learned:
+
+* How to integrate SFTP file fetching into your batch job
+* How to create and launch a stream to poll files on an SFTP server and launch a batch job
+* How to verify status via logs and shell commands
+

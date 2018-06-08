@@ -226,6 +226,283 @@ These files should be deleted from `/tmp/remote-files` prior to deleting them fr
 +
 
 
+==== Using the Cloud Foundry Server
+
+===== Additional Prerequisites
+
+* Cloud Foundry instance
+* A `mysql` service instance
+* A `rabbit` service instance
+* A `redis` service instance
+* The Spring Cloud Data Flow Cloud Foundry Server
+* An SFTP server accessible from the Cloud Foundry instance
+
+The Cloud Foundry Data Flow Server is Spring Boot application available for http://cloud.spring.io/spring-cloud-dataflow/#platform-implementations/[download] or you can https://github.com/spring-cloud/spring-cloud-dataflow-server-cloudfoundry[build] it yourself.
+If you build it yourself, the executable jar will be in `spring-cloud-dataflow-server-cloudfoundry/target`
+
+NOTE: Although you can run the Data Flow Cloud Foundry Server locally and configure it to deploy to any Cloud Foundry instance, we will
+deploy the server to Cloud Foundry as recommended.
+
+. Verify that CF instance is reachable (Your endpoint urls will be different from what is shown here).
++
+
+```
+$ cf api
+API endpoint: https://api.system.io (API version: ...)
+
+$ cf apps
+Getting apps in org [your-org] / space [your-space] as user...
+OK
+
+No apps found
+```
+. Follow the instructions to deploy the https://docs.spring.io/spring-cloud-dataflow-server-cloudfoundry/docs/current/reference/htmlsingle[Spring Cloud Data Flow Cloud Foundry server]. The following manifest file can be used, replacing values as needed:
++
+[source,console,options=nowrap]
+----
+---
+applications:
+- name: dataflow-server
+  host: dataflow-server
+  memory: 2G
+  disk_quota: 2G
+  instances: 1
+  path: /PATH/TO/SPRING-CLOUD-DATAFLOW-SERVER-CLOUDFOUNDRY-JAR
+  env:
+    SPRING_APPLICATION_NAME: dataflow-server
+    SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_URL: YOUR_CF_URL
+    SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_ORG: YOUR_CF_ORG
+    SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_SPACE: YOUR_CF_SPACE
+    SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_DOMAIN: YOUR_CF_DOMAIN
+    SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_USERNAME: YOUR_CF_USER
+    SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_PASSWORD: YOUR_CF_PASSWORD
+    SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_STREAM_SERVICES: rabbit
+    SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_TASK_SERVICES: mysql
+    SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_SKIP_SSL_VALIDATION: true
+    SPRING_APPLICATION_JSON: '{"maven": { "remote-repositories": { "repo1": { "url": "https://repo.spring.io/libs-release"}, "repo2": { "url": "https://repo.spring.io/libs-snapshot"}, "repo3": { "url": "https://repo.spring.io/libs-milestone"} } } }'
+services:
+  - mysql
+  - rabbit
+  - redis
+----
++
+If your Cloud Foundry installation is behind a firewall, you may need to install the stream apps used in this sample in your internal Maven repository and https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#configuration-maven[configure] the server to access that repository.
+. Once you have successfully executed `cf push`, verify the dataflow server is running
++
+
+```
+$ cf apps
+Getting apps in org [your-org] / space [your-space] as user...
+OK
+
+name                 requested state   instances   memory   disk   urls
+dataflow-server      started           1/1         1G       1G     dataflow-server.app.io
+```
+
+. Notice that the `dataflow-server` application is started and ready for interaction via the url endpoint
+
+. Connect the `shell` with `server` running on Cloud Foundry, e.g., `http://dataflow-server.app.io`
++
+```
+$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW-SHELL-JAR>
+$ java -jar spring-cloud-dataflow-shell-<VERSION>.jar
+
+  ____                              ____ _                __
+ / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
+ \___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
+  ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
+ |____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
+  ____ |_|    _          __|___/                 __________
+ |  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
+ | | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
+ | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
+ |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
+
+
+Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
+server-unknown:>
+```
++
+```
+server-unknown:>dataflow config server http://dataflow-server.app.io
+Successfully targeted http://dataflow-server.app.io
+dataflow:>
+```
++
+
+
+===== Building and Running the Demo
+
+. Build the demo JAR
++
+Building upon the code in `batch/file-ingest-sftp`, in this demo we utilize https://cloud.spring.io/spring-cloud-connectors/[Spring Cloud Connectors] to automatically bind Cloud Foundry services such as MySQL and Redis.
++
+From the root of this project:
++
+```
+$ cd batch/file-ingest-sftp-cf
+$ mvn clean package
+```
++
+The resulting `target/ingest-sftp-cf-1.0.0.jar` artifact must be uploaded to a remote location such as an HTTP server or Maven repository that is accessible to your Cloud Foundry installation. For convenience, a pre-built demo artifact can be found at: https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow-samples/master/batch/file-ingest-sftp-cf/artifacts/ingest-sftp-cf-1.0.0.jar[https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow-samples/master/batch/file-ingest-sftp-cf/artifacts/ingest-sftp-cf-1.0.0.jar]
+
+. Create the data directory
++
+A directory must be created on the SFTP server where the batch job will find files and download for processing. This path must exist prior to running the batch job can can be any location that is accessible by the configured SFTP user. On the SFTP server create a directory, for example:
++
+```
+$ mkdir /tmp/remote-files
+```
++
+
+. Register the the SFTP source and the Task Launcher Cloud Foundry sink
++
+With the Spring Cloud Data Flow server running, the `SFTP` source and `task-launcher-cloudfoundry` sink needs to be registered. The `SFTP` source application will do the work of polling for new files and when received, it sends a message to the `task-launcher-cloudfoundry` to launch the batch job for that file.
++
+In the Spring Cloud Data Flow shell:
++
+[source,console,options=nowrap]
+----
+dataflow:>app register --name sftp --type source --uri maven://org.springframework.cloud.stream.app:sftp-source-rabbit:2.0.0.BUILD-SNAPSHOT
+Successfully registered application 'source:sftp'
+dataflow:>app register --name task-launcher-cloudfoundry --type sink --uri maven://org.springframework.cloud.stream.app:task-launcher-cloudfoundry-sink-rabbit:2.0.0.BUILD-SNAPSHOT
+Successfully registered application 'sink:task-launcher-local'
+----
++
+
+. Create and deploy the stream
++
+Now a stream needs to be created that will poll the SFTP server, launching the batch job when new files arrive.
++
+Create the stream:
++
+NOTE: You must replace `--username=user`, `--password=pass` and `--host=1.1.1.1` below to their respective values. The `--username=` and `--password=` parameters are the credentials for your remote SFTP user. The `--batch-resource-uri=` parameter is the path to the batch artifact to use. In this Stream definition, the published sample batch artifact JAR is used. If you would like to use a custom built artifact, replace this value with the artifact location.
++
+[source,console]
+----
+dataflow:>stream create --name inboundSftp --definition "sftp --username=user --password=pass --host=1.1.1.1 --allow-unknown-keys=true --task-launcher-output=true --remote-dir=/tmp/remote-files --batch-resource-uri=https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow-samples/master/batch/file-ingest-sftp-cf/artifacts/ingest-sftp-cf-1.0.0.jar --local-file-path-job-parameter-value=/tmp/ | task-launcher-cloudfoundry --spring.cloud.deployer.cloudfoundry.services=mysql"
+Created new stream 'inboundSftp'
+dataflow:>
+----
++
+Deploy the stream:
++
+NOTE: You must replace `CF_USER`, `CF_PASSWORD`, `CF_ORG`, `CF_SPACE`, and `CF_URL` below with the appropriate values for your setup. The values will be used by the task launcher to launch tasks.
++
+[source,console]
+----
+dataflow:>stream deploy inboundSftp --properties "app.task-launcher-cloudfoundry.spring.cloud.deployer.cloudfoundry.username=CF_USER,app.task-launcher-cloudfoundry.spring.cloud.deployer.cloudfoundry.password=CF_PASSWORD,app.task-launcher-cloudfoundry.spring.cloud.deployer.cloudfoundry.org=CF_ORG,app.task-launcher-cloudfoundry.spring.cloud.deployer.cloudfoundry.space=CF_SPACE,app.task-launcher-cloudfoundry.spring.cloud.deployer.cloudfoundry.url=CF_URL,app.task-launcher-cloudfoundry.spring.cloud.deployer.cloudfoundry.skip-ssl-validation=true,app.task-launcher-cloudfoundry.spring.cloud.deployer.cloudfoundry.apiTimeout=30000,deployer.sftp.cloudfoundry.services=redis"
+Deployment request has been sent for stream 'inboundSftp'
+
+dataflow:>
+----
++
+
+. Verify Stream deployment
++
+The status of the stream to be deployed can be queried with `stream list`, for example:
++
+[source,console,options=nowrap]
+----
+dataflow:>stream list
+╔═══════════╤═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║Stream Name│                                                                     Stream Definition                                                                                │      Status      ║
+╠═══════════╪═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║inboundSftp│sftp --password='******' --local-file-path-job-parameter-value=/tmp/ --host=1.1.1.1 --remote-dir=/tmp/remote-files --allow-unknown-keys=true                          │The stream has    ║
+║           │--task-launcher-output=true                                                                                                                                           |been successfully ║
+║           |--batch-resource-uri=https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow-samples/master/batch/file-ingest-sftp-cf/artifacts/ingest-sftp-cf-1.0.0.jar |deployed          ║
+║           |--username=user | task-launcher-cloudfoundry --spring.cloud.deployer.cloudfoundry.services=mysql                                                                      |                  ║
+╚═══════════╧═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+----
++
+
+. Inspecting logs
++
+In the event the stream failed to deploy, or you would like to inspect the logs for any reason, the logs can be obtained from individual applications. First list the deployed apps:
++
+[source,console,options=nowrap]
+----
+$ cf apps
+Getting apps in org cf_org / space cf_space as cf_user...
+OK
+
+name                                                             requested state   instances   memory   disk   urls
+dataflow-server                                                  started           1/1         2G       2G     dataflow-server.app.io
+dataflow-server-N5RYLDj-inboundSftp-sftp                         started           1/1         1G       1G     dataflow-server-N5RYLDj-inboundSftp-sftp.dataflow-server.app.io
+dataflow-server-N5RYLDj-inboundSftp-task-launcher-cloudfoundry   started           1/1         1G       1G     dataflow-server-N5RYLDj-inboundSftp-task-launcher-cloudfoundry.dataflow-server.app.io
+----
++
+In this example, the logs for the `SFTP` application can be viewed by:
++
+```
+cf logs dataflow-server-N5RYLDj-inboundSftp-sftp --recent
+```
++
+The log files of this application would be useful to debug issues such as SFTP connection failures.
++
+Additionally, the logs for the `task-launcher-local` application can be viewed by:
++
+```
+cf logs dataflow-server-N5RYLDj-inboundSftp-task-launcher-cloudfoundry --recent
+```
++
+Since the `task-launcher-cloudfoundry` application is used to launch batch jobs upon receiving new files, this log would contain the start up logs of the `task-launcher-cloudfoundry` application but also log the name and other information of all applications deployed from it. The application log file for each launched task can also be inspected as needed for debugging or verification.
++
+
+. Add data
++
+A sample data file can be found in the `data/` directory of the sample project. Copy `data/people.csv` into the `/tmp/remote-files` directory of the remote SFTP server directory. This file will be detected by the SFTP application that is polling the remote directory and launch a batch job for processing.
++
+
+. Inspect Job Executions
++
+After data is received and the batch job runs, it will be recorded as a Job Execution. We can view job executions by for example issuing the following command in the Spring Cloud Data Flow shell:
++
+[source,console,options=nowrap]
+----
+dataflow:>job execution list
+╔═══╤═══════╤═════════╤════════════════════════════╤═════════════════════╤══════════════════╗
+║ID │Task ID│Job Name │         Start Time         │Step Execution Count │Definition Status ║
+╠═══╪═══════╪═════════╪════════════════════════════╪═════════════════════╪══════════════════╣
+║1  │1      │ingestJob│Thu Jun 07 13:46:42 EDT 2018│1                    │Destroyed         ║
+╚═══╧═══════╧═════════╧════════════════════════════╧═════════════════════╧══════════════════╝
+----
++
+As well as list more details about that specific job execution:
++
+[source,console,options=nowrap]
+----
+dataflow:>job execution display --id 1
+╔═══════════════════════╤════════════════════════════╗
+║          Key          │           Value            ║
+╠═══════════════════════╪════════════════════════════╣
+║Job Execution Id       │1                           ║
+║Task Execution Id      │1                           ║
+║Task Instance Id       │1                           ║
+║Job Name               │ingestJob                   ║
+║Create Time            │Thu Jun 07 13:46:42 EDT 2018║
+║Start Time             │Thu Jun 07 13:46:42 EDT 2018║
+║End Time               │Thu Jun 07 13:46:44 EDT 2018║
+║Running                │false                       ║
+║Stopping               │false                       ║
+║Step Execution Count   │1                           ║
+║Execution Status       │COMPLETED                   ║
+║Exit Status            │COMPLETED                   ║
+║Exit Message           │                            ║
+║Definition Status      │Destroyed                   ║
+║Job Parameters         │                            ║
+║run.id(LONG)           │1                           ║
+║remoteFilePath(STRING) │/tmp/remote-files/1012.csv  ║
+║localFilePath(STRING)  │/tmp/1012.csv               ║
+╚═══════════════════════╧════════════════════════════╝
+----
++
+. Verification of Data and Seen Files
++
+Verification of data loaded by the batch job and seen file tracking can be accomplished in the same way as with Local Server using the appropriate tools. Consult the documentation for the service broker on your platform (PWS, PCF, etc) for information on how to connect to the backing service.
++
+
+
 ==== Summary
 
 In this sample, you have learned:
@@ -233,4 +510,5 @@ In this sample, you have learned:
 * How to integrate SFTP file fetching into your batch job
 * How to create and launch a stream to poll files on an SFTP server and launch a batch job
 * How to verify status via logs and shell commands
+* How to run the SFTP file ingest batch job on Cloud Foundry
 

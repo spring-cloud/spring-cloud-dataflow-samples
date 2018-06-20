@@ -282,7 +282,6 @@ applications:
     SPRING_APPLICATION_JSON: '{"maven": { "remote-repositories": { "repo1": { "url": "https://repo.spring.io/libs-release"}, "repo2": { "url": "https://repo.spring.io/libs-snapshot"}, "repo3": { "url": "https://repo.spring.io/libs-milestone"} } } }'
 services:
   - mysql
-  - rabbit
   - redis
 ----
 +

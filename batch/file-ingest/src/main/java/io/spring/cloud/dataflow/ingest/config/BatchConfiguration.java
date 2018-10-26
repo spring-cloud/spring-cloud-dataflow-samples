@@ -33,7 +33,6 @@ import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -44,19 +43,24 @@ import org.springframework.core.io.ResourceLoader;
  * Class used to configure the batch job related beans.
  *
  * @author Chris Schaefer
+ * @author David Turanski
  */
 @Configuration
 @EnableBatchProcessing
 public class BatchConfiguration {
+
 	private final DataSource dataSource;
+
 	private final ResourceLoader resourceLoader;
+
 	private final JobBuilderFactory jobBuilderFactory;
+
 	private final StepBuilderFactory stepBuilderFactory;
 
 	@Autowired
 	public BatchConfiguration(final DataSource dataSource, final JobBuilderFactory jobBuilderFactory,
-							final StepBuilderFactory stepBuilderFactory,
-							final ResourceLoader resourceLoader) {
+		final StepBuilderFactory stepBuilderFactory,
+		final ResourceLoader resourceLoader) {
 		this.dataSource = dataSource;
 		this.resourceLoader = resourceLoader;
 		this.jobBuilderFactory = jobBuilderFactory;
@@ -65,12 +69,17 @@ public class BatchConfiguration {
 
 	@Bean
 	@StepScope
-	public ItemStreamReader<Person> reader(@Value("#{jobParameters['filePath']}") String filePath) throws Exception {
+	public ItemStreamReader<Person> reader(@Value("#{jobParameters['localFilePath']}") String filePath) {
+
+		if (!filePath.matches("[a-z]+:.*")) {
+			filePath = "file:" + filePath;
+		}
+
 		return new FlatFileItemReaderBuilder<Person>()
 			.name("reader")
 			.resource(resourceLoader.getResource(filePath))
 			.delimited()
-			.names(new String[] {"firstName", "lastName"})
+			.names(new String[] { "firstName", "lastName" })
 			.fieldSetMapper(new PersonFieldSetMapper())
 			.build();
 	}
@@ -90,7 +99,7 @@ public class BatchConfiguration {
 	}
 
 	@Bean
-	public Job ingestJob() throws Exception {
+	public Job ingestJob() {
 		return jobBuilderFactory.get("ingestJob")
 			.incrementer(new RunIdIncrementer())
 			.flow(step1())
@@ -99,7 +108,7 @@ public class BatchConfiguration {
 	}
 
 	@Bean
-	public Step step1() throws Exception {
+	public Step step1() {
 		return stepBuilderFactory.get("ingest")
 			.<Person, Person>chunk(10)
 			.reader(reader(null))

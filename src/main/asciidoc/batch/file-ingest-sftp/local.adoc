@@ -1,0 +1,209 @@
+[[sftp-file-ingest-local]]
+==== Using the Local Server
+
+===== Additional Prerequisites
+
+* A running local Data Flow Server
+include::{docs_dir}/local-server.adoc[]
+
+* Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
+* Either a remote or local host accepting SFTP connections.
+
+* A database tool such as link:https://dbeaver.jkiss.org/download/[DBeaver] to inspect the database contents
+
+NOTE: To simplify the dependencies and configuration in this example, we will use our local machine acting as an SFTP server.
+
+==== Building and Running the Demo
+
+. Build the demo JAR
++
+From the root of this project:
++
+```
+$ cd batch/file-ingest
+$ mvn clean package
+```
+NOTE: For convenience, you can skip this step.
+The jar is published to the  https://repo.spring.io/libs-snapshot-local/io/spring/cloud/dataflow/ingest/ingest/1.0.0.BUILD-SNAPSHOT/[Spring Maven repository]
++
+
+. Create the data directories
++
+Now we create a remote directory on the SFTP server and a local directory where the batch job expects to find files.
++
+NOTE: If you are using a remote SFTP server, create the remote directory on the SFTP server.
++
+```
+$ mkdir -p /tmp/remote-files /tmp/local-files
+```
++
+
+. Register the `sftp-dataflow` source and the `task-launcher-dataflow` sink
++
+With our Spring Cloud Data Flow server running, we register the `sftp-dataflow` source and `task-launcher-dataflow` sink.
+The `sftp-dataflow` source application will do the work of polling the remote directory for new files and downloading them to the local directory.
+As each file is received, it emits a message for the `task-launcher-dataflow` sink to launch the task for that file.
++
+In the Spring Cloud Data Flow shell:
++
+[source,console,options=nowrap]
+----
+dataflow:>app register --name sftp --type source --uri maven://org.springframework.cloud.stream.app:sftp-dataflow-source-kafka:2.0.3.BUILD-SNAPSHOT
+Successfully registered application 'source:sftp'
+dataflow:>app register --name task-launcher --type sink --uri maven://org.springframework.cloud.stream.app:task-launcher-dataflow-sink-kafka:1.0.0.BUILD-SNAPSHOT
+Successfully registered application 'sink:task-launcher'
+----
++
+. Register and create the file ingest task. If using the published jar set `--uri maven://io.spring.cloud.dataflow.ingest:ingest:1.0.0.BUILD-SNAPSHOT`:
+[source,console,options=nowrap]
+dataflow:>app register --name fileIngest --type task --uri file:///path/to/target/ingest-X.X.X.jar
+Successfully registered application 'task:fileIngest'
+dataflow:>task create fileIngestTask --definition fileIngest
+Created new task 'fileIngestTask'
++
+. Create and deploy the stream
++
+Now lets create and deploy the stream which will start polling the SFTP server and when new files arrive launch the batch job.
++
+NOTE: Replace `<user>` and '<pass>` below.
+The `<username>` and `<password>` values are the credentials for the local (or remote) user.
+If not using a local SFTP server, specify the host using the `--host`, and optionally `--port`, parameters.
+If not defined, `host` defaults to `127.0.0.1` and `port` defaults to `22`.
++
+[source,console,options=nowrap]
+----
+dataflow:>stream create --name inboundSftp --definition "sftp --username=<user> --password=<pass> --allow-unknown-keys=true --task.launch.request.taskName=fileIngestTask --remote-dir=/tmp/remote-files/  --localDir=/tmp/local-files/ | task-launcher" --deploy
+Created new stream 'inboundSftp'
+Deployment request has been sent
+----
++
+
+. Verify Stream deployment
++
+We can see the status of the streams to be deployed with `stream list`, for example:
++
+[source,console,options=nowrap]
+----
+dataflow:>stream list
+╔═══════════╤═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╤════════════════════════════╗
+║Stream Name│                                                         Stream Definition                                                         │           Status           ║
+╠═══════════╪═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╪════════════════════════════╣
+║inboundSftp│sftp --password='******' --remote-dir=/tmp/remote-files/ --localDir=/tmp/local-files/ --task.launch.request.taskName=fileIngestTask│The stream has been         ║
+║           │--allow-unknown-keys=true --username=<user> | task-launcher                                                                        │successfully deployed       ║
+╚═══════════╧═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╧════════════════════════════╝
+----
++
+
+. Inspect logs
++
+In the event the stream failed to deploy, or you would like to inspect the logs for any reason, you can get the location of the logs to applications created for the `inboundSftp` stream  using the `runtime apps` command:
+[source,console,options=nowrap]
+dataflow:>runtime apps
+╔═══════════════════════════╤═══════════╤════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║   App Id / Instance Id    │Unit Status│                                                                     No. of Instances / Attributes                                                                      ║
+╠═══════════════════════════╪═══════════╪════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║inboundSftp.sftp           │ deployed  │                                                                                   1                                                                                    ║
+╟┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┼┈┈┈┈┈┈┈┈┈┈┈┼┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈╢
+║                           │           │       guid = 23057                                                                                                                                                     ║
+║                           │           │        pid = 71927                                                                                                                                                     ║
+║                           │           │       port = 23057                                                                                                                                                     ║
+║inboundSftp.sftp-0         │ deployed  │     stderr = /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-deployer-120915912946760306/inboundSftp-1540821009913/inboundSftp.sftp/stderr_0.log         ║
+║                           │           │     stdout = /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-deployer-120915912946760306/inboundSftp-1540821009913/inboundSftp.sftp/stdout_0.log         ║
+║                           │           │        url = http://192.168.64.1:23057                                                                                                                                 ║
+║                           │           │working.dir = /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-deployer-120915912946760306/inboundSftp-1540821009913/inboundSftp.sftp                      ║
+╟───────────────────────────┼───────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╢
+║inboundSftp.task-launcher  │ deployed  │                                                                                   1                                                                                    ║
+╟┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┼┈┈┈┈┈┈┈┈┈┈┈┼┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈╢
+║                           │           │       guid = 60081                                                                                                                                                     ║
+║                           │           │        pid = 71926                                                                                                                                                     ║
+║                           │           │       port = 60081                                                                                                                                                     ║
+║inboundSftp.task-launcher-0│ deployed  │     stderr = /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-deployer-120915912946760306/inboundSftp-1540820991695/inboundSftp.task-launcher/stderr_0.log║
+║                           │           │     stdout = /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-deployer-120915912946760306/inboundSftp-1540820991695/inboundSftp.task-launcher/stdout_0.log║
+║                           │           │        url = http://192.168.64.1:60081                                                                                                                                 ║
+║                           │           │working.dir = /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-deployer-120915912946760306/inboundSftp-1540820991695/inboundSftp.task-launcher             ║
+╚═══════════════════════════╧═══════════╧════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
++
+
+. Add data
++
+Normally data would be uploaded to an SFTP server.
+We will simulate this by copying a file into the directory specified by `--remote-dir`.
+Sample data can be found in the `data/` directory of the <<Batch File Ingest>> project.
++
+Copy `data/name-list.csv` into the `/tmp/remote-files` directory which the SFTP source is monitoring.
+When this file is detected, the `sftp` source will download it to the  `/tmp/local-files` directory specified by `--local-dir`, and emit a Task Launch Request.
+The Task Launch Request includes the name of the task to launch along with the local file path, given as the command line argument `localFilePath`.
+Spring Batch binds each command line argument to a corresponding JobParameter.
+The FileIngestTask job processes the file given by the JobParameter named `localFilePath`.
+The `task-launcher` sink polls for messages using an exponential back-off.
+Since there have not been any recent requests, the task will launch within 30 seconds after the request is published.
++
+```
+$ cp data/name-list.csv /tmp/remote-files
+```
+When the batch job launches, you will see something like this in the SCDF console log:
+[source,console,options=nowrap]
+2018-10-26 16:47:24.879  INFO 86034 --- [nio-9393-exec-7] o.s.c.d.spi.local.LocalTaskLauncher      : Command to be executed: /Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home/jre/bin/java -jar <path-to>/batch/file-ingest/target/ingest-1.0.0.jar localFilePath=/tmp/local-files/name-list.csv --spring.cloud.task.executionid=1
+2018-10-26 16:47:25.100  INFO 86034 --- [nio-9393-exec-7] o.s.c.d.spi.local.LocalTaskLauncher      : launching task fileIngestTask-8852d94d-9dd8-4760-b0e4-90f75ee028de
+   Logs will be in /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/fileIngestTask3100511340216074735/1540586844871/fileIngestTask-8852d94d-9dd8-4760-b0e4-90f75ee028de
++
+
+. Inspect Job Executions
++
+After data is received and the batch job runs, it will be recorded as a Job Execution. We can view job executions by for example issuing the following command in the Spring Cloud Data Flow shell:
++
+[source,console,options=nowrap]
+----
+dataflow:>job execution list
+╔═══╤═══════╤═════════╤════════════════════════════╤═════════════════════╤══════════════════╗
+║ID │Task ID│Job Name │         Start Time         │Step Execution Count │Definition Status ║
+╠═══╪═══════╪═════════╪════════════════════════════╪═════════════════════╪══════════════════╣
+║1  │1      │ingestJob│Tue May 01 23:34:05 EDT 2018│1                    │Created           ║
+╚═══╧═══════╧═════════╧════════════════════════════╧═════════════════════╧══════════════════╝
+----
++
+As well as list more details about that specific job execution:
++
+[source,console,options=nowrap]
+----
+dataflow:>job execution display --id 1
+╔═══════════════════════════════════════╤══════════════════════════════╗
+║                  Key                  │            Value             ║
+╠═══════════════════════════════════════╪══════════════════════════════╣
+║Job Execution Id                       │1                             ║
+║Task Execution Id                      │1                             ║
+║Task Instance Id                       │1                             ║
+║Job Name                               │ingestJob                     ║
+║Create Time                            │Fri Oct 26 16:57:51 EDT 2018  ║
+║Start Time                             │Fri Oct 26 16:57:51 EDT 2018  ║
+║End Time                               │Fri Oct 26 16:57:53 EDT 2018  ║
+║Running                                │false                         ║
+║Stopping                               │false                         ║
+║Step Execution Count                   │1                             ║
+║Execution Status                       │COMPLETED                     ║
+║Exit Status                            │COMPLETED                     ║
+║Exit Message                           │                              ║
+║Definition Status                      │Created                       ║
+║Job Parameters                         │                              ║
+║-spring.cloud.task.executionid(STRING) │1                             ║
+║run.id(LONG)                           │1                             ║
+║localFilePath(STRING)                  │/tmp/local-files/name-list.csv║
+╚═══════════════════════════════════════╧══════════════════════════════╝
+----
++
+. Verify data
++
+When the the batch job runs, it processes the file in the local directory `/tmp/local-files` and transforms each item to uppercase names and inserts it into the database.
++
+You may use any database tool that supports the H2 database to inspect the data.
+In this example we use the database tool `DBeaver`.
+Lets inspect the table to ensure our data was processed correctly.
++
+Within DBeaver, create a connection to the database using the JDBC URL `jdbc:h2:tcp://localhost:19092/mem:dataflow`, and user `sa` with no password.
+When connected, expand the `PUBLIC` schema, then expand `Tables` and then double click on the table `PEOPLE`.
+When the table data loads, click the "Data" tab to view the data.
++
+
+. You're done!
+

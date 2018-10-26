@@ -1,0 +1,253 @@
+[sftp-file-ingest-local]]
+==== Using the Cloud Foundry Server
+
+===== Additional Prerequisites
+
+NOTE: Running this demo in Cloud Foundry requires a shared file system that is accessed by apps running in different containers.
+This feature is provided by https://docs.pivotal.io/pivotalcf/2-3/devguide/services/using-vol-services.html[NFS Volume Services].
+To use Volume Services with SCDF, it is required that we provide `nfs` configuration via `cf create-service` rather than `cf bind-service`.
+Cloud Foundry introduced the `cf create-service` configuration option for Volume Services in version 2.3.
+
+* A Cloud Foundry instance v2.3+ with  NFS Volume Services https://docs.pivotal.io/pivotalcf/2-3/opsguide/enable-vol-services.html[enabled]
+* An SFTP server accessible from the Cloud Foundry instance
+* An `nfs` service instance properly configured
+
+NOTE: For this example, we use an NFS host configured to allow https://www.tldp.org/HOWTO/NFS-HOWTO/server.html[read-write access] to the Cloud Foundry instance.
+Create the `nfs` service instance using a command as below, where `share` specifies the NFS host and shared directory(`/export`), `uid` an `gid` specify an account that has read-write access to the shared directory, and `mount` is the container's mount path for each application bound to `nfs`:
+
+```
+$ cf create-service nfs Existing nfs -c '{"share":"<nfs_host_ip>/export","uid":"<uid>","gid":"<gid>", "mount":"/var/scdf"}'
+```
+
+* A `mysql` service instance
+* A `rabbit` service instance
+* https://github.com/pivotal-cf/PivotalMySQLWeb[PivotalMySQLWeb] or another database tool to view the data
+
+* The Spring Cloud Data Flow Cloud Foundry Server
+include::{docs_dir}/cloudfoundry-server.adoc[]
+
+===== Configuring the SCDF server
+
+For convenience, we will configure the SCDF server to bind all stream and task apps to the `nfs` service. Using the Cloud Foundry CLI,
+set the following environment variables (or set them in the manifest):
+```
+cf set-env <dataflow-server-app-name> SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_STREAM_SERVICES rabbitmq,nfs
+cf set-env <dataflow-server-app-name> SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_TASK_SERVICES mysql,nfs
+```
+
+NOTE: Normally, for security and operational efficiency, we may want more fine grained control of which apps bind to the nfs service.
+One way to do this is to set deployment properties when creating and deploying the stream, as shown below.
+
+===== Running the Demo
+
+
+The source code for the <<Batch File Ingest>> batch job is located in `batch/file-ingest`.
+The resulting executable jar file must be available in a location that is accessible to your Cloud Foundry instance, such as an HTTP server or Maven repository.
+For convenience, the jar is published to the  https://repo.spring.io/libs-snapshot-local/io/spring/cloud/dataflow/ingest/ingest/1.0.0.BUILD-SNAPSHOT/[Spring Maven repository]
+
+. Create the remote directory
++
+Create a directory on the SFTP server where the `sftp` source will detect files and download them for processing.
+This path must exist prior to running the demo and can be any location that is accessible by the configured SFTP user.
+On the SFTP server create a directory called `remote-files`, for example:
++
+```
+sftp> mkdir remote-files
+```
++
+. Create a shared NFS directory
++
+Create a directory on the NFS server that is accessible to the user, specified by `uid` and `gid`, used to create the nfs service:
++
+```
+$ sudo mkdir /export/shared-files
+$ sudo chown <uid>:<gid> /export/shared-files
+```
+. Register the `sftp-dataflow` source and the `tasklauncher-dataflow` sink
++
+With our Spring Cloud Data Flow server running, we register the `sftp-dataflow` source and `task-launcher-dataflow` sink.
+The `sftp-dataflow` source application will do the work of polling the remote directory for new files and downloading them to the local directory.
+As each file is received, it emits a message for the `task-launcher-dataflow` sink to launch the task to process the data from that file.
++
+In the Spring Cloud Data Flow shell:
++
+[source,console,options=nowrap]
+----
+dataflow:>app register --name sftp --type source --uri maven://org.springframework.cloud.stream.app:sftp-dataflow-source-rabbit:2.0.3.BUILD-SNAPSHOT
+Successfully registered application 'source:sftp'
+dataflow:>app register --name task-launcher --type sink --uri maven://org.springframework.cloud.stream.app:task-launcher-dataflow-sink-rabbit:1.0.0.BUILD-SNAPSHOT
+Successfully registered application 'sink:task-launcher'
+----
++
+. Register and create the file ingest task:
+[source,console,options=nowrap]
+dataflow:>app register --name fileIngest --type task --uri maven://io.spring.cloud.dataflow.ingest:ingest:1.0.0.BUILD-SNAPSHOT
+Successfully registered application 'task:fileIngest'
+dataflow:>task create fileIngestTask --definition fileIngest
+Created new task 'fileIngestTask'
++
+. Create and deploy the stream
++
+Now lets create and deploy the stream.
+Once deployed, the stream will start polling the SFTP server and, when new files arrive, launch the batch job.
++
+NOTE: Replace `<user>`, '<pass>`, and `<host>` below.
+The `<host>` is the SFTP server host, `<user>` and `<password>` values are the credentials for the remote user.
+Additionally, replace `--spring.cloud.dataflow.client.server-uri=http://<dataflow-server-route>` with the URL of your dataflow server, as shown by `cf apps`.
+If you have security enabled for the SCDF server, set the appropriate `spring.cloud.dataflow.client` options.
++
+[source, console, options=nowrap]
+----
+dataflow:> app info --name task-launcher --type sink
+╔══════════════════════════════╤══════════════════════════════╤══════════════════════════════╤══════════════════════════════╗
+║         Option Name          │         Description          │           Default            │             Type             ║
+╠══════════════════════════════╪══════════════════════════════╪══════════════════════════════╪══════════════════════════════╣
+║spring.cloud.dataflow.client.a│The login username.           │<none>                        │java.lang.String              ║
+║uthentication.basic.username  │                              │                              │                              ║
+║spring.cloud.dataflow.client.a│The login password.           │<none>                        │java.lang.String              ║
+║uthentication.basic.password  │                              │                              │                              ║
+║trigger.max-period            │The maximum polling period in │30000                         │java.lang.Integer             ║
+║                              │milliseconds. Will be set to  │                              │                              ║
+║                              │period if period > maxPeriod. │                              │                              ║
+║trigger.period                │The polling period in         │1000                          │java.lang.Integer             ║
+║                              │milliseconds.                 │                              │                              ║
+║trigger.initial-delay         │The initial delay in          │1000                          │java.lang.Integer             ║
+║                              │milliseconds.                 │                              │                              ║
+║spring.cloud.dataflow.client.s│Skip Ssl validation.          │true                          │java.lang.Boolean             ║
+║kip-ssl-validation            │                              │                              │                              ║
+║spring.cloud.dataflow.client.e│Enable Data Flow DSL access.  │false                         │java.lang.Boolean             ║
+║nable-dsl                     │                              │                              │                              ║
+║spring.cloud.dataflow.client.s│The Data Flow server URI.     │http://localhost:9393         │java.lang.String              ║
+║erver-uri                     │                              │                              │                              ║
+╚══════════════════════════════╧══════════════════════════════╧══════════════════════════════╧══════════════════════════════╝
+----
++
+Since we configured the SCDF server to bind all stream and task apps to the `nfs` service, no deployment parameters are required.
++
+[source,console,options=nowrap]
+----
+dataflow:>stream create inboundSftp --definition "sftp --username=<user> --password=<pass> --host=<host> --allow-unknown-keys=true --remote-dir=remote-files --local-dir=/var/scdf/shared-files/ --task.launch.request.taskName=fileIngestTask | task-launcher --spring.cloud.dataflow.client.server-uri=http://<dataflow-server-route>"
+Created new stream 'inboundSftp'
+dataflow:>stream deploy inboundSftp
+Deployment request has been sent for stream 'inboundSftp'
+----
++
+Alternatively, we can bind the `nfs` service to the `fileIngestTask` by passing deployment properties to the task via the task launch request in the stream definition: `--task.launch.request.deployment-properties=deployer.*.cloudfoundry.services=nfs`
++
+[source, console, options=nowrap]
+----
+dataflow:>stream deploy inboundSftp --properties "deployer.sftp.cloudfoundry.services=nfs"
+----
+
+. Verify Stream deployment
++
+The status of the stream to be deployed can be queried with `stream list`, for example:
++
+[source,console,options=nowrap]
+----
+dataflow:>stream list
+╔═══════════╤═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╤══════════════════╗
+║Stream Name│                                                                 Stream Definition                                                                 │      Status      ║
+╠═══════════╪═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╪══════════════════╣
+║inboundSftp│sftp --task.launch.request.deployment-properties='deployer.*.cloudfoundry.services=nfs' --password='******' --host=<host>                          │The stream has    ║
+║           │--remote-dir=remote-files --local-dir=/var/scdf/shared-files/ --task.launch.request.taskName=fileIngestTask --allow-unknown-keys=true              │been successfully ║
+║           │--username=<user> | task-launcher --spring.cloud.dataflow.client.server-uri=http://<dataflow-server-route>                                         │deployed          ║
+╚═══════════╧═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╧══════════════════╝
+
+----
++
+
+. Inspect logs
++
+In the event the stream failed to deploy, or you would like to inspect the logs for any reason, the logs can be obtained from individual applications. First list the deployed apps:
++
+[source,console,options=nowrap]
+----
+$ cf apps
+Getting apps in org cf_org / space cf_space as cf_user...
+OK
+
+name                                                             requested state   instances   memory   disk   urls
+dataflow-server                                                  started           1/1         2G       2G     dataflow-server.app.io
+dataflow-server-N5RYLDj-inboundSftp-sftp                         started           1/1         1G       1G     dataflow-server-N5RYLDj-inboundSftp-sftp.dataflow-server.app.io
+dataflow-server-N5RYLDj-inboundSftp-task-launcher-cloudfoundry   started           1/1         1G       1G     dataflow-server-N5RYLDj-inboundSftp-task-launcher-cloudfoundry.dataflow-server.app.io
+----
++
+In this example, the logs for the `SFTP` application can be viewed by:
++
+[source, console, options=nowrap]
+----
+cf logs dataflow-server-N5RYLDj-inboundSftp-sftp --recent
+----
++
+The log files of this application would be useful to debug issues such as SFTP connection failures.
++
+Additionally, the logs for the `task-launcher` application can be viewed by:
++
+```
+cf logs dataflow-server-N5RYLDj-inboundSftp-task-launcher --recent
+```
+
+. Add data
++
+Sample data can be found in the `data/` directory of the <<Batch File Ingest>> project.
+Connect to the SFTP server and upload `data/name-list.csv` into the `remote-files` directory.
+Copy `data/name-list.csv` into the `/tmp/remote-files` directory which the SFTP source is monitoring.
+When this file is detected, the `sftp` source will download it to the  `/var/scdf/shared-files` directory specified by `--local-dir`, and emit a Task Launch Request.
+The Task Launch Request includes the name of the task to launch along with the local file path, given as a command line argument.
+Spring Batch binds each command line argument to a corresponding JobParameter.
+The FileIngestTask job processes the file given by the JobParameter named `localFilePath`.
+The `task-launcher` sink polls for messages using an exponential back-off.
+Since there have not been any recent requests, the task will launch within 30 seconds after the request is published.
++
+
+. Inspect Job Executions
++
+After data is received and the batch job runs, it will be recorded as a Job Execution. We can view job executions by for example issuing the following command in the Spring Cloud Data Flow shell:
++
+[source,console,options=nowrap]
+----
+dataflow:>job execution list
+╔═══╤═══════╤═════════╤════════════════════════════╤═════════════════════╤══════════════════╗
+║ID │Task ID│Job Name │         Start Time         │Step Execution Count │Definition Status ║
+╠═══╪═══════╪═════════╪════════════════════════════╪═════════════════════╪══════════════════╣
+║1  │1      │ingestJob│Thu Jun 07 13:46:42 EDT 2018│1                    │Created           ║
+╚═══╧═══════╧═════════╧════════════════════════════╧═════════════════════╧══════════════════╝
+----
++
+As well as list more details about that specific job execution:
++
+[source,console,options=nowrap]
+----
+dataflow:>job execution display --id 1
+╔═══════════════════════════════════════════╤════════════════════════════════════╗
+║                    Key                    │               Value                ║
+╠═══════════════════════════════════════════╪════════════════════════════════════╣
+║Job Execution Id                           │1                                   ║
+║Task Execution Id                          │1                                   ║
+║Task Instance Id                           │1                                   ║
+║Job Name                                   │ingestJob                           ║
+║Create Time                                │Wed Oct 31 03:17:34 EDT 2018        ║
+║Start Time                                 │Wed Oct 31 03:17:34 EDT 2018        ║
+║End Time                                   │Wed Oct 31 03:17:34 EDT 2018        ║
+║Running                                    │false                               ║
+║Stopping                                   │false                               ║
+║Step Execution Count                       │1                                   ║
+║Execution Status                           │COMPLETED                           ║
+║Exit Status                                │COMPLETED                           ║
+║Exit Message                               │                                    ║
+║Definition Status                          │Created                             ║
+║Job Parameters                             │                                    ║
+║-spring.cloud.task.executionid(STRING)     │1                                   ║
+║run.id(LONG)                               │1                                   ║
+║localFilePath(STRING)                      │/var/scdf/shared-files/name_list.csv║
+╚═══════════════════════════════════════════╧════════════════════════════════════╝
+----
++
+. Verify data
++
+When the the batch job runs, it processes the file in the local directory `/var/scdf/shared-files` and transforms each item to uppercase names and inserts it into the database.
++
+Use https://github.com/pivotal-cf/PivotalMySQLWeb[PivotalMySQLWeb] to inspect the data.
+
+

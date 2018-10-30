@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-package io.spring.cloud.ingest.mapper.fieldset;
+package io.spring.cloud.dataflow.ingest;
 
-import io.spring.cloud.ingest.domain.Person;
-
-import org.springframework.batch.item.file.mapping.FieldSetMapper;
-import org.springframework.batch.item.file.transform.FieldSet;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.task.configuration.EnableTask;
 
 /**
- * Maps the provided FieldSet into a Person object.
+ * Main entry point for the ingest sample application.
  *
  * @author Chris Schaefer
  */
-public class PersonFieldSetMapper implements FieldSetMapper<Person> {
-	@Override
-	public Person mapFieldSet(FieldSet fieldSet) {
-		String firstName = fieldSet.readString(0);
-		String lastName = fieldSet.readString(1);
-
-		return new Person(firstName, lastName);
+@EnableTask
+@SpringBootApplication
+public class Application {
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(Application.class, args);
 	}
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.cloud.ingest.config;
+package io.spring.cloud.dataflow.ingest.config;
 
 import org.junit.After;
 import org.junit.Before;

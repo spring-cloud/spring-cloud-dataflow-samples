@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package io.spring.cloud.ingest.mapper.fieldset;
+package io.spring.cloud.dataflow.ingest.mapper.fieldset;
 
+import io.spring.cloud.dataflow.ingest.domain.Person;
 import org.junit.Test;
 
 import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.transform.DefaultFieldSet;
 import org.springframework.batch.item.file.transform.FieldSet;
-
-import io.spring.cloud.ingest.domain.Person;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;

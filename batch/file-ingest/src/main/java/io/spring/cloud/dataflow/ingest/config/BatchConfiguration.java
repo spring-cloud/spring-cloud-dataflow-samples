@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package io.spring.cloud.ingest.config;
+package io.spring.cloud.dataflow.ingest.config;
 
-import io.spring.cloud.ingest.domain.Person;
-import io.spring.cloud.ingest.mapper.fieldset.PersonFieldSetMapper;
-import io.spring.cloud.ingest.processor.PersonItemProcessor;
+import io.spring.cloud.dataflow.ingest.domain.Person;
+import io.spring.cloud.dataflow.ingest.mapper.fieldset.PersonFieldSetMapper;
+import io.spring.cloud.dataflow.ingest.processor.PersonItemProcessor;
 import javax.sql.DataSource;
 
 import org.springframework.batch.core.Job;

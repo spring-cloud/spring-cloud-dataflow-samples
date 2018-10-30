@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.cloud.ingest.domain;
+package io.spring.cloud.dataflow.ingest.domain;
 
 /**
  * Domain object representing data about a Person.

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package io.spring.cloud.ingest.processor;
+package io.spring.cloud.dataflow.ingest.processor;
 
-import io.spring.cloud.ingest.domain.Person;
+import io.spring.cloud.dataflow.ingest.domain.Person;
 import org.junit.Test;
 
 import org.springframework.batch.item.ItemProcessor;

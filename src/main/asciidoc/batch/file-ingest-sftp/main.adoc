@@ -117,7 +117,7 @@ INFO o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Polling paused- increasing polli
 ==== Avoid Duplication Processing
 
 The `sftp` source will not process files that it has already seen.
-It uses a [https://docs.spring.io/spring-integration/docs/5.0.6.RELEASE/reference/html/system-management-chapter.html#metadata-store[Metadata Store] to keep track of files by extracting content from messages at runtime.
+It uses a [https://docs.spring.io/spring-integration/docs/current/reference/html/system-management-chapter.html#metadata-store[Metadata Store] to keep track of files by extracting content from messages at runtime.
 Out of the box, it uses an in-memory Metadata Store.
 Thus, if we re-deploy the stream, this information is lost and files will be reprocessed.
 Thanks to the magic of Spring, we can inject one of the available persistent Metadata Stores.

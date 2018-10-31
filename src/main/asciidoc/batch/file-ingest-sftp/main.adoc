@@ -116,7 +116,53 @@ INFO o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Polling paused- increasing polli
 
 ==== Avoid Duplication Processing
 
-TBD
+The `sftp` source will not process files that it has already seen.
+It uses a [https://docs.spring.io/spring-integration/docs/5.0.6.RELEASE/reference/html/system-management-chapter.html#metadata-store[Metadata Store] to keep track of files by extracting content from messages at runtime.
+Out of the box, it uses an in-memory Metadata Store.
+Thus, if we re-deploy the stream, this information is lost and files will be reprocessed.
+Thanks to the magic of Spring, we can inject one of the available persistent Metadata Stores.
+
+In this example, we will use the https://github.com/spring-cloud-stream-app-starters/core/tree/master/common/app-starters-metadata-store-common#jdbc[JDBC Metadata Store] since we are already using a database.
+
+. Building the SFTP source
+
+For this we add some JDBC dependencies to the `sftp-dataflow` source.
+
+Clone the https://github.com/spring-cloud-stream-app-starters/sftp[sftp] stream app starter.
+From the sftp directory:
+```
+$ ./mvnw clean install -DskipTests -PgenerateApps
+$ cd apps/sftp-dataflow-source-kafka
+```
+If you are running the demo in Cloud Foundry, use `sftp-dataflow-source-rabbit`.
+
+Add the following dependencies to `pom.xml`:
+```
+<dependency>
+    <groupId>org.springframework.integration</groupId>
+    <artifactId>spring-integration-jdbc</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-jdbc</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+</dependency>
+```
+
+Set the JDBC url in `src/main/resources/application.properties` to use the Data Flow server instance:
+```
+spring.datasource.url=jdbc:h2:tcp://localhost:19092/mem:dataflow
+```
+
+Build the app:
+```
+$./mvnw clean package
+```
+
+WARNING: Work in progress, more details to come.
 
 ==== Summary
 

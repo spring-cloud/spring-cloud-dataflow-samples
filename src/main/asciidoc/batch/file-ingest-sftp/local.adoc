@@ -13,7 +13,7 @@ include::{docs_dir}/local-server.adoc[]
 
 NOTE: To simplify the dependencies and configuration in this example, we will use our local machine acting as an SFTP server.
 
-==== Building and Running the Demo
+===== Building and Running the Demo
 
 . Build the demo JAR
 +

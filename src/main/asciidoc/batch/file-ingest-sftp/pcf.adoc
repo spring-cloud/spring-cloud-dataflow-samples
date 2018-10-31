@@ -1,7 +1,7 @@
 [sftp-file-ingest-local]]
-=== Using the Cloud Foundry Server
+==== Using the Cloud Foundry Server
 
-==== Additional Prerequisites
+===== Additional Prerequisites
 
 NOTE: Running this demo in Cloud Foundry requires the a shared file system that is accessed by apps running in different containers.
 This feature is provided by https://docs.pivotal.io/pivotalcf/2-3/devguide/services/using-vol-services.html[NFS Volume Services].
@@ -26,7 +26,7 @@ $ cf create-service nfs Existing nfs -c '{"share":"<nfs_host_ip>/export","uid":"
 * The Spring Cloud Data Flow Cloud Foundry Server
 include::{docs_dir}/cloudfoundry-server.adoc[]
 
-==== Configuring the SCDF server
+===== Configuring the SCDF server
 
 For convenience, we will configure the SCDF server to bind all stream and task apps to the `nfs` service. Using the Cloud Foundry CLI,
 set the following environment variables (or set them in the manifest):
@@ -38,7 +38,7 @@ cf set-env <dataflow-server-app-name> SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_TASK_SE
 NOTE: Normally, for security and operational efficiency, we may want more fine grained control of which apps bind to the nfs service.
 One way to do this is to set deployment properties when creating and deploying the stream, as shown below.
 
-==== Running the Demo
+===== Running the Demo
 
 
 The source code for the <<Batch File Ingest>> batch job is located in `batch/file-ingest`.

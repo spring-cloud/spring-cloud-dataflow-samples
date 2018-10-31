@@ -17,6 +17,107 @@ include::local.adoc[]
 
 include::pcf.adoc[]
 
+==== Limiting Concurrent Task Executions
+
+The Batch File Ingest - SFTP Demo processes a single file with 5000+ items. What if we copy 100 files to the remote directory?
+The sftp source will process them immediately, generating 100 task launch requests. The Dataflow Server launches tasks asynchronously so this could potentially overwhelm the resources of the runtime platform.
+For example, when running the Data Flow server on your local machine, each launched task creates a new JVM. In Cloud Foundry, each task creates a new container instance.
+
+Fortunately, Spring Cloud Data Flow 1.7 introduced new features to manage concurrently running tasks, including a new configuration parameter, `spring.cloud.dataflow.task.maximum-concurrent-tasks`, to http://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#spring-cloud-dataflow-task-limit-concurrent-executions[limit the number of concurrently running tasks].
+We can use this demo to see how this works.
+
+===== Configuring the SCDF server
+Set the maximum concurrent tasks to 3.
+For the local server, restart the server, adding a command line argument `--spring.cloud.dataflow.task.maximum-concurrent-tasks=3`.
+
+For the Cloud Foundry server, `cf set-env <dataflow-server> SPRING_CLOUD_DATAFLOW_TASK_MAXIMUM_CONCURRENT_TASKS 3`, and restage.
+
+===== Running the demo
+Follow the main demo instructions but change the `Add Data` step, as described below.
+
+. Monitor the task launcher
++
+Tail the logs on the `task-launcher` app.
++
+If there are no requests in the input queue, you will see something like:
++
+[source, console, options=nowrap]
+----
+07:42:51.760  INFO  o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : No task launch request received- increasing polling period to 2 seconds.
+07:42:53.768  INFO  o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : No task launch request received- increasing polling period to 4 seconds.
+07:42:57.780  INFO  o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : No task launch request received- increasing polling period to 8 seconds.
+07:43:05.791  INFO  o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : No task launch request received- increasing polling period to 16 seconds.
+07:43:21.801  INFO  o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : No task launch request received- increasing polling period to 30 seconds.
+07:43:51.811  INFO  o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : No task launch request received
+07:44:21.824  INFO  o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : No task launch request received
+07:44:51.834  INFO  o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : No task launch request received
+----
++
+The first three messages show the exponential backoff at start up or after processing the final request.
+The the last three message show the task launcher in a steady state of polling for messages every 30 seconds.
+Of course, these values are configurable.
++
+The task launcher sink polls the input destination. The polling period adjusts according to the presence of task launch requests and also to the number of currently running tasks reported via the Data Flow server's `tasks/executions/current` REST endpoint.
+The sink queries this endpoint and will pause polling the input for new requests if the number of concurrent tasks is at its limit.
+This introduces a 1-30 second lag between the creation of the task launch request and the execution of the request, sacrificing some performance for resilience.
+Task launch requests will never be sent to a dead letter queue because the server is busy or unavailable.
+The exponential backoff also prevents the app from querying the server excessively when there are no task launch requests.
++
+You can also monitor the Data Flow server:
++
+[source, console, options=nowrap]
+----
+$ watch curl <dataflow-server-url>/tasks/executions/current
+Every 2.0s: curl http://localhost:9393/tasks/executions/current                                                                                                             ultrafox.local: Wed Oct 31 08:38:53 2018
+
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    53    0    53    0     0     53      0 --:--:-- --:--:-- --:--:--  5888
+{"maximumTaskExecutions":3,"runningExecutionCount":0}
+----
+
+. Add Data
++
+The directory `batch/file-ingest/data/split` contains the contents of
+`batch/file-ingest/data/name-list.csv` split into 100 files, of 54 entries each.
+Upload these files to the SFTP remote directory, e.g.,
+
+```
+sftp>cd remote-files
+sftp>lcd batch/file-ingest/data/split
+sftp>mput *
+```
+Or if using the local machine as the SFTP server:
+```
+>cp * /tmp/remote-files
+```
+In the `task-launcher` logs, you should now see:
+[source, console, options=nowrap]
+----
+INFO o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Polling period reset to 1000 ms.
+INFO o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Launching Task fileIngestTask
+WARN o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Data Flow server has reached its concurrent task execution limit: (3)
+INFO o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Polling paused- increasing polling period to 2 seconds.
+INFO o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Polling resumed
+INFO o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Launching Task fileIngestTask
+INFO o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Polling period reset to 1000 ms.
+WARN o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Data Flow server has reached its concurrent task execution limit: (3)
+INFO o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Polling paused- increasing polling period to 2 seconds.
+INFO o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Polling resumed
+INFO o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Launching Task fileIngestTask
+INFO o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Polling period reset to 1000 ms.
+INFO o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Launching Task fileIngestTask
+INFO o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Launching Task fileIngestTask
+WARN o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Data Flow server has reached its concurrent task execution limit: (3)
+INFO o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Polling paused- increasing polling period to 2 seconds.
+...
+----
+
+
+==== Avoid Duplication Processing
+
+TBD
+
 ==== Summary
 
 In this sample, you have learned:
@@ -25,4 +126,4 @@ In this sample, you have learned:
 * How to create a stream to poll files on an SFTP server and launch a batch job
 * How to verify job status via logs and shell commands
 * How the Data Flow Task Launcher limits concurrent task executions
-* How to avoid processing duplicate files
+* How to avoid duplicate processing of files

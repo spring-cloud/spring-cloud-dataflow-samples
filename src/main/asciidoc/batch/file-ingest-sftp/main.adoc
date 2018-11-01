@@ -79,7 +79,7 @@ Every 2.0s: curl http://localhost:9393/tasks/executions/current                 
 . Add Data
 +
 The directory `batch/file-ingest/data/split` contains the contents of
-`batch/file-ingest/data/name-list.csv` split into 100 files, of 54 entries each.
+`batch/file-ingest/data/name-list.csv` split into 20 files, not 100 but enough to illustrate the concept.
 Upload these files to the SFTP remote directory, e.g.,
 
 ```
@@ -113,30 +113,31 @@ INFO o.s.c.s.a.t.l.d.s.LaunchRequestConsumer  : Polling paused- increasing polli
 ...
 ----
 
-
-==== Avoid Duplication Processing
+==== Avoid Duplicate Processing
 
 The `sftp` source will not process files that it has already seen.
-It uses a [https://docs.spring.io/spring-integration/docs/current/reference/html/system-management-chapter.html#metadata-store[Metadata Store] to keep track of files by extracting content from messages at runtime.
+It uses a https://docs.spring.io/spring-integration/docs/current/reference/html/system-management-chapter.html#metadata-store[Metadata Store] to keep track of files by extracting content from messages at runtime.
 Out of the box, it uses an in-memory Metadata Store.
-Thus, if we re-deploy the stream, this information is lost and files will be reprocessed.
+Thus, if we re-deploy the stream, this state is lost and files will be reprocessed.
 Thanks to the magic of Spring, we can inject one of the available persistent Metadata Stores.
 
 In this example, we will use the https://github.com/spring-cloud-stream-app-starters/core/tree/master/common/app-starters-metadata-store-common#jdbc[JDBC Metadata Store] since we are already using a database.
 
-. Building the SFTP source
-
+. Build the SFTP source
++
 For this we add some JDBC dependencies to the `sftp-dataflow` source.
-
++
 Clone the https://github.com/spring-cloud-stream-app-starters/sftp[sftp] stream app starter.
 From the sftp directory:
++
 ```
 $ ./mvnw clean install -DskipTests -PgenerateApps
 $ cd apps/sftp-dataflow-source-kafka
 ```
++
 If you are running the demo in Cloud Foundry, use `sftp-dataflow-source-rabbit`.
-
 Add the following dependencies to `pom.xml`:
++
 ```
 <dependency>
     <groupId>org.springframework.integration</groupId>
@@ -151,18 +152,79 @@ Add the following dependencies to `pom.xml`:
     <artifactId>h2</artifactId>
 </dependency>
 ```
-
++
 Set the JDBC url in `src/main/resources/application.properties` to use the Data Flow server instance:
++
 ```
 spring.datasource.url=jdbc:h2:tcp://localhost:19092/mem:dataflow
 ```
-
++
 Build the app:
++
 ```
 $./mvnw clean package
 ```
+. Register the jar
++
+If running in Cloud Foundry, the resulting executable jar file must be available in a location that is accessible to your Cloud Foundry instance, such as an HTTP server or Maven repository.
+If running on a local server:
++
+```
+dataflow>app register --name sftp --type source --uri file:<project-directory>/sftp/apps/sftp-dataflow-source-kafka/target/sftp-dataflow-source-kafka-X.X.X.jar --force
+```
+. Run the Demo
++
+Follow the instructions for building and running the main SFTP File Ingest demo, for your preferred platform, up to the `Add Data Step`.
+If you have already completed the main exercise, restore the data to its initial state, and redeploy the stream:
++
+* Clean the data directories
+* Execute the SQL command `DROP TABLE PEOPLE;` in the database
+* Undeploy the stream, and deploy it again to run the updated `sftp` source
 
-WARNING: Work in progress, more details to come.
+. Add Data
++
+Let's use one small file for this.
+The directory `batch/file-ingest/data/split` contains the contents of
+`batch/file-ingest/data/name-list.csv` split into 20 files. Upload one of them:
++
+```
+sftp>cd remote-files
+sftp>lcd batch/file-ingest/data/split
+sftp>put names_aa.csv
+```
++
+Or if using the local machine as the SFTP server:
++
+```
+$cp names_aa.csv truncate INT_METADATA_STORE;
+```
+. Inspect data
++
+Using a SQL browser, as described in the main demo, view the contents of the `INT_METADATA_STORE` table.
++
+image::metadata_store_1.png[title="JDBC Metadata Store"]
++
+Note that there is a single key-value pair, where the key identies the file name (the prefix `sftpSource/` provides a namespace for the `sftp` source app) and the value is a timestamp indicating when the message was received.
+The metadata store tracks files that have already been processed.
+This prevents the same files from being pulled every from the remote directory on every polling cycle. Only new files, or files that have been updated will be processed.
+Since there are no uniqueness constraints on the data, a file processed multiple times by our batch job will result in duplicate entries.
++
+If we view the `PEOPLE` table, it should look something like this:
++
+image::people_table_1.png[title="People Data"]
++
+Now let'supdate the remote file, using SFTP `put` or if using the local machine as an SFTP server:
++
+```
+$touch /tmp/remote-files/names_aa.csv
+```
+Now the `PEOPLE` table will have duplicate data. If you `ORDER BY FIRST_NAME`, you will see something like this:
++
+image::people_table_2.png[title="People Data with Duplicates"]
++
+Of course, if we drop another one of files into the remote directory, that will processed and we will see another entry in the Metadata Store.
++
+
 
 ==== Summary
 

@@ -72,7 +72,7 @@ If not defined, `host` defaults to `127.0.0.1` and `port` defaults to `22`.
 +
 [source,console,options=nowrap]
 ----
-dataflow:>stream create --name inboundSftp --definition "sftp --username=<user> --password=<pass> --allow-unknown-keys=true --task.launch.request.taskName=fileIngestTask --remote-dir=/tmp/remote-files/  --localDir=/tmp/local-files/ | task-launcher" --deploy
+dataflow:>stream create --name inboundSftp --definition "sftp --username=<user> --password=<pass> --allow-unknown-keys=true --task.launch.request.taskName=fileIngestTask --remote-dir=/tmp/remote-files/  --local-dir=/tmp/local-files/ | task-launcher" --deploy
 Created new stream 'inboundSftp'
 Deployment request has been sent
 ----
@@ -85,12 +85,12 @@ We can see the status of the streams to be deployed with `stream list`, for exam
 [source,console,options=nowrap]
 ----
 dataflow:>stream list
-╔═══════════╤═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╤════════════════════════════╗
-║Stream Name│                                                         Stream Definition                                                         │           Status           ║
-╠═══════════╪═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╪════════════════════════════╣
-║inboundSftp│sftp --password='******' --remote-dir=/tmp/remote-files/ --localDir=/tmp/local-files/ --task.launch.request.taskName=fileIngestTask│The stream has been         ║
-║           │--allow-unknown-keys=true --username=<user> | task-launcher                                                                        │successfully deployed       ║
-╚═══════════╧═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╧════════════════════════════╝
+╔═══════════╤════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╤════════════════════════════╗
+║Stream Name│                                                         Stream Definition                                                          │           Status           ║
+╠═══════════╪════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╪════════════════════════════╣
+║inboundSftp│sftp --password='******' --remote-dir=/tmp/remote-files/ --local-dir=/tmp/local-files/ --task.launch.request.taskName=fileIngestTask│The stream has been         ║
+║           │--allow-unknown-keys=true --username=<user> | task-launcher                                                                         │successfully deployed       ║
+╚═══════════╧════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╧════════════════════════════╝
 ----
 +
 

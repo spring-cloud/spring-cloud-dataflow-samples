@@ -125,7 +125,7 @@ Since we configured the SCDF server to bind all stream and task apps to the `nfs
 +
 [source,console,options=nowrap]
 ----
-dataflow:>stream create inboundSftp --definition "sftp --username=<user> --password=<pass> --host=<host> --allow-unknown-keys=true --remote-dir=remote-files --localDir=/var/scdf/shared-files/ --task.launch.request.taskName=fileIngestTask | task-launcher --spring.cloud.dataflow.client.server-uri=http://<dataflow-server-route>"
+dataflow:>stream create inboundSftp --definition "sftp --username=<user> --password=<pass> --host=<host> --allow-unknown-keys=true --remote-dir=remote-files --local-dir=/var/scdf/shared-files/ --task.launch.request.taskName=fileIngestTask | task-launcher --spring.cloud.dataflow.client.server-uri=http://<dataflow-server-route>"
 Created new stream 'inboundSftp'
 dataflow:>stream deploy inboundSftp
 Deployment request has been sent for stream 'inboundSftp'
@@ -149,7 +149,7 @@ dataflow:>stream list
 ║Stream Name│                                                                 Stream Definition                                                                 │      Status      ║
 ╠═══════════╪═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╪══════════════════╣
 ║inboundSftp│sftp --task.launch.request.deployment-properties='deployer.*.cloudfoundry.services=nfs' --password='******' --host=<host>                          │The stream has    ║
-║           │--remote-dir=remote-files --localDir=/var/scdf/shared-files/ --task.launch.request.taskName=fileIngestTask --allow-unknown-keys=true               │been successfully ║
+║           │--remote-dir=remote-files --local-dir=/var/scdf/shared-files/ --task.launch.request.taskName=fileIngestTask --allow-unknown-keys=true              │been successfully ║
 ║           │--username=<user> | task-launcher --spring.cloud.dataflow.client.server-uri=http://<dataflow-server-route>                                         │deployed          ║
 ╚═══════════╧═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╧══════════════════╝
 

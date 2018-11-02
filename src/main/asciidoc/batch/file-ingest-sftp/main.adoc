@@ -123,19 +123,18 @@ Thanks to the magic of Spring, we can inject one of the available persistent Met
 
 In this example, we will use the https://github.com/spring-cloud-stream-app-starters/core/tree/master/common/app-starters-metadata-store-common#jdbc[JDBC Metadata Store] since we are already using a database.
 
-. Build the SFTP source
+. Configure and Build the SFTP source
 +
 For this we add some JDBC dependencies to the `sftp-dataflow` source.
 +
 Clone the https://github.com/spring-cloud-stream-app-starters/sftp[sftp] stream app starter.
-From the sftp directory:
+From the sftp directory. Replace <binder> below with `kafka` or `rabbit` as appropriate for your configuration:
 +
 ```
 $ ./mvnw clean install -DskipTests -PgenerateApps
-$ cd apps/sftp-dataflow-source-kafka
+$ cd apps/sftp-dataflow-source-<binder>
 ```
 +
-If you are running the demo in Cloud Foundry, use `sftp-dataflow-source-rabbit`.
 Add the following dependencies to `pom.xml`:
 +
 ```
@@ -153,10 +152,16 @@ Add the following dependencies to `pom.xml`:
 </dependency>
 ```
 +
-Set the JDBC url in `src/main/resources/application.properties` to use the Data Flow server instance:
+If you are running on a local server with the in memory H2 database, set the JDBC url in `src/main/resources/application.properties` to use the Data Flow server's database:
 +
 ```
 spring.datasource.url=jdbc:h2:tcp://localhost:19092/mem:dataflow
+```
++
+If you are running in Cloud Foundry, we will bind the source to the `mysql` service. Add the following property to `src/main/resources/application.properties`:
++
+```
+spring.integration.jdbc.initialize-schema=always
 ```
 +
 Build the app:
@@ -180,6 +185,12 @@ If you have already completed the main exercise, restore the data to its initial
 * Clean the data directories
 * Execute the SQL command `DROP TABLE PEOPLE;` in the database
 * Undeploy the stream, and deploy it again to run the updated `sftp` source
++
+If you are running in Cloud Foundry, set the deployment properties to bind `sftp` to the `mysql` service. For example:
++
+```
+dataflow>stream deploy inboundSftp --properties "deployer.sftp.cloudfoundry.services=nfs,mysql"
+```
 
 . Add Data
 +
@@ -200,7 +211,7 @@ $cp names_aa.csv truncate INT_METADATA_STORE;
 ```
 . Inspect data
 +
-Using a SQL browser, as described in the main demo, view the contents of the `INT_METADATA_STORE` table.
+Using a Database browser, as described in the main demo, view the contents of the `INT_METADATA_STORE` table.
 +
 image::metadata_store_1.png[title="JDBC Metadata Store"]
 +
@@ -223,8 +234,6 @@ Now the `PEOPLE` table will have duplicate data. If you `ORDER BY FIRST_NAME`, y
 image::people_table_2.png[title="People Data with Duplicates"]
 +
 Of course, if we drop another one of files into the remote directory, that will processed and we will see another entry in the Metadata Store.
-+
-
 
 ==== Summary
 

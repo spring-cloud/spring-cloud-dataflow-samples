@@ -3,9 +3,9 @@
 
 ===== Additional Prerequisites
 
-NOTE: Running this demo in Cloud Foundry requires the a shared file system that is accessed by apps running in different containers.
+NOTE: Running this demo in Cloud Foundry requires a shared file system that is accessed by apps running in different containers.
 This feature is provided by https://docs.pivotal.io/pivotalcf/2-3/devguide/services/using-vol-services.html[NFS Volume Services].
-Using Volume Services with SCDF requires that we provide `nfs` configuration via `cf create-service` rather than `cf bind-service`.
+To use Volume Services with SCDF, it is required that we provide `nfs` configuration via `cf create-service` rather than `cf bind-service`.
 Cloud Foundry introduced the `cf create-service` configuration option for Volume Services in version 2.3.
 
 * A Cloud Foundry instance v2.3+ with  NFS Volume Services https://docs.pivotal.io/pivotalcf/2-3/opsguide/enable-vol-services.html[enabled]
@@ -67,7 +67,7 @@ $ sudo chown <uid>:<gid> /export/shared-files
 +
 With our Spring Cloud Data Flow server running, we register the `sftp-dataflow` source and `task-launcher-dataflow` sink.
 The `sftp-dataflow` source application will do the work of polling the remote directory for new files and downloading them to the local directory.
-As each file is received, it emits a message for the `task-launcher-dataflow` sink to launch the task for that file.
+As each file is received, it emits a message for the `task-launcher-dataflow` sink to launch the task to process the data from that file.
 +
 In the Spring Cloud Data Flow shell:
 +
@@ -88,7 +88,8 @@ Created new task 'fileIngestTask'
 +
 . Create and deploy the stream
 +
-Now lets create and deploy the stream which will start polling the SFTP server and when new files arrive launch the batch job.
+Now lets create and deploy the stream.
+Once deployed, the stream will start polling the SFTP server and, when new files arrive, launch the batch job.
 +
 NOTE: Replace `<user>`, '<pass>`, and `<host>` below.
 The `<host>` is the SFTP server host, `<user>` and `<password>` values are the credentials for the remote user.

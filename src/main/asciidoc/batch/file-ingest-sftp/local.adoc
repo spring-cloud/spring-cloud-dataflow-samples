@@ -32,6 +32,7 @@ The jar is published to the  https://repo.spring.io/libs-snapshot-local/io/sprin
 Now we create a remote directory on the SFTP server and a local directory where the batch job expects to find files.
 +
 NOTE: If you are using a remote SFTP server, create the remote directory on the SFTP server.
+Since we are using the local machine as the SFTP server, we will create both the local and remote directories on the local machine.
 +
 ```
 $ mkdir -p /tmp/remote-files /tmp/local-files
@@ -42,7 +43,7 @@ $ mkdir -p /tmp/remote-files /tmp/local-files
 +
 With our Spring Cloud Data Flow server running, we register the `sftp-dataflow` source and `task-launcher-dataflow` sink.
 The `sftp-dataflow` source application will do the work of polling the remote directory for new files and downloading them to the local directory.
-As each file is received, it emits a message for the `task-launcher-dataflow` sink to launch the task for that file.
+As each file is received, it emits a message for the `task-launcher-dataflow` sink to launch the task to process the data from that file.
 +
 In the Spring Cloud Data Flow shell:
 +
@@ -54,7 +55,7 @@ dataflow:>app register --name task-launcher --type sink --uri maven://org.spring
 Successfully registered application 'sink:task-launcher'
 ----
 +
-. Register and create the file ingest task. If using the published jar set `--uri maven://io.spring.cloud.dataflow.ingest:ingest:1.0.0.BUILD-SNAPSHOT`:
+. Register and create the file ingest task. If you're using the published jar, set `--uri maven://io.spring.cloud.dataflow.ingest:ingest:1.0.0.BUILD-SNAPSHOT`:
 [source,console,options=nowrap]
 dataflow:>app register --name fileIngest --type task --uri file:///path/to/target/ingest-X.X.X.jar
 Successfully registered application 'task:fileIngest'
@@ -63,7 +64,8 @@ Created new task 'fileIngestTask'
 +
 . Create and deploy the stream
 +
-Now lets create and deploy the stream which will start polling the SFTP server and when new files arrive launch the batch job.
+Now lets create and deploy the stream.
+Once deployed, the stream will start polling the SFTP server and, when new files arrive, launch the batch job.
 +
 NOTE: Replace `<user>` and '<pass>` below.
 The `<username>` and `<password>` values are the credentials for the local (or remote) user.

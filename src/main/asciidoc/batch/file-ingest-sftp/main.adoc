@@ -182,7 +182,7 @@ dataflow>app register --name sftp --type source --uri file:<project-directory>/s
 Follow the instructions for building and running the main SFTP File Ingest demo, for your preferred platform, up to the `Add Data Step`.
 If you have already completed the main exercise, restore the data to its initial state, and redeploy the stream:
 +
-* Clean the data directories
+* Clean the data directories (e.g., `tmp/local-files` and `tmp/remote-files`)
 * Execute the SQL command `DROP TABLE PEOPLE;` in the database
 * Undeploy the stream, and deploy it again to run the updated `sftp` source
 +
@@ -224,7 +224,7 @@ If we view the `PEOPLE` table, it should look something like this:
 +
 image::people_table_1.png[title="People Data"]
 +
-Now let'supdate the remote file, using SFTP `put` or if using the local machine as an SFTP server:
+Now let's update the remote file, using SFTP `put` or if using the local machine as an SFTP server:
 +
 ```
 $touch /tmp/remote-files/names_aa.csv

@@ -16,6 +16,7 @@
         <spring.cloud.task.version>2.1.0.BUILD-SNAPSHOT</spring.cloud.task.version>
         <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
         <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
+        <docker.org>springcloud</docker.org>
     </properties>
     <dependencies>
         <dependency>
@@ -46,8 +47,24 @@
             <artifactId>spring-batch-test</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
+    <profiles>
+       <profile>
+          <id>kubernetes</id>
+          <dependencies>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <scope>test</scope>
+            </dependency>    
+            <dependency>
+                <groupId>org.mariadb.jdbc</groupId>
+                <artifactId>mariadb-java-client</artifactId>
+                <version>2.3.0</version>
+            </dependency>
+        </dependencies>
+       </profile>
+    </profiles>
     <build>
         <plugins>
             <plugin>
@@ -66,6 +83,34 @@
                     <compilerArgument>-Xlint:all</compilerArgument>
                 </configuration>
             </plugin>
+            <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>0.14.2</version>
+        <configuration>
+          <images>
+            <image>
+              <name>${docker.org}/${project.artifactId}</name>
+              <build>
+                <from>springcloud/openjdk</from>
+                <volumes>
+                  <volume>/tmp</volume>
+                </volumes>
+                <entryPoint>
+                  <exec>
+                    <arg>java</arg>
+                    <arg>-jar</arg>
+                    <arg>/maven/ingest.jar</arg>
+                  </exec>
+                </entryPoint>
+                <assembly>
+                  <descriptor>assembly.xml</descriptor>
+                </assembly>
+              </build>
+            </image>
+          </images>
+        </configuration>
+      </plugin>
         </plugins>
     </build>
     <repositories>

@@ -1,4 +1,4 @@
-[sftp-file-ingest-local]]
+[sftp-file-ingest-pcf]]
 ==== Using the Cloud Foundry Server
 
 ===== Additional Prerequisites
@@ -173,7 +173,7 @@ dataflow-server-N5RYLDj-inboundSftp-sftp                         started        
 dataflow-server-N5RYLDj-inboundSftp-task-launcher-cloudfoundry   started           1/1         1G       1G     dataflow-server-N5RYLDj-inboundSftp-task-launcher-cloudfoundry.dataflow-server.app.io
 ----
 +
-In this example, the logs for the `SFTP` application can be viewed by:
+In this example, the logs for the `sftp` application can be viewed by:
 +
 [source, console, options=nowrap]
 ----
@@ -192,7 +192,7 @@ cf logs dataflow-server-N5RYLDj-inboundSftp-task-launcher --recent
 +
 Sample data can be found in the `data/` directory of the <<Batch File Ingest>> project.
 Connect to the SFTP server and upload `data/name-list.csv` into the `remote-files` directory.
-Copy `data/name-list.csv` into the `/tmp/remote-files` directory which the SFTP source is monitoring.
+Copy `data/name-list.csv` into the `/remote-files` directory which the SFTP source is monitoring.
 When this file is detected, the `sftp` source will download it to the  `/var/scdf/shared-files` directory specified by `--local-dir`, and emit a Task Launch Request.
 The Task Launch Request includes the name of the task to launch along with the local file path, given as a command line argument.
 Spring Batch binds each command line argument to a corresponding JobParameter.
@@ -249,5 +249,6 @@ dataflow:>job execution display --id 1
 When the the batch job runs, it processes the file in the local directory `/var/scdf/shared-files` and transforms each item to uppercase names and inserts it into the database.
 +
 Use https://github.com/pivotal-cf/PivotalMySQLWeb[PivotalMySQLWeb] to inspect the data.
-
++
+. You're done!
 

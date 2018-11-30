@@ -17,6 +17,8 @@ include::local.adoc[]
 
 include::pcf.adoc[]
 
+include::kubernetes.adoc[]
+
 ==== Limiting Concurrent Task Executions
 
 The Batch File Ingest - SFTP Demo processes a single file with 5000+ items. What if we copy 100 files to the remote directory?

@@ -1,0 +1,278 @@
+[[sftp-file-ingest-kubernetes]]
+==== Using the Kubernetes Server
+
+===== Additional Prerequisites
+* A database tool such as link:https://dbeaver.jkiss.org/download/[DBeaver] to inspect the database contents
+* An SFTP server accessible from the Kubernetes cluster
+* An NFS server accessible from the Kubernetes cluster
+NOTE: For this example, we use an NFS host configured to allow https://www.tldp.org/HOWTO/NFS-HOWTO/server.html[read-write access].
+* Configure a Kubernetes Persistent Volume named `nfs` using the Host IP of the NFS server and the shared directory path:
+```
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: <NFS_SERVER_IP>
+    path: <NFS_SHARED_PATH>
+```
+Copy and save the above to `pv-nfs.yaml` and replace `<NFS_SERVER_IP>` with the IP address of the NFS Server and <NFS_SHARED_PATH> with a shared directory on the server, e.g.`/export`. Create the resource:
+```
+$kubectl apply -f pv-nfs.yaml
+persistentvolume/nfs created
+```
+* Configure a Persistent Volume Claim on the `nfs` persistent volume. We will also name the PVC `nfs`. Later, we will configure our apps to use this to mount the NFS shared directory. 
+```
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  resources:
+    requests:
+      storage: 5Gi
+```
+Copy and save the above to `pvc-nsf.yaml` and create the PVC resource:
+```
+$kubectl apply -f pvc-nsf.yaml
+persistentvolumeclaim/nfs created
+```
+* The Spring Cloud Data Flow Kubernetes Server
+include::{docs_dir}/kubernetes-server.adoc[]
+
+===== Running the Demo
+
+The source code for the <<Batch File Ingest>> batch job is located in `batch/file-ingest`.
+We will need to build a Docker image for this app and publish it to a Docker registry
+accessible to your Kubernetes cluster. 
+For your convenience, the Docker image is available at 
+https://hub.docker.com/r/springcloud/ingest/[springcloud/ingest].
+
+. Build and publish the Docker image
++
+Skip this step if you are using the pre-built image. We are using the `fabric8` Maven docker plugin. which will push images to https://hub.docker.com/[Docker Hub] by default. You will need to have a Docker Hub account for this. Note the `-Pkubernetes` flag adds a dependency to provide the required Maria DB JDBC driver. 
++
+[source,console,options=nowrap]
+----
+$cd batch/file-ingest
+$mvn clean package docker:build docker:push -Ddocker.org=<DOCKER_ORG> -Ddocker.username=<DOCKER_USERNAME> -Ddocker.password=<DOCKER_PASSWORD> -Pkubernetes
+----
++  
+. Create the remote directory
++
+Create a directory on the SFTP server where the `sftp` source will detect files and download them for processing.
+This path must exist prior to running the demo and can be any location that is accessible by the configured SFTP user.
+On the SFTP server create a directory called `remote-files`, for example:
++
+```
+sftp> mkdir remote-files
+```
++
+. Create a shared NFS directory
++
+Create a read/write directory on the NFS server.
++
+```
+$ sudo mkdir /export/shared-files
+$ sudo chmod 0777 /export/shared-files
+```
+. Register the `sftp-dataflow` source and the `tasklauncher-dataflow` sink
++
+With our Spring Cloud Data Flow server running, we register the `sftp-dataflow` source and `task-launcher-dataflow` sink.
+The `sftp-dataflow` source application will do the work of polling the remote directory for new files and downloading them to the local directory.
+As each file is received, it emits a message for the `task-launcher-dataflow` sink to launch the task to process the data from that file.
++
+In the Spring Cloud Data Flow shell:
++
+[source,console,options=nowrap]
+----
+dataflow:>dataflow:>app register --name sftp --type source --uri docker:springcloud/sftp-dataflow-source-kafka --metadata-uri maven://org.springframework.cloud.stream.app:sftp-dataflow-source-kafka:jar:metadata:2.1.0.BUILD-SNAPSHOT
+Successfully registered application 'source:sftp'
+dataflow:>app register --name task-launcher --type sink --uri docker:springcloud/task-launcher-dataflow-sink-kafka --metadata-uri maven://org.springframework.cloud.stream.app:task-launcher-dataflow-sink-kafka:jar:metadata:1.0.0.BUILD-SNAPSHOT
+Successfully registered application 'sink:task-launcher'
+----
++
+. Register and create the file ingest task:
+[source,console,options=nowrap]
+dataflow:>app register --name fileIngest --type task --uri docker:springcloud/ingest
+Successfully registered application 'task:fileIngest'
+dataflow:>task create fileIngestTask --definition fileIngest
+Created new task 'fileIngestTask'
++
+. Create and deploy the stream
++
+Now lets create and deploy the stream.
+Once deployed, the stream will start polling the SFTP server and, when new files arrive, launch the batch job.
++
+NOTE: Replace `<user>`, '<pass>`, and `<host>` below.
+The `<host>` is the SFTP server host, `<user>` and `<password>` values are the credentials for the remote user. 
+Additionally, replace `--spring.cloud.dataflow.client.server-uri=http://<dataflow-server-ip>` with the Cluster IP (External IP should work as well) of your dataflow server, as shown by `kubectl get svc/scdf-server`. 
+The default Data Flow server credentials are `user` and `password`.
++
+Notice how we use the Kubernetes Persistent Volume Claim(PVC) resource that we created earlier. 
+In the stream definition, the PVC and the associated Volume Mount are passed to the task via `--task.launch.request.deployment-properties`. 
+The `deployer.\*.kubernetes...` properties provide native Kubernetes specs as JSON to instruct the Data Flow server's deployer to add this configuration to the container configuration for the pod that will run the batch job. 
+We mount the NFS shared directory that we configured in the `nfs` Persistent Volume(PV) as `/staging` in the pod's local file system. The `nfs` PVC allows the pod to allocate space on the PV.
+The corresponding configuration, targeting the `sftp` source is used to deploy the stream.
+This enables the `sftp` source to share NFS mounted files with the launched task.
++
+NOTE: The deployment property `deployer.*.kubernetes.bootMajorVersion=2` tells the deployer to configure the liveness and readiness probes for Spring Boot 2.x applications, as Spring Boot actuator endpoints change in version 2. This will likely become the default in a future SCDF release.
++
+[source,console,options=nowrap]
+----
+dataflow:>stream create inboundSftp --definition "sftp --host=<host> --username=<user> --password=<password> --allow-unknown-keys=true --remote-dir=/remote-files --local-dir=/staging/shared-files --task.launch.request.taskName=fileIngestTask --task.launch.request.deployment-properties='deployer.*.kubernetes.volumes=[{\"name\":\"staging\",\"persistentVolumeClaim\":{\"claimName\":\"nfs\"}}],deployer.*.kubernetes.volumeMounts=[{\"mountPath\":\"/staging\",\"name\":\"staging\"}]'| task-launcher --spring.cloud.dataflow.client.server-uri=http://<dataflow-server-ip> --spring.cloud.dataflow.client.authentication.basic.username=user --spring.cloud.dataflow.client.authentication.basic.password=password"
+----
++
+[source, console, options=nowrap]
+----
+dataflow:>stream deploy inboundSftp --properties 'deployer.sftp.kubernetes.volumes=[{"name":"staging","persistentVolumeClaim":{"claimName":"nfs"}}],deployer.sftp.kubernetes.volumeMounts=[{"mountPath":"/staging","name":"staging"}],deployer.*.kubernetes.bootMajorVersion=2'
+----
+
+. Verify Stream deployment
++
+The status of the stream to be deployed can be queried with `stream list`, for example:
++
+[source,console,options=nowrap]
+----
+dataflow:>stream list
+╔═══════════╤═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╤════════════╗
+║Stream Name│                                                                                                     Stream Definition                                                                                                     │   Status   ║
+╠═══════════╪═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╪════════════╣
+║inboundSftp│sftp                                                                                                                                                                                                                       │The stream  ║
+║           │--task.launch.request.deployment-properties='deployer.*.kubernetes.volumes=[{"name":"staging","persistentVolumeClaim":{"claimName":"nfs"}}],deployer.*.kubernetes.volumeMounts=[{"mountPath":"/staging","name":"staging"}]'│has been    ║
+║           │--password='******' --local-dir=/staging/shared-files --host=<host> --remote-dir=/remote-files --task.launch.request.taskName=fileIngestTask --allow-unknown-keys=true --username=<user> | task-launcher                   │successfully║
+║           │--spring.cloud.dataflow.client.server-uri=http://<dataflow-server-ip> --spring.cloud.dataflow.client.authentication.basic.username=user --spring.cloud.dataflow.client.authentication.basic.password='******'              │deployed    ║
+╚═══════════╧═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╧════════════╝
+----
++
+
+. Inspect logs
++
+In the event the stream failed to deploy, or you would like to inspect the logs for any reason, the logs can be obtained from individual applications. First list the pods. The following shows all are in a healthy state.:
++
+[source,console,options=nowrap]
+----
+$ kubectl get pods
+NAME                                         READY   STATUS      RESTARTS   AGE
+inboundsftp-sftp-7c44b54cc4-jd65c            1/1     Running     0          1m
+inboundsftp-task-launcher-768d8f45bd-2s4wc   1/1     Running     0          1m
+kafka-broker-696786c8f7-4chnn                1/1     Running     0          1d
+kafka-zk-5f9bff7d5-4tbb7                     1/1     Running     0          1d
+mysql-f878678df-ml5vd                        1/1     Running     0          1d
+redis-748db48b4f-zz2ht                       1/1     Running     0          1d
+scdf-server-64fb996ffb-dmwpj                 1/1     Running     4          1d
+----
++
+In this example, the logs for the `sftp` application can be viewed by:
++
+[source, console, options=nowrap]
+----
+$kubectl logs -f inboundsftp-sftp-7c44b54cc4-jd65c
+----
++
+The log files of this application would be useful to debug issues such as SFTP connection failures.
++
+Additionally, the logs for the `task-launcher` application can be viewed by:
++
+```
+$kubectl logs -f inboundsftp-task-launcher-768d8f45bd-2s4wc
+```
+NOTE: Another way to access pods is via metadata labels. The SCDF deployer configures some useful labels, such as `spring-app-id=<stream-name>-<app-name>`, converted to lowercase. So `kubectl logs -lspring-app-id=inboundsftp-sftp`, for example, will also work. 
+
+. Add data
++
+Sample data can be found in the `data/` directory of the <<Batch File Ingest>> project.
+Connect to the SFTP server and upload `data/name-list.csv` into the `remote-files` directory.
+Copy `data/name-list.csv` into the `/remote-files` directory which the SFTP source is monitoring.
+When this file is detected, the `sftp` source will download it to the  `/staging/shared-files` directory specified by `--local-dir`, and emit a Task Launch Request.
+The Task Launch Request includes the name of the task to launch along with the local file path, given as a command line argument.
+Spring Batch binds each command line argument to a corresponding JobParameter.
+The FileIngestTask job processes the file given by the JobParameter named `localFilePath`.
+The `task-launcher` sink polls for messages using an exponential back-off.
+Since there have not been any recent requests, the task will launch within 30 seconds after the request is published.
++
+
+. Inspect Job Executions
++
+After data is received and the batch job runs, it will be recorded as a Job Execution. We can view job executions by for example issuing the following command in the Spring Cloud Data Flow shell:
++
+[source,console,options=nowrap]
+----
+dataflow:>job execution list
+╔═══╤═══════╤═════════╤════════════════════════════╤═════════════════════╤══════════════════╗
+║ID │Task ID│Job Name │         Start Time         │Step Execution Count │Definition Status ║
+╠═══╪═══════╪═════════╪════════════════════════════╪═════════════════════╪══════════════════╣
+║1  │1      │ingestJob│Fri Nov 30 15:45:29 EST 2018│1                    │Created           ║
+╚═══╧═══════╧═════════╧════════════════════════════╧═════════════════════╧══════════════════╝
+----
++
+As well as list more details about that specific job execution:
++
+[source,console,options=nowrap]
+----
+dataflow:>job execution display --id 1
+╔═══════════════════════════════════════════╤══════════════════════════════════════╗
+║                    Key                    │                Value                 ║
+╠═══════════════════════════════════════════╪══════════════════════════════════════╣
+║Job Execution Id                           │1                                     ║
+║Task Execution Id                          │3                                     ║
+║Task Instance Id                           │1                                     ║
+║Job Name                                   │ingestJob                             ║
+║Create Time                                │Fri Nov 30 13:52:38 EST 2018          ║
+║Start Time                                 │Fri Nov 30 13:52:38 EST 2018          ║
+║End Time                                   │Fri Nov 30 13:52:38 EST 2018          ║
+║Running                                    │false                                 ║
+║Stopping                                   │false                                 ║
+║Step Execution Count                       │1                                     ║
+║Execution Status                           │COMPLETED                             ║
+║Exit Status                                │COMPLETED                             ║
+║Exit Message                               │                                      ║
+║Definition Status                          │Created                               ║
+║Job Parameters                             │                                      ║
+║-spring.cloud.task.executionid(STRING)     │1                                     ║
+║run.id(LONG)                               │1                                     ║
+║-spring.datasource.username(STRING)        │root                                  ║
+║-spring.cloud.task.name(STRING)            │fileIngestTask                        ║
+║-spring.datasource.password(STRING)        │******************                    ║
+║-spring.datasource.driverClassName(STRING) │org.mariadb.jdbc.Driver               ║
+║localFilePath(STRING)                      │classpath:data.csv                    ║
+║-spring.datasource.url(STRING)             │jdbc:mysql://10.100.200.152:3306/mysql║
+╚═══════════════════════════════════════════╧══════════════════════════════════════╝
+----
++
+. Verify data
++
+When the the batch job runs, it processes the file in the local directory `/staging/shared-files` and transforms each item to uppercase names and inserts it into the database. In this case, we are using the same database that SCDF uses to store task execution and job execution status. We can use port forwarding to access the mysql server on a local port.
++
+[source,console,options=nowrap]
+----
+$ kubectl get pods
+NAME                                         READY   STATUS      RESTARTS   AGE
+inboundsftp-sftp-7c44b54cc4-jd65c            1/1     Running     0          1m
+inboundsftp-task-launcher-768d8f45bd-2s4wc   1/1     Running     0          1m
+kafka-broker-696786c8f7-4chnn                1/1     Running     0          1d
+kafka-zk-5f9bff7d5-4tbb7                     1/1     Running     0          1d
+mysql-f878678df-ml5vd                        1/1     Running     0          1d
+redis-748db48b4f-zz2ht                       1/1     Running     0          1d
+scdf-server-64fb996ffb-dmwpj                 1/1     Running     4          1d
+
+$kubectl port-forward pod/mysql-f878678df-ml5vd 3306:3306 &
+----
+You may use any database tool that supports the MySQL database to inspect the data.
+In this example we use the database tool `DBeaver`.
+Lets inspect the table to ensure our data was processed correctly.
++
+Within DBeaver, create a connection to the database using the JDBC URL `jdbc:mysql://localhost:3306/mysql`, and user `root` with password `yourpassword`, the default for the `mysql` deployment.
+When connected, expand the `mysql` schema, then expand `Tables` and then double click on the table `people`.
+When the table data loads, click the "Data" tab to view the data.
++
+. You're done!
+

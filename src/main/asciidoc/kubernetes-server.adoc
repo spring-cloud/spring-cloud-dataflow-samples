@@ -1,0 +1,106 @@
+
+The Kubernetes Data Flow Server is Spring Boot application available for http://cloud.spring.io/spring-cloud-dataflow/#platform-implementations/[download] or you can https://github.com/spring-cloud/spring-cloud-dataflow-server-kubernetes[build] it yourself.
+If you build it yourself, the executable jar will be in `spring-cloud-dataflow-server-kubernetes/target`.
+
+Operating The Data Flow Server in a Kubernetes cluster requires a Kubernetes cluster with sufficient resources to run the Data Flow Server and the distributed applications that the server will deploy to the cluster. 
+Additional services, at a minimum, a message broker (e.g., Kafka or Rabbit MQ) and a database, must also be installed. The reference documentation for the Kubernetes Data Flow Server includes detailed https://docs.spring.io/spring-cloud-dataflow-server-kubernetes/docs/current/reference/htmlsingle/#kubernetes-getting-started[installation instructions]. 
+For running these samples, we recommend you start with a simple baseline configuration.
+
+. https://kubernetes.io/docs/tasks/tools/install-kubectl/[Install and Setup] `kubectl`
+. Verify that you are configured to access your Kubernetes cluster.
++
+```
+$kubectl config current-context
+```
++
+should display your cluster name. 
+For a newly installed cluster, the `kubectl get all` command should look something like this:
++
+```
+$kubectl get all
+NAME                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   10.100.200.1   <none>        443/TCP   5m
+```
+. Install the and configure Kubernetes Data Flow Server.
++
+We will clone the git repo and configure Kafka message broker.
++
+```
+$git clone https://github.com/spring-cloud/spring-cloud-dataflow-server-kubernetes.git
+$cd spring-cloud-dataflow-server-kubernetes
+$git checkout v1.7.1.RELEASE
+$kubectl create -f src/kubernetes/kafka/
+$kubectl create -f src/kubernetes/mysql/
+$kubectl create -f src/kubernetes/redis/
+$kubectl create -f src/kubernetes/server/server-roles.yaml
+$kubectl create -f src/kubernetes/server/server-rolebinding.yaml
+$kubectl create -f src/kubernetes/server/service-account.yaml
+$kubectl create -f src/kubernetes/server/server-config-kafka.yaml
+$kubectl create -f src/kubernetes/server/server-svc.yaml
+$kubectl create -f src/kubernetes/server/server-deployment.yaml
+```
+. Verify the installation
++
+Now, if you run `kubectl get all`, you should see something like:
++
+```
+$kubectl get all
+NAME                                READY   STATUS    RESTARTS   AGE
+pod/kafka-broker-696786c8f7-4chnn   1/1     Running   0          7m
+pod/kafka-zk-5f9bff7d5-4tbb7        1/1     Running   0          7m
+pod/mysql-f878678df-ml5vd           1/1     Running   0          7m
+pod/redis-748db48b4f-zz2ht          1/1     Running   0          1m
+pod/scdf-server-64fb996ffb-dmwpj    1/1     Running   0          5m
+
+NAME                  TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)                      AGE
+service/kafka         ClusterIP      10.100.200.97    <none>          9092/TCP                     7m
+service/kafka-zk      ClusterIP      10.100.200.244   <none>          2181/TCP,2888/TCP,3888/TCP   7m
+service/kubernetes    ClusterIP      10.100.200.1     <none>          443/TCP                      19d
+service/mysql         ClusterIP      10.100.200.152   <none>          3306/TCP                     7m
+service/redis         ClusterIP      10.100.200.8     <none>          6379/TCP                     1m
+service/scdf-server   LoadBalancer   10.100.200.32    44.333.222.11   80:31486/TCP                 5m
+
+NAME                           DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/kafka-broker   1         1         1            1           7m
+deployment.apps/kafka-zk       1         1         1            1           7m
+deployment.apps/mysql          1         1         1            1           7m
+deployment.apps/redis          1         1         1            1           1m
+deployment.apps/scdf-server    1         1         1            1           5m
+
+NAME                                      DESIRED   CURRENT   READY   AGE
+replicaset.apps/kafka-broker-696786c8f7   1         1         1       7m
+replicaset.apps/kafka-zk-5f9bff7d5        1         1         1       7m
+replicaset.apps/mysql-f878678df           1         1         1       7m
+replicaset.apps/redis-748db48b4f          1         1         1       1m
+replicaset.apps/scdf-server-64fb996ffb    1         1         1       5m
+```
+. Connect the `shell` with `server` running on Kubernetes. 
+Note the `EXTERNAL-IP` entry for `service/scdf-server`. 
+Connect using the default username and password.
++
+```
+$ cd <PATH/TO/SPRING-CLOUD-DATAFLOW-SHELL-JAR>
+$ java -jar spring-cloud-dataflow-shell-<VERSION>.jar
+
+  ____                              ____ _                __
+ / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
+ \___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
+  ___) | |_) | |  | | | | | (_| | | |___| | (_) | |_| | (_| |
+ |____/| .__/|_|  |_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|
+  ____ |_|    _          __|___/                 __________
+ |  _ \  __ _| |_ __ _  |  ___| | _____      __  \ \ \ \ \ \
+ | | | |/ _` | __/ _` | | |_  | |/ _ \ \ /\ / /   \ \ \ \ \ \
+ | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
+ |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
+
+
+Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
+server-unknown:>
+```
++
+```
+server-unknown:>dataflow config server --uri http://<SCDF_EXTERNAL_IP> --username user --password password
+...
+dataflow:>
+```
+

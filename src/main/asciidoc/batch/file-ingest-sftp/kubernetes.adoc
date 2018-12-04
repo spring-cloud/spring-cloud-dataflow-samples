@@ -1,12 +1,21 @@
 [[sftp-file-ingest-kubernetes]]
+:docs_dir: ../..
 ==== Using the Kubernetes Server
 
 ===== Additional Prerequisites
+* A Kubernetes cluster
 * A database tool such as link:https://dbeaver.jkiss.org/download/[DBeaver] to inspect the database contents
 * An SFTP server accessible from the Kubernetes cluster
 * An NFS server accessible from the Kubernetes cluster
+
 NOTE: For this example, we use an NFS host configured to allow https://www.tldp.org/HOWTO/NFS-HOWTO/server.html[read-write access].
+
+* The Spring Cloud Data Flow Kubernetes Server
++
+include::{docs_dir}/kubernetes-server.adoc[]
++
 * Configure a Kubernetes Persistent Volume named `nfs` using the Host IP of the NFS server and the shared directory path:
++
 ```
 apiVersion: v1
 kind: PersistentVolume
@@ -21,12 +30,15 @@ spec:
     server: <NFS_SERVER_IP>
     path: <NFS_SHARED_PATH>
 ```
++
 Copy and save the above to `pv-nfs.yaml` and replace `<NFS_SERVER_IP>` with the IP address of the NFS Server and <NFS_SHARED_PATH> with a shared directory on the server, e.g.`/export`. Create the resource:
++
 ```
 $kubectl apply -f pv-nfs.yaml
 persistentvolume/nfs created
 ```
 * Configure a Persistent Volume Claim on the `nfs` persistent volume. We will also name the PVC `nfs`. Later, we will configure our apps to use this to mount the NFS shared directory. 
++
 ```
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -35,18 +47,17 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: ""
   resources:
     requests:
       storage: 5Gi
 ```
++
 Copy and save the above to `pvc-nsf.yaml` and create the PVC resource:
++
 ```
 $kubectl apply -f pvc-nsf.yaml
 persistentvolumeclaim/nfs created
 ```
-* The Spring Cloud Data Flow Kubernetes Server
-include::{docs_dir}/kubernetes-server.adoc[]
 
 ===== Running the Demo
 
@@ -109,33 +120,34 @@ Created new task 'fileIngestTask'
 +
 . Create and deploy the stream
 +
-Now lets create and deploy the stream.
+Now lets create the stream.
 Once deployed, the stream will start polling the SFTP server and, when new files arrive, launch the batch job.
-+
-NOTE: Replace `<user>`, '<pass>`, and `<host>` below.
-The `<host>` is the SFTP server host, `<user>` and `<password>` values are the credentials for the remote user. 
-Additionally, replace `--spring.cloud.dataflow.client.server-uri=http://<dataflow-server-ip>` with the Cluster IP (External IP should work as well) of your dataflow server, as shown by `kubectl get svc/scdf-server`. 
-The default Data Flow server credentials are `user` and `password`.
-+
-Notice how we use the Kubernetes Persistent Volume Claim(PVC) resource that we created earlier. 
-In the stream definition, the PVC and the associated Volume Mount are passed to the task via `--task.launch.request.deployment-properties`. 
-The `deployer.\*.kubernetes...` properties provide native Kubernetes specs as JSON to instruct the Data Flow server's deployer to add this configuration to the container configuration for the pod that will run the batch job. 
-We mount the NFS shared directory that we configured in the `nfs` Persistent Volume(PV) as `/staging` in the pod's local file system. The `nfs` PVC allows the pod to allocate space on the PV.
-The corresponding configuration, targeting the `sftp` source is used to deploy the stream.
-This enables the `sftp` source to share NFS mounted files with the launched task.
-+
-NOTE: The deployment property `deployer.*.kubernetes.bootMajorVersion=2` tells the deployer to configure the liveness and readiness probes for Spring Boot 2.x applications, as Spring Boot actuator endpoints change in version 2. This will likely become the default in a future SCDF release.
 +
 [source,console,options=nowrap]
 ----
 dataflow:>stream create inboundSftp --definition "sftp --host=<host> --username=<user> --password=<password> --allow-unknown-keys=true --remote-dir=/remote-files --local-dir=/staging/shared-files --task.launch.request.taskName=fileIngestTask --task.launch.request.deployment-properties='deployer.*.kubernetes.volumes=[{\"name\":\"staging\",\"persistentVolumeClaim\":{\"claimName\":\"nfs\"}}],deployer.*.kubernetes.volumeMounts=[{\"mountPath\":\"/staging\",\"name\":\"staging\"}]'| task-launcher --spring.cloud.dataflow.client.server-uri=http://<dataflow-server-ip> --spring.cloud.dataflow.client.authentication.basic.username=user --spring.cloud.dataflow.client.authentication.basic.password=password"
 ----
 +
+NOTE: Replace `<user>`, '<pass>`, and `<host>` above.
+The `<host>` is the SFTP server host, `<user>` and `<password>` values are the credentials for the remote user. 
+Additionally, replace `--spring.cloud.dataflow.client.server-uri=http://<dataflow-server-ip>` with the Cluster IP (External IP should work as well) of your dataflow server, as shown by `kubectl get svc/scdf-server`. 
+The default Data Flow server credentials are `user` and `password`.
++
+NOTE: Here we use the Kubernetes Persistent Volume Claim(PVC) resource that we created earlier. 
+In the stream definition, the PVC and the associated Volume Mount are passed to the task via `--task.launch.request.deployment-properties`. 
+The `deployer.*.kubernetes...` properties provide native Kubernetes specs as JSON to instruct the Data Flow server's deployer to add this configuration to the container configuration for the pod that will run the batch job. 
+We mount the NFS shared directory that we configured in the `nfs` Persistent Volume(PV) as `/staging` in the pod's local file system. The `nfs` PVC allows the pod to allocate space on the PV.
+The corresponding configuration, targeting the `sftp` source is used to deploy the stream.
+This enables the `sftp` source to share NFS mounted files with the launched task.
++
+Now let's deploy the stream.
++
 [source, console, options=nowrap]
 ----
 dataflow:>stream deploy inboundSftp --properties 'deployer.sftp.kubernetes.volumes=[{"name":"staging","persistentVolumeClaim":{"claimName":"nfs"}}],deployer.sftp.kubernetes.volumeMounts=[{"mountPath":"/staging","name":"staging"}],deployer.*.kubernetes.bootMajorVersion=2'
 ----
-
+NOTE: The deployment property `deployer.*.kubernetes.bootMajorVersion=2` tells the deployer to configure the liveness and readiness probes for Spring Boot 2.x applications, as Spring Boot actuator endpoints change in version 2. This will likely become the default in a future SCDF release.
++
 . Verify Stream deployment
 +
 The status of the stream to be deployed can be queried with `stream list`, for example:
@@ -168,7 +180,7 @@ kafka-broker-696786c8f7-4chnn                1/1     Running     0          1d
 kafka-zk-5f9bff7d5-4tbb7                     1/1     Running     0          1d
 mysql-f878678df-ml5vd                        1/1     Running     0          1d
 redis-748db48b4f-zz2ht                       1/1     Running     0          1d
-scdf-server-64fb996ffb-dmwpj                 1/1     Running     4          1d
+scdf-server-64fb996ffb-dmwpj                 1/1     Running     0          1d
 ----
 +
 In this example, the logs for the `sftp` application can be viewed by:
@@ -262,8 +274,10 @@ kafka-broker-696786c8f7-4chnn                1/1     Running     0          1d
 kafka-zk-5f9bff7d5-4tbb7                     1/1     Running     0          1d
 mysql-f878678df-ml5vd                        1/1     Running     0          1d
 redis-748db48b4f-zz2ht                       1/1     Running     0          1d
-scdf-server-64fb996ffb-dmwpj                 1/1     Running     4          1d
-
+scdf-server-64fb996ffb-dmwpj                 1/1     Running     0          1d
+----
++
+----
 $kubectl port-forward pod/mysql-f878678df-ml5vd 3306:3306 &
 ----
 You may use any database tool that supports the MySQL database to inspect the data.

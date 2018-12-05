@@ -146,7 +146,7 @@ Now let's deploy the stream.
 ----
 dataflow:>stream deploy inboundSftp --properties 'deployer.sftp.kubernetes.volumes=[{"name":"staging","persistentVolumeClaim":{"claimName":"nfs"}}],deployer.sftp.kubernetes.volumeMounts=[{"mountPath":"/staging","name":"staging"}],deployer.*.kubernetes.bootMajorVersion=2'
 ----
-NOTE: The deployment property `deployer.*.kubernetes.bootMajorVersion=2` tells the deployer to configure the liveness and readiness probes for Spring Boot 2.x applications, as Spring Boot actuator endpoints change in version 2. This will likely become the default in a future SCDF release.
+NOTE: The deployment property `deployer.*.kubernetes.bootMajorVersion=2` tells the deployer to configure the liveness and readiness probes for Spring Boot 2.x applications, as actuator endpoints have changed in Spring Boot 2.0. This will likely become the default in a future SCDF release.
 +
 . Verify Stream deployment
 +

@@ -1,4 +1,4 @@
-The Kubernetes Data Flow Server is Spring Boot application. Operating The Data Flow Server in a Kubernetes cluster requires a Kubernetes cluster with sufficient resources to run the server, the distributed applications that the server will deploy to the cluster, and the requisite services. 
+The Kubernetes Data Flow Server is a Spring Boot application. Operating The Data Flow Server in a Kubernetes cluster requires a cluster with sufficient resources to run the server, the distributed applications that the server will deploy to the cluster, and the requisite services. 
 Additional services include, at a minimum, a message broker (e.g., Kafka or Rabbit MQ) and a database. The Spring Cloud Data Flow Kubernetes reference incudes detailed https://docs.spring.io/spring-cloud-dataflow-server-kubernetes/docs/current/reference/htmlsingle/#kubernetes-getting-started[installation instructions]. 
 +
 For running these samples, we will follow these steps to set up a simple baseline configuration.
@@ -20,7 +20,7 @@ NAME                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
 service/kubernetes   ClusterIP   10.100.200.1   <none>        443/TCP   5m
 ```
 +
-. Install the and configure Kubernetes Data Flow Server.
+. Install and configure Kubernetes Data Flow Server.
 We will clone the git repo and configure Kafka message broker.
 +
 ```

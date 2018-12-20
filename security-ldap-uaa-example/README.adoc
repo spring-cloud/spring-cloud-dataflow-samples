@@ -1,0 +1,222 @@
+= LDAP Security and UAA Example
+
+This example provides an example on running
+Spring Cloud Data Flow with a https://github.com/cloudfoundry/uaa[CloudFoundry User Account and Authentication (UAA) Server] (UAA) backed by _Lightweight Directory Access Protocol_ (LDAP) security.
+
+This repository provides an embedded LDAP server, powered by
+https://directory.apache.org/[Apache Directory Server] (ApacheDS) and Spring Boot, running on *port 40000*
+with pre-configured users. In this example we will use 2 users.
+
+First user with all roles:
+
+- username: marlene
+- password: supersecret
+- assigned LDAP groups: *view*, *create*, *manage*
+
+Second user with view and manage roles only:
+
+- username: joe
+- password: joespassword
+- assigned LDAP groups: *view*, *manage*
+
+In order to get everything running we need to setup the following server instances:
+
+* LDAP Server (port `40000`)
+* UAA Server (port `8080`)
+* Spring Cloud Skipper (secured by UAA, port `7577`)
+* Spring Cloud Data Flow (secured by UAA, port `9393`)
+
+== Build + Start LDAP Server
+
+* Java 8
+* https://git-scm.com/[Git]
+* https://github.com/cloudfoundry/cf-uaac[CloudFoundry UAA Command Line Client] (UACC)
+
+== Build + Start LDAP Server
+
+[source,bash]
+----
+$ git clone https://github.com/ghillert/ldap-uaa-example.git
+$ cd ldap-uaa-example
+$ ./mwnw clean package
+$ java -jar target/ldapserver-uaa-1.0.0.BUILD-SNAPSHOT.jar
+----
+
+== Download + Start UAA Server
+
+Since by default the UAA Server is available as a war file only, we will
+use a custom Spring Boot based version that wraps the UAA war file but makes
+for an easier startup experience:
+
+[source,bash]
+----
+$ git clone https://github.com/ghillert/uaa-bundled.git
+$ cd uaa-bundled
+$ export CLOUD_FOUNDRY_CONFIG_PATH=/path/to/dev/ldap-uaa-example
+$ ./mwnw clean package
+$ java -jar target/uaa-bundled-1.0.0.BUILD-SNAPSHOT.jar
+----
+
+== Prepare UAA Server
+
+Simply execute the BASH script `./setup-uaa.sh`. It will execute the following
+commands:
+
+[source,bash]
+----
+uaac token client get admin -s adminsecret
+
+uaac group add "dataflow.view"
+uaac group add "dataflow.create"
+uaac group add "dataflow.manage"
+
+uaac group map "cn=view,ou=groups,dc=springframework,dc=org" --name="dataflow.view" --origin=ldap
+uaac group map "cn=create,ou=groups,dc=springframework,dc=org" --name="dataflow.create" --origin=ldap
+uaac group map "cn=manage,ou=groups,dc=springframework,dc=org" --name="dataflow.manage" --origin=ldap
+
+uaac client add dataflow \
+  --name dataflow \
+  --scope cloud_controller.read,cloud_controller.write,openid,password.write,scim.userids,dataflow.view,dataflow.create,dataflow.manage \
+  --authorized_grant_types password,authorization_code,client_credentials,refresh_token \
+  --authorities uaa.resource \
+  --redirect_uri http://localhost:9393/login \
+  --autoapprove openid \
+  --secret dataflow \
+
+uaac client add skipper \
+  --name skipper \
+  --scope cloud_controller.read,cloud_controller.write,openid,password.write,scim.userids,dataflow.view,dataflow.create,dataflow.manage \
+  --authorized_grant_types password,authorization_code,client_credentials,refresh_token \
+  --authorities uaa.resource \
+  --redirect_uri http://localhost:7577/login \
+  --autoapprove openid \
+  --secret skipper \
+----
+
+== Quick Test Using Curl
+
+[source,bash]
+----
+$ curl -v -d"username=marlene&password=supersecret&client_id=dataflow&grant_type=password" -u "dataflow:dataflow" http://localhost:8080/uaa/oauth/token
+
+$ curl -v -d"username=joe&password=joespassword&client_id=skipper&grant_type=password" -u "skipper:skipper" http://localhost:8080/uaa/oauth/token
+----
+
+This should yield output similar to the following:
+
+[source,bash]
+----
+*   Trying ::1...
+* TCP_NODELAY set
+* Connected to localhost (::1) port 8080 (#0)
+* Server auth using Basic with user 'dataflow'
+> POST /uaa/oauth/token HTTP/1.1
+> Host: localhost:8080
+> Authorization: Basic ZGF0YWZsb3c6ZGF0YWZsb3c=
+> User-Agent: curl/7.54.0
+> Accept: */*
+> Content-Length: 76
+> Content-Type: application/x-www-form-urlencoded
+>
+* upload completely sent off: 76 out of 76 bytes
+< HTTP/1.1 200
+< Cache-Control: no-store
+< Pragma: no-cache
+< X-XSS-Protection: 1; mode=block
+< X-Frame-Options: DENY
+< X-Content-Type-Options: nosniff
+< Content-Type: application/json;charset=UTF-8
+< Transfer-Encoding: chunked
+< Date: Thu, 20 Dec 2018 20:09:27 GMT
+<
+* Connection #0 to host localhost left intact
+{"access_token":"eyJhbGciOiJSUzI1NiIsImprdSI6Imh0dHBzOi8vbG9jYWxob3N0OjgwODAvdWFhL3Rva2VuX2tleXMiLCJraWQiOiJrZXktaWQtMSIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI2MjQxMTIwNDc1YTA0NzZmYjhmMmQwZWJmOGZhNmJmZSIsInN1YiI6IjMyMTMzMmExLTZmZjAtNGQ1Yy1hYjMzLTE3YzIzYjk4MzcxNSIsInNjb3BlIjpbImRhdGFmbG93LnZpZXciLCJzY2ltLnVzZXJpZHMiLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyLnJlYWQiLCJwYXNzd29yZC53cml0ZSIsImRhdGFmbG93Lm1hbmFnZSIsImNsb3VkX2NvbnRyb2xsZXIud3JpdGUiLCJkYXRhZmxvdy5jcmVhdGUiXSwiY2xpZW50X2lkIjoiZGF0YWZsb3ciLCJjaWQiOiJkYXRhZmxvdyIsImF6cCI6ImRhdGFmbG93IiwiZ3JhbnRfdHlwZSI6InBhc3N3b3JkIiwidXNlcl9pZCI6IjMyMTMzMmExLTZmZjAtNGQ1Yy1hYjMzLTE3YzIzYjk4MzcxNSIsIm9yaWdpbiI6ImxkYXAiLCJ1c2VyX25hbWUiOiJtYXJsZW5lIiwiZW1haWwiOiJtYXJsZW5lQHVzZXIuZnJvbS5sZGFwLmNmIiwiYXV0aF90aW1lIjoxNTQ1MzM2NTY3LCJyZXZfc2lnIjoiZjg3NjU2MTUiLCJpYXQiOjE1NDUzMzY1NjcsImV4cCI6MTU0NTM0MDE2NywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3VhYS9vYXV0aC90b2tlbiIsInppZCI6InVhYSIsImF1ZCI6WyJzY2ltIiwiY2xvdWRfY29udHJvbGxlciIsInBhc3N3b3JkIiwiZGF0YWZsb3ciLCJvcGVuaWQiXX0.OrV_UzlfGtv5ME6jgp0Xg_DKptUXyCalV7yNlUL0PxYonECJsfej1yzG3twIBuNJ8LGvNAkUIhIokdbBsRx1bVnn-tudaRxahihZDgbrOBOeTsG6MOOK8DrwyNqI9QksuPseh2IaQ8Q0RaPkwLTa_tmNJvZYpYmVaGSImhNsSvYnmVuxFXLALy0XhkLMhSf_ViTbA9-uyYw8n7u9Gsb46_pU3uGKUh-mSA4dETZvXqjFIalV07BBFJj0NhQ7jQPn3URRkKBULQVga1GWBuQkw18jwOF8Q6PA1ENmOOO6PJfqGJUXV0sCWDUC0TQhYSxLbpDodQOwAHVoqJ2M0lD78g","token_type":"bearer","id_token":"eyJhbGciOiJSUzI1NiIsImprdSI6Imh0dHBzOi8vbG9jYWxob3N0OjgwODAvdWFhL3Rva2VuX2tleXMiLCJraWQiOiJrZXktaWQtMSIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzMjEzMzJhMS02ZmYwLTRkNWMtYWIzMy0xN2MyM2I5ODM3MTUiLCJhdWQiOlsiZGF0YWZsb3ciXSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3VhYS9vYXV0aC90b2tlbiIsImV4cCI6MTU0NTM0MDE2NywiaWF0IjoxNTQ1MzM2NTY3LCJhbXIiOlsiZXh0IiwicHdkIl0sImF6cCI6ImRhdGFmbG93Iiwic2NvcGUiOlsib3BlbmlkIl0sImVtYWlsIjoibWFybGVuZUB1c2VyLmZyb20ubGRhcC5jZiIsInppZCI6InVhYSIsIm9yaWdpbiI6ImxkYXAiLCJqdGkiOiI2MjQxMTIwNDc1YTA0NzZmYjhmMmQwZWJmOGZhNmJmZSIsInByZXZpb3VzX2xvZ29uX3RpbWUiOjE1NDUzMzQyMTY1MzYsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiY2xpZW50X2lkIjoiZGF0YWZsb3ciLCJjaWQiOiJkYXRhZmxvdyIsImdyYW50X3R5cGUiOiJwYXNzd29yZCIsInVzZXJfbmFtZSI6Im1hcmxlbmUiLCJyZXZfc2lnIjoiZjg3NjU2MTUiLCJ1c2VyX2lkIjoiMzIxMzMyYTEtNmZmMC00ZDVjLWFiMzMtMTdjMjNiOTgzNzE1IiwiYXV0aF90aW1lIjoxNTQ1MzM2NTY3fQ.JOa9oNiMKIu-bE0C9su2Kaw-Mbl8Pr6r-ALFfMIvFS_iaI9c5_OIrE-wNAFjtPhGvQkVoLL2d_fSdgtv5GyjWIJ0pCjZb-VJdX2AGauNynnumsR7ct6F6nI9CGrTtCS2Khe6Tp54Nu1wxumk09jd42CaPXA1S2pmUcudQBZEa8AELpESjnjnwOYEbPiKba03cnacGJvqPtbMl3jfWGRMmGqxQEM0A-5CKCqQpMzhkAeokUkPnirVOuNsQHQXNERy1gygO7fji9nReRaOiaFKNYL9aS-hKjY_i3uuAawvY_qpe5qRZ3-xCEesi-TqOItqy2I3BBREDp99t9cfAr2UXQ","expires_in":3599,"scope":"dataflow.view scim.userids openid cloud_controller.read password.write dataflow.manage cloud_controller.write dataflow.create","jti":"6241120475a0476fb8f2d0ebf8fa6bfe"}
+----
+
+== Download + Start Spring Cloud Skipper
+
+[source,bash]
+----
+$ wget http://repo.spring.io/snapshot/org/springframework/cloud/spring-cloud-skipper-server/2.0.0.BUILD-SNAPSHOT/spring-cloud-skipper-server-2.0.0.BUILD-SNAPSHOT.jar
+$ java -jar spring-cloud-skipper-server-2.0.0.BUILD-SNAPSHOT.jar \
+  --spring.config.additional-location=/path/to/ldap-uaa-example/skipper.yml
+----
+
+== Download + Start Spring Cloud Data Flow
+
+[source,bash]
+----
+$ wget https://repo.spring.io/milestone/org/springframework/cloud/spring-cloud-dataflow-server-local/2.0.0.BUILD-SNAPSHOT/spring-cloud-dataflow-server-local-2.0.0.BUILD-SNAPSHOT.jar
+$ wget https://repo.spring.io/milestone/org/springframework/cloud/spring-cloud-dataflow-shell/2.0.0.BUILD-SNAPSHOT/spring-cloud-dataflow-shell-2.0.0.BUILD-SNAPSHOT.jar
+$ java -jar spring-cloud-dataflow-server-local-2.0.0.BUILD-SNAPSHOT.jar --spring.config.additional-location=/path/to/ldap-uaa-example/dataflow.yml
+----
+
+== Helper Utility
+
+In case you want to experiment with LDAP users and make changes to them, be aware
+that users are cached in UAA. In that case you can use the following helper BASH script
+that will reload the user and display the UAA data as well:
+
+[source,bash]
+----
+$ ./reload-user.sh <username> <password>
+----
+
+== Configure and run a Composed Task
+
+First start the Spring Cloud Data Flow Shell:
+
+[source,bash]
+----
+$ java -jar spring-cloud-dataflow-shell-2.0.0.BUILD-SNAPSHOT.jar --dataflow.username=marlene --dataflow.password=supersecret
+----
+
+Now we need to import the Composed Task Runner and the Spring Cloud Task App Starters:
+
+[source,bash]
+----
+dataflow:> app import http://bit.ly/Dearborn-GA-task-applications-maven
+----
+
+If you want to import _just_ the Composed Task Runner applications:
+
+[source,bash]
+----
+dataflow:> app register --name composed-task-runner --type task --uri  maven://org.springframework.cloud.task.app:composedtaskrunner-task:2.0.0.RELEASE
+----
+
+It is important that use the latest task app starters, so we end up having at
+least _Composed Task Runner_ version `2.0.0.RELEASE`. The earlier versions
+had [short-comings](https://github.com/spring-cloud-task-app-starters/composed-task-runner/issues/41)
+in regards to security. Therefore, don't use the app starters from the *Clark*
+release train.
+
+Create + Run the Composed Task:
+
+[source,bash]
+----
+dataflow:> task create my-composed-task --definition "timestamp && timestamp-batch"
+dataflow:> task launch my-composed-task --arguments "--dataflow-server-username=marlene --dataflow-server-password=supersecret"
+----
+
+This should execute the composed task successfully and yield task executions that look
+similar to the following:
+
+[source,bash]
+----
+dataflow:>task execution list
+╔════════════════════════════════╤══╤════════════════════════════╤════════════════════════════╤═════════╗
+║           Task Name            │ID│         Start Time         │          End Time          │Exit Code║
+╠════════════════════════════════╪══╪════════════════════════════╪════════════════════════════╪═════════╣
+║my-composed-task-timestamp-batch│3 │Thu Dec 20 09:30:41 HST 2018│Thu Dec 20 09:30:41 HST 2018│0        ║
+║my-composed-task-timestamp      │2 │Thu Dec 20 09:30:26 HST 2018│Thu Dec 20 09:30:26 HST 2018│0        ║
+║my-composed-task                │1 │Thu Dec 20 09:30:18 HST 2018│Thu Dec 20 09:30:47 HST 2018│0        ║
+╚════════════════════════════════╧══╧════════════════════════════╧════════════════════════════╧═════════╝
+
+dataflow:>
+----
+
+Using the Dashboard, you should see task execution similar to these:
+
+image::images/composed-task-success.png[Dashboard successful task executions]
+

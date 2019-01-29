@@ -36,9 +36,9 @@ In order to get everything running we need to setup the following server instanc
 
 [source,bash]
 ----
-$ git clone https://github.com/ghillert/ldap-uaa-example.git
-$ cd ldap-uaa-example
-$ ./mwnw clean package
+$ git clone https://github.com/spring-cloud/spring-cloud-dataflow-samples.git
+$ cd spring-cloud-dataflow-samples/security-ldap-uaa-example
+$ ./mvnw clean package
 $ java -jar target/ldapserver-uaa-1.0.0.BUILD-SNAPSHOT.jar
 ----
 

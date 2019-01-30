@@ -7,13 +7,13 @@ This repository provides an embedded LDAP server, powered by
 https://directory.apache.org/[Apache Directory Server] (ApacheDS) and Spring Boot, running on *port 40000*
 with pre-configured users. In this example we will use 2 users.
 
-First user with all roles:
+*First user* with all roles:
 
 - username: marlene
 - password: supersecret
 - assigned LDAP groups: *view*, *create*, *manage*
 
-Second user with view and manage roles only:
+*Second user* with view and manage roles only:
 
 - username: joe
 - password: joespassword
@@ -52,8 +52,8 @@ for an easier startup experience:
 ----
 $ git clone https://github.com/ghillert/uaa-bundled.git
 $ cd uaa-bundled
-$ export CLOUD_FOUNDRY_CONFIG_PATH=/path/to/dev/ldap-uaa-example
-$ ./mwnw clean package
+$ export CLOUD_FOUNDRY_CONFIG_PATH=/path/to/dev/security-ldap-uaa-example
+$ ./mvnw clean package
 $ java -jar target/uaa-bundled-1.0.0.BUILD-SNAPSHOT.jar
 ----
 

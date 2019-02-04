@@ -20,7 +20,7 @@ Out of the box, SCSt sends https://docs.spring.io/spring-boot/docs/2.0.1.RELEASE
 
 NOTE: Unlike Spring Cloud Data Flow Metrics Collector, metrics here are sent synchronously over HTTP not through a Binder channel topic.
 
-All Spring Cloud Stream App Starers enrich the standard  http://micrometer.io/docs/concepts#_supported_monitoring_systems[dimensional tags] with the following SCDF specific tags:
+All Spring Cloud Stream App Starters enrich the standard  http://micrometer.io/docs/concepts#_supported_monitoring_systems[dimensional tags] with the following SCDF specific tags:
 [width="100%",options="header"]
 |====================
 | tag name | SCDF property | default value

@@ -3,7 +3,8 @@
 :docs_dir: ../..
 === Twitter Analytics
 
-In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from _TwitterStream_ and compute simple analytics over data-in-transit using _Field-Value-Counter_.
+In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from _TwitterStream_, compute analytics over data-in-transit using https://github.com/spring-cloud-stream-app-starters/analytics[Analytics-Counter].
+Use Prometheus and Grafana for storing, analysing and visualizing the collected data.
 
 We will take you through the steps to configure Spring Cloud Data Flow's `Local` server.
 
@@ -13,7 +14,15 @@ We will take you through the steps to configure Spring Cloud Data Flow's `Local`
 include::{docs_dir}/shell.adoc[]
 * A running local Data Flow Server
 include::{docs_dir}/local-server.adoc[]
-* Running instance of link:http://redis.io/[Redis]
+Make sure to add the following properties when starting the Data Flow server:
+```
+--spring.cloud.dataflow.applicationProperties.stream.management.metrics.export.prometheus.enabled=true
+--spring.cloud.dataflow.applicationProperties.stream.spring.cloud.streamapp.security.enabled=false
+--spring.cloud.dataflow.applicationProperties.stream.management.endpoints.web.exposure.include=prometheus,info,health
+--spring.cloud.dataflow.grafana-info.url=http://localhost:3000
+```
+* Running instance of link:http://docs.spring.io/spring-cloud-dataflow/docs/2.0.0.BUILD-SNAPSHOT/reference/htmlsingle/#streams-monitoring-local-prometheus[Prometheus, Service Discovery and Grafana].
+Follow the http://docs.spring.io/spring-cloud-dataflow/docs/2.0.0.BUILD-SNAPSHOT/reference/htmlsingle/#streams-monitoring-local-prometheus[instructions] to start those services in Docker containers.
 * Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
 * Twitter credentials from link:https://apps.twitter.com/[Twitter Developers] site
 
@@ -37,12 +46,12 @@ Created new stream 'tweets'
 ```
 +
 ```
-dataflow:>stream create tweetlang  --definition ":tweets.twitterstream > field-value-counter --fieldName=lang --name=language" --deploy
+dataflow:>stream create tweetlang  --definition ":tweets.twitterstream > counter --name=language --counter.tag.expression.lang=#jsonPath(payload,'$..lang')" --deploy
 Created and deployed new stream 'tweetlang'
 ```
 +
 ```
-dataflow:>stream create tagcount --definition ":tweets.twitterstream > field-value-counter --fieldName=entities.hashtags.text --name=hashtags" --deploy
+dataflow:>stream create tagcount  --definition ":tweets.twitterstream > counter --name=hashtags --counter.tag.expression.hastag=#jsonPath(payload,'$.entities.hashtags[*].text')" --deploy
 Created and deployed new stream 'tagcount'
 ```
 +
@@ -52,93 +61,30 @@ Deployed stream 'tweets'
 ```
 +
 NOTE: To get a consumerKey and consumerSecret you need to register a twitter application. If you don’t already have one set up, you can create an app at the link:https://apps.twitter.com/[Twitter Developers] site to get these credentials. The tokens `<CONSUMER_KEY>`, `<CONSUMER_SECRET>`, `<ACCESS_TOKEN>`, and `<ACCESS_TOKEN_SECRET>` are required to be replaced with your account credentials.
-
 +
 . Verify the streams are successfully deployed. Where: (1) is the primary pipeline; (2) and (3) are tapping the primary pipeline with the DSL syntax `<stream-name>.<label/app name>` [e.x. `:tweets.twitterstream`]; and (4) is the final deployment of primary pipeline
-
 +
 ```
 dataflow:>stream list
 ```
 +
-. Notice that `tweetlang.field-value-counter`, `tagcount.field-value-counter`, `tweets.log` and `tweets.twitterstream` link:https://github.com/spring-cloud-stream-app-starters/[Spring Cloud Stream] applications are running as Spring Boot applications within the `local-server`.
+. Notice that `tweetlang.counter`, `tagcount.counter`, `tweets.log` and `tweets.twitterstream` link:https://github.com/spring-cloud-stream-app-starters/[Spring Cloud Stream] applications are running as Spring Boot applications within the `local-server`.
 +
-
-[source,console,options=nowrap]
-----
-2016-02-16 11:43:26.174  INFO 10189 --- [nio-9393-exec-2] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:field-value-counter-sink:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
-   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-6990537012958280418/tweetlang-1455651806160/tweetlang.field-value-counter
-2016-02-16 11:43:26.206  INFO 10189 --- [nio-9393-exec-3] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:field-value-counter-sink:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
-   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-6990537012958280418/tagcount-1455651806202/tagcount.field-value-counter
-2016-02-16 11:43:26.806  INFO 10189 --- [nio-9393-exec-4] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:log-sink:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
-   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-6990537012958280418/tweets-1455651806800/tweets.log
-2016-02-16 11:43:26.813  INFO 10189 --- [nio-9393-exec-4] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:twitterstream-source:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
-   Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-6990537012958280418/tweets-1455651806800/tweets.twitterstream
-----
-+
-. Verify that two `field-value-counter` with the names `hashtags` and `language` is listing successfully
-+
-
-[source,console,options=nowrap]
-----
-dataflow:>field-value-counter list
-╔════════════════════════╗
-║Field Value Counter name║
-╠════════════════════════╣
-║hashtags                ║
-║language                ║
-╚════════════════════════╝
-----
-+
-. Verify you can query individual `field-value-counter` results successfully
-+
-[source,console,options=nowrap]
-----
-dataflow:>field-value-counter display hashtags
-Displaying values for field value counter 'hashtags'
-╔══════════════════════════════════════╤═════╗
-║                Value                 │Count║
-╠══════════════════════════════════════╪═════╣
-║KCA                                   │   40║
-║PENNYSTOCKS                           │   17║
-║TEAMBILLIONAIRE                       │   17║
-║UCL                                   │   11║
-║...                                   │   ..║
-║...                                   │   ..║
-║...                                   │   ..║
-╚══════════════════════════════════════╧═════╝
-
-dataflow:>field-value-counter display language
-Displaying values for field value counter 'language'
-╔═════╤═════╗
-║Value│Count║
-╠═════╪═════╣
-║en   │1,171║
-║es   │  337║
-║ar   │  296║
-║und  │  251║
-║pt   │  175║
-║ja   │  137║
-║..   │  ...║
-║..   │  ...║
-║..   │  ...║
-╚═════╧═════╝
-
-----
-
-+
-. Go to `Dashboard` accessible at `http://localhost:9393/dashboard` and launch the `Analytics` tab. From the default `Dashboard` menu, select the following combinations to visualize real-time updates on `field-value-counter`.
-
-- For real-time updates on `language` tags, select:
- .. Metric Type as `Field-Value-Counters`
- .. Stream as `language`
- .. Visualization as `Bubble-Chart` or `Pie-Chart`
-- For real-time updates on `hashtags` tags, select:
- .. Metric Type as `Field-Value-Counters`
- .. Stream as `hashtags`
- .. Visualization as `Bubble-Chart` or `Pie-Chart`
+. Go to `Grafana Dashboard` accessible at `http://localhost:3000`, login as admin:admin.
+Import the link:micrometer/prometheus/grafana-twitter-scdf-analytics.json[grafana-twitter-scdf-analytics.json] dashboard.
+You will see a dashboard similar to this:
 
 image::twitter_analytics.png[Twitter Analytics Visualization, scaledwidth="50%"]
+
+Following Prometheus queries have been used to aggregate the `lang` and `hastag` data visualized on the dashboard:
+
+[source,console,options=nowrap]
+----
+sort_desc(topk(10, sum(language_total) by (lang)))
+sort_desc(topk(100, sum(hashtags_total) by (hastag)))
+----
+
+
 
 ==== Summary
 
@@ -146,4 +92,5 @@ In this sample, you have learned:
 
 * How to use Spring Cloud Data Flow's `Local` server
 * How to use Spring Cloud Data Flow's `shell` application
-* How to create streaming data pipeline to compute simple analytics using `Twitter Stream` and `Field Value Counter` applications
+* How to use Prometheus and Grafana with Spring Cloud Data Flow's `Local` server
+* How to create streaming data pipeline to compute simple analytics using `Twitter Stream` and `Analytics Counter` applications

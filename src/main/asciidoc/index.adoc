@@ -11,7 +11,7 @@ Sabby Anandan; David Turanski; Glenn Renfro; Eric Bottard; Mark Pollack; Chris S
 
 :spring-cloud-stream-docs: http://docs.spring.io/spring-cloud-stream/docs/{scst-core-version}/reference/htmlsingle/index.html
 :github-code: https://github.com/spring-cloud/spring-cloud-dataflow-samples
-:scdf-release-train-name: Celsius-SR1
+:scdf-release-train-name: Einstein.RELEASE
 :app-import-kafka-maven: http://bit.ly/{scdf-release-train-name}-stream-applications-kafka-10-maven
 :app-import-rabbit-maven: http://bit.ly/{scdf-release-train-name}-stream-applications-rabbit-maven
 

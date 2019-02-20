@@ -65,6 +65,7 @@
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
+          "legendFormat": "{{lang}}",
           "refId": "A"
         }
       ],
@@ -91,10 +92,10 @@
       "yaxes": [
         {
           "format": "short",
-          "label": null,
+          "label": "",
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -141,10 +142,11 @@
       "strokeWidth": 1,
       "targets": [
         {
-          "expr": "sort_desc(topk(100, sum(hashtags_total) by (hastag)))",
+          "expr": "sort_desc(topk(50, sum(hashtags_total) by (htag)))",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
+          "legendFormat": "{{htag}}",
           "refId": "A"
         }
       ],
@@ -187,6 +189,7 @@
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
+          "legendFormat": "{{lang}}",
           "refId": "A"
         }
       ],
@@ -201,7 +204,7 @@
       "valueName": "current"
     }
   ],
-  "refresh": "30s",
+  "refresh": "5s",
   "schemaVersion": 16,
   "style": "dark",
   "tags": [],
@@ -240,5 +243,5 @@
   "timezone": "",
   "title": "SCDF Analytics",
   "uid": "vhHweSriz",
-  "version": 10
+  "version": 2
 }

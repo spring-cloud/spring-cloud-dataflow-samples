@@ -51,7 +51,7 @@ Created and deployed new stream 'tweetlang'
 ```
 +
 ```
-dataflow:>stream create tagcount  --definition ":tweets.twitterstream > counter --name=hashtags --counter.tag.expression.hastag=#jsonPath(payload,'$.entities.hashtags[*].text')" --deploy
+dataflow:>stream create tagcount  --definition ":tweets.twitterstream > counter --name=hashtags --counter.tag.expression.htag=#jsonPath(payload,'$.entities.hashtags[*].text')" --deploy
 Created and deployed new stream 'tagcount'
 ```
 +

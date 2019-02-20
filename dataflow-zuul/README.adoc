@@ -1,0 +1,22 @@
+= Data Flow Zuul Proxy Example
+
+This example provides an example of using the Spring Cloud Data Flow Server behind
+a Zuul proxy server.
+
+The Zuul proxy server will start on port `8080`. When you go to
+`http://localhost:8080/dashboard` you will see that all Dashboard requests will be
+proxied over to port `9393`.
+
+Please make sure that you start Spring Cloud Data Flow Server with the property
+`server.use-forward-headers` and the value `true`.
+
+In order to get everything running we need to setup the following server instances:
+
+* Spring Cloud Skipper (port `7577`)
+* Spring Cloud Data Flow (port `9393`)
+
+== Build + Run
+
+Build the sample using `$ mvn clean package` and run using
+`$ java -jar target/dataflow-zuul-1.0.0.BUILD-SNAPSHOT.jar`
+

@@ -1,0 +1,36 @@
+server.port: 8080
+zuul:
+  routes:
+    securityinfo:
+      path: /security/**
+      url: http://localhost:9393/security
+    about:
+      path: /about/**
+      url: http://localhost:9393/about
+    apps:
+      path: /apps/**
+      url: http://localhost:9393/apps
+    dashboard:
+      path: /dashboard/**
+      url: http://localhost:9393/dashboard
+    audit-records:
+      path: /audit-records"
+      url: http://localhost:9393/audit-records
+    jobs:
+      path: /jobs/**
+      url: http://localhost:9393/jobs
+    streams:
+      path: /streams/**
+      url: http://localhost:9393/streams
+    tasks:
+      path: /tasks/**
+      url: http://localhost:9393/tasks
+    tools:
+      path: /tools/**
+      url: http://localhost:9393/tools
+    runtime:
+      path: /runtime/**
+      url: http://localhost:9393/runtime
+    completions:
+      path: /completions/**
+      url: http://localhost:9393/completions

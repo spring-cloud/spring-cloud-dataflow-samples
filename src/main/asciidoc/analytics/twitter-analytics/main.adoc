@@ -4,7 +4,7 @@
 === Twitter Analytics
 
 In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from _TwitterStream_, compute analytics over data-in-transit using https://github.com/spring-cloud-stream-app-starters/analytics[Analytics-Counter].
-Use Prometheus and Grafana for storing, analysing and visualizing the collected data.
+Use Prometheus for storing and data aggregation analysis and Grafana for visualizing the computed data.
 
 We will take you through the steps to configure Spring Cloud Data Flow's `Local` server.
 
@@ -40,20 +40,76 @@ dataflow:>app import --uri {app-import-kafka-maven}
 
 . Create and deploy the following streams
 +
+image::scdf-tweets-analysis-architecture.png[Twitter Analytics Visualization, scaledwidth="100%"]
+The `tweets` stream subscribes to the provided twitter account, reads the incoming JSON tweets and logs their content to the log.
++
 ```
 dataflow:>stream create tweets --definition "twitterstream --consumerKey=<CONSUMER_KEY> --consumerSecret=<CONSUMER_SECRET> --accessToken=<ACCESS_TOKEN> --accessTokenSecret=<ACCESS_TOKEN_SECRET> | log"
 Created new stream 'tweets'
 ```
+The received https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/intro-to-tweet-json.html[tweet messages] have a format similar to this:
++
+[source,json]
+----
+{
+  "created_at": "Thu Apr 06 15:24:15 +0000 2017",
+  "id_str": "850006245121695744",
+  "text": "1\/ Today we\u2019re sharing our vision for the future of the Twitter API platform!\nhttps:\/\/t.co\/XweGngmxlP",
+  "user": {
+    "id": 2244994945,
+    "name": "Twitter Dev",
+    "screen_name": "TwitterDev",
+	"lang": "en",
+    "url": "https:\/\/dev.twitter.com\/"
+  },
+  "place": {
+  },
+  "entities": {
+    "hashtags": [
+		{
+		  "text": "documentation",
+		  "indices": [211, 225]
+		},
+		{
+		  "text": "GeoTagged",
+		  "indices": [239, 249]
+		}
+    ],
+    "urls": [
+      {
+        "url": "https:\/\/t.co\/XweGngmxlP",
+        "unwound": {
+          "url": "https:\/\/cards.twitter.com\/cards\/18ce53wgo4h\/3xo1c",
+          "title": "Building the Future of the Twitter API Platform"
+        }
+      }
+    ],
+    "user_mentions": [
+    ]
+  }
+}
+----
++
+We can use https://github.com/json-path/JsonPath[JsonPath] SpEL expressions to extract the attributes we would like to analyse.
+For example the `#jsonPath(payload,'$..lang')` expression extracts all values of the `lang` attributes in the JSON tweet.
+The https://github.com/spring-cloud-stream-app-starters/analytics/tree/master/spring-cloud-starter-stream-sink-counter[Analytics Counter Sink] can map the extracted values to custom https://micrometer.io/docs/concepts#_meters[Micrometer tags/dimensions] attached to every measurement the counter sends.
+Following stream consumes the json tweets stream and uses counter sink to extract and count the languages used in the tweets.
+The counter called `language` uses the `--counter.tag.expression.lang=#jsonPath(payload,'$..lang')` to extract the language values from the tweet message, assigns them to a Micrometer tag called `lang`. This counter produces the `language_total` time series send to Prometheus.
 +
 ```
 dataflow:>stream create tweetlang  --definition ":tweets.twitterstream > counter --name=language --counter.tag.expression.lang=#jsonPath(payload,'$..lang')" --deploy
 Created and deployed new stream 'tweetlang'
 ```
 +
+Similarly we can use the `#jsonPath(payload,'$.entities.hashtags[*].text')` expression to extract and count the hastags in the incoming tweets.
+The following stream does this, using a counter (called `hashtags`) with a `htag` Micrometer tag holding the extracted hashtag values.
++
 ```
 dataflow:>stream create tagcount  --definition ":tweets.twitterstream > counter --name=hashtags --counter.tag.expression.htag=#jsonPath(payload,'$.entities.hashtags[*].text')" --deploy
 Created and deployed new stream 'tagcount'
 ```
++
+Now we can deploy the `tweets` stream to start tweet analysis.
 +
 ```
 dataflow:>stream deploy tweets
@@ -76,12 +132,12 @@ You will see a dashboard similar to this:
 
 image::twitter_analytics.png[Twitter Analytics Visualization, scaledwidth="50%"]
 
-Following Prometheus queries have been used to aggregate the `lang` and `hastag` data visualized on the dashboard:
+The following Prometheus queries have been used to aggregate the `lang` and `htag` data persisted in Prometheus, which can be visualized through Grafana dashboard:
 
 [source,console,options=nowrap]
 ----
 sort_desc(topk(10, sum(language_total) by (lang)))
-sort_desc(topk(100, sum(hashtags_total) by (hastag)))
+sort_desc(topk(100, sum(hashtags_total) by (htag)))
 ----
 
 

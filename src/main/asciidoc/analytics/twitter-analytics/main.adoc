@@ -90,8 +90,8 @@ dataflow:>stream create tweetlang  --definition ":tweets.twitterstream > counter
 Created and deployed new stream 'tweetlang'
 ```
 +
-Similarly we can use the `#jsonPath(payload,'$.entities.hashtags[*].text')` expression to extract and count the hastags in the incoming tweets.
-The following stream does this, using a counter (called `hashtags`) with a `htag` Micrometer tag holding the extracted hashtag values.
+Similarly, we can use the `#jsonPath(payload,'$.entities.hashtags[*].text')` expression to extract and count the hastags in the incoming tweets.
+The following stream uses the counter-sink to compute real-time counts (named as `hashtags`) and the `htag` attribute in `counter.tag.expression.htag` indicate to Micrometer in what tag to hold the extracted hashtag values from the incoming tweets.
 +
 ```
 dataflow:>stream create tagcount  --definition ":tweets.twitterstream > counter --name=hashtags --counter.tag.expression.htag=#jsonPath(payload,'$.entities.hashtags[*].text')" --deploy

@@ -54,16 +54,14 @@ The received https://developer.twitter.com/en/docs/tweets/data-dictionary/overvi
 {
   "created_at": "Thu Apr 06 15:24:15 +0000 2017",
   "id_str": "850006245121695744",
-  "text": "1\/ Today we\u2019re sharing our vision for the future of the Twitter API platform!\nhttps:\/\/t.co\/XweGngmxlP",
+  "text": "Today we are sharing our vision for the future of the Twitter API platform!",
   "user": {
     "id": 2244994945,
     "name": "Twitter Dev",
     "screen_name": "TwitterDev",
-	"lang": "en",
-    "url": "https:\/\/dev.twitter.com\/"
+	"lang": "en"
   },
-  "place": {
-  },
+  "place": {},
   "entities": {
     "hashtags": [
 		{
@@ -75,17 +73,7 @@ The received https://developer.twitter.com/en/docs/tweets/data-dictionary/overvi
 		  "indices": [239, 249]
 		}
     ],
-    "urls": [
-      {
-        "url": "https:\/\/t.co\/XweGngmxlP",
-        "unwound": {
-          "url": "https:\/\/cards.twitter.com\/cards\/18ce53wgo4h\/3xo1c",
-          "title": "Building the Future of the Twitter API Platform"
-        }
-      }
-    ],
-    "user_mentions": [
-    ]
+    ....
   }
 }
 ----

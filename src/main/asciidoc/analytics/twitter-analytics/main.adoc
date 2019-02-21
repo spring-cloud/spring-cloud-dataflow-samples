@@ -90,11 +90,12 @@ The received https://developer.twitter.com/en/docs/tweets/data-dictionary/overvi
 }
 ----
 +
-We can use https://github.com/json-path/JsonPath[JsonPath] SpEL expressions to extract the attributes we would like to analyse.
-For example the `#jsonPath(payload,'$..lang')` expression extracts all values of the `lang` attributes in the JSON tweet.
-The https://github.com/spring-cloud-stream-app-starters/analytics/tree/master/spring-cloud-starter-stream-sink-counter[Analytics Counter Sink] can map the extracted values to custom https://micrometer.io/docs/concepts#_meters[Micrometer tags/dimensions] attached to every measurement the counter sends.
-Following stream consumes the json tweets stream and uses counter sink to extract and count the languages used in the tweets.
-The counter called `language` uses the `--counter.tag.expression.lang=#jsonPath(payload,'$..lang')` to extract the language values from the tweet message, assigns them to a Micrometer tag called `lang`. This counter produces the `language_total` time series send to Prometheus.
+The https://github.com/json-path/JsonPath[JsonPath] SpEL expressions can help to extract the attributes to be analysed.
+For example the `#jsonPath(payload,'$..lang')` expression extracts all values of the `lang` attributes in the tweet.
+The https://github.com/spring-cloud-stream-app-starters/analytics/tree/master/spring-cloud-starter-stream-sink-counter[Analytics Counter Sink] maps the extracted values to custom https://micrometer.io/docs/concepts#_meters[Micrometer tags/dimensions] attached to every measurement send.
+The `tweetlang` stream created below, extracts and counts the languages found in the tweets.
+The counter, named `language`, applies the `--counter.tag.expression.lang=#jsonPath(payload,'$..lang')` to extract the language values and map them to a Micrometer tag named: `lang`.
+This counter generates the `language_total` time-series send to Prometheus.
 +
 ```
 dataflow:>stream create tweetlang  --definition ":tweets.twitterstream > counter --name=language --counter.tag.expression.lang=#jsonPath(payload,'$..lang')" --deploy

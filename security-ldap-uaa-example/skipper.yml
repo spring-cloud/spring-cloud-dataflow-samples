@@ -1,10 +1,16 @@
+spring:
+  cloud:
+    dataflow:
+      security:
+        authorization:
+          map-oauth-scopes: true
 security:
  oauth2:
    client:
-     client-id: test
-     client-secret: test
-     access-token-uri: http://dataflow.local:8080/uaa/oauth/token
-     user-authorization-uri: http://dataflow.local:8080/uaa/oauth/authorize
+      client-id: skipper
+      client-secret: skipper
+      access-token-uri: http://dataflow.local:8080/uaa/oauth/token
+      user-authorization-uri: http://dataflow.local:8080/uaa/oauth/authorize
    resource:
-     user-info-uri: http://dataflow.local:8080/uaa/userinfo
-     token-info-uri: http://dataflow.local:8080/uaa/check_token
+      user-info-uri: http://dataflow.local:8080/uaa/userinfo
+      token-info-uri: http://dataflow.local:8080/uaa/check_token

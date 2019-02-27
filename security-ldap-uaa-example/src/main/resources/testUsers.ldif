@@ -133,6 +133,34 @@ cn: create
 ou: create
 member: uid=marlene,ou=otherpeople,dc=springframework,dc=org
 
+dn: cn=deploy,ou=groups,dc=springframework,dc=org
+objectclass: top
+objectclass: groupOfNames
+cn: deploy
+ou: deploy
+member: uid=marlene,ou=otherpeople,dc=springframework,dc=org
+
+dn: cn=destroy,ou=groups,dc=springframework,dc=org
+objectclass: top
+objectclass: groupOfNames
+cn: destroy
+ou: destroy
+member: uid=marlene,ou=otherpeople,dc=springframework,dc=org
+
+dn: cn=modify,ou=groups,dc=springframework,dc=org
+objectclass: top
+objectclass: groupOfNames
+cn: modify
+ou: modify
+member: uid=marlene,ou=otherpeople,dc=springframework,dc=org
+
+dn: cn=schedule,ou=groups,dc=springframework,dc=org
+objectclass: top
+objectclass: groupOfNames
+cn: schedule
+ou: schedule
+member: uid=marlene,ou=otherpeople,dc=springframework,dc=org
+
 dn: cn=manage,ou=groups,dc=springframework,dc=org
 objectclass: top
 objectclass: groupOfNames

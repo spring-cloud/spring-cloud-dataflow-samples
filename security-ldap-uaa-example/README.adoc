@@ -11,7 +11,7 @@ with pre-configured users. In this example we will use 2 users.
 
 - username: marlene
 - password: supersecret
-- assigned LDAP groups: *view*, *create*, *manage*
+- assigned LDAP groups: *create*, *deploy*, *destroy*, *manage*, *modify*, *schedule*, *view*
 
 *Second user* with view and manage roles only:
 

@@ -4,168 +4,20 @@
 
 === SCDF metrics with Prometheus and Grafana
 
-In this demonstration, you will learn how http://micrometer.io[Micrometer] can help to monitor your  http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] Streams using  http://prometheus.io[Prometheus] and https://grafana.com/grafana[Grafana].
+In this demonstration, you will learn how to monitor your http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] Streams using  http://prometheus.io[Prometheus] and https://grafana.com/grafana[Grafana].
 
-Prometheus is time series database used for monitoring of highly dynamic service-oriented architectures. In a world of microservices, its support for multi-dimensional data collection and querying is a particular strength.
+Starting with 2.0, Data Flow provides built-in support for monitoring with Prometheus.
+Following the reference manual instructions for how to get started with Prometheus:
 
-https://grafana.com/grafana[Grafana] is open source metrics Dashboard platform. It supports multiple backend time-series databases including Prometheus.
+* http://docs.spring.io/spring-cloud-dataflow/docs/2.0.0.BUILD-SNAPSHOT/reference/htmlsingle/#streams-monitoring-local-prometheus[Prometheus with SCDF-Local]
+* http://docs.spring.io/spring-cloud-dataflow/docs/2.0.0.BUILD-SNAPSHOT/reference/htmlsingle/#streams-monitoring-kubernetes-prometheus[Prometheus with SCDF-Kubernetes]
 
-The architecture (Fig.1) builds on the https://docs.spring.io/spring-boot/docs/2.0.1.RELEASE/reference/htmlsingle/#production-ready-metrics-getting-started[Spring Boot Micrometer] functionality. When a http://micrometer.io/docs/registry/prometheus[micrometer-registry-prometheus] dependency is found on the classpath the Spring Boot auto-configures the metrics export for `Prometheus`.
+Following diagram (Fig.4) illustrates the metrics collection flows for monitoring with prometheus on a Local SCDF platform:
 
-The https://cloud.spring.io/spring-cloud-stream-app-starters/[Spring Cloud Stream] (SCSt) applications inherit the mircometer functionality, allowing them to compute and send various application metrics to the configured time-series database.
-
-image::scdf-micrometer-prometheus-grafana-architecture.png[title="SCDF metrics analyzis with Prometheus and Grafana"]
+image::scdf-micrometer-prometheus-grafana-architecture.png[title="SCDF metrics analyzis with Prometheus and Grafana", scaledwidth="50%"]
 
 Out of the box, SCSt sends https://docs.spring.io/spring-boot/docs/2.0.1.RELEASE/reference/htmlsingle/#production-ready-metrics-meter[core metrics] such as `CPU`, `Memory`, `MVC` and `Health` to name some. Among those the https://docs.spring.io/spring-integration/docs/current/reference/html/system-management-chapter.html#micrometer-integration[Spring Integration metrics] allows computing the `Rate` and the `Latency` of the messages in the SCDF streams.
 
-NOTE: Unlike Spring Cloud Data Flow Metrics Collector, metrics here are sent synchronously over HTTP not through a Binder channel topic.
+Once you deploy the stream you should see dashboards similar to these.
 
-All Spring Cloud Stream App Starers enrich the standard  http://micrometer.io/docs/concepts#_supported_monitoring_systems[dimensional tags] with the following SCDF specific tags:
-[width="100%",options="header"]
-|====================
-| tag name | SCDF property | default value
-| stream.name |  spring.cloud.dataflow.stream.name | unknown
-| application.name | spring.cloud.dataflow.stream.app.label | unknown  
-| instance.index | instance.index | 0 
-| application.guid | spring.cloud.application.guid | unknown 
-| application.gype | spring.cloud.dataflow.stream.app.type | unknown
-|====================
-
-NOTE: For custom app starters that don't extend from the https://github.com/spring-cloud-stream-app-starters/core[core] parent, you should add the `app-starters-common` : `org.springframework.cloud.stream.app` dependency to enable the SCDF tags.
-
-Prometheus employs the pull-metrics model, called metrics scraping. Spring Boot provides an actuator endpoint available at `/actuator/prometheus` to present a Prometheus scrape with the appropriate format.
-
-Furthermore Prometheus requires a mechanism to discover the target applications to be monitored (e.g. the URLs of the SCSt app instances). Targets may be statically configured via the `static_configs` parameter or dynamically discovered using one of the supported service-discovery mechanisms.
-
-The https://github.com/tzolov/spring-cloud-dataflow-prometheus-service-discovery[SCDF Prometheus Service Discovery] is a standalone (Spring Boot) service, that uses the https://goo.gl/kE4eLV[runtime/apps] endpoint to retrieve the URLs of the running SCDF applications and generate `targets.json` file. The targets.json file is compliant with the  https://prometheus.io/docs/prometheus/latest/configuration/configuration/#%3Cfile_sd_config%3E[<file_sd_config>] Prometheus discovery format.
- 
-Below we will present the steps to prepare, configure the demo of Spring Cloud Data Flow's `Local` server integration with `Prometheus`. For other deployment environment, such as `Cloud Foundry` or `Kubernetes`, additional configurations might be required.
-
-==== Prerequisites
-
-* A Running Data Flow Shell
-include::{docs_dir}/shell.adoc[]
-* A running local Data Flow Server
-include::{docs_dir}/local-server.adoc[]
-* Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
-* Spring Cloud Stream 2.x based https://github.com/spring-cloud-stream-app-starters/time/blob/master/spring-cloud-starter-stream-source-time/README.adoc[Time] and https://github.com/spring-cloud-stream-app-starters/log/blob/master/spring-cloud-starter-stream-sink-log/README.adoc[Log] applications starters, pre-built with `io.micrometer:micrometer-registry-prometheus` dependency.
-+
-NOTE: Next versions of the https://start-scs.cfapps.io/[SCSt App Initializr] utility would add support for Micrometer dependencies to facilitate the injection of micrometer-registries with SCSt apps.
-
-==== Building and Running the Demo
-
-. Register `time` and `log` applications that are pre-built with `io.micrometer:micrometer-registry-prometheus`. The next version of https://start-scs.cfapps.io/[SCSt App Initializr] allows adding Micrometer registry dependencies as well.
-+
-```bash
-app register --name time2 --type source --uri file://<path-to-your-time-app>/time-source-kafka-2.0.0.BUILD-SNAPSHOT.jar --metadata-uri file://<path-to-your-time-app>/time-source-kafka-2.0.0.BUILD-SNAPSHOT-metadata.jar
-
-app register --name log2 --type sink --uri file://<path-to-your-log-app>/log-sink-kafka-2.0.0.BUILD-SNAPSHOT.jar --metadata-uri file://<path-to-your-log-app>/log-sink-kafka-2.0.0.BUILD-SNAPSHOT-metadata.jar
-```
-+
-. Create and deploy the following stream
-+
-```bash
-dataflow:>stream create --name t2 --definition "time2 | log2"
-
-dataflow:>stream deploy --name t2 --properties "app.*.management.endpoints.web.exposure.include=prometheus,app.*.spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration"
-```
-The deployment properties make sure that the prometheus actuator is enabled and the Spring Boot security is disabled
-+
-. Build and start the SCDF Prometheus Service Discovery application
-+
-Build the spring-cloud-dataflow-prometheus-service-discover project form:  https://github.com/spring-cloud/spring-cloud-dataflow-samples/micrometer/spring-cloud-dataflow-prometheus-service-discovery
-+
-```bash
-cd ./spring-cloud-dataflow-samples/micrometer/spring-cloud-dataflow-prometheus-service-discovery
-./mvnw clean install
-```
-For convenience, the final https://github.com/spring-cloud/spring-cloud-dataflow-samples/raw/master/src/main/asciidoc/micrometer/prometheus/spring-cloud-dataflow-prometheus-service-discovery-0.0.1-SNAPSHOT.jar[spring-cloud-dataflow-prometheus-service-discovery-0.0.1-SNAPSHOT.jar] artifact is provided with this sample.
-+
-Start the service discovery application:
-+
-```bash
-java -jar ./target/spring-cloud-dataflow-prometheus-service-discovery-0.0.1-SNAPSHOT.jar \
---metrics.prometheus.target.discovery.url=http://localhost:9393/runtime/apps \
---metrics.prometheus.target.file.path=/tmp/targets.json \
---metrics.prometheus.target.refresh.rate=10000 \
---metrics.prometheus.target.mode=local
-```
-+
-It will connect to the SCDF runtime url, and generates /tmp/targets.json files every 10 sec.
-+
-. Create Prometheus configuration file (prometheus-local-file.yml)
-+
-```yaml
-global:
-  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
-  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
-  # scrape_timeout is set to the global default (10s).
-
-# A scrape configuration containing exactly one endpoint to scrape:
-scrape_configs:
-  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
-  - job_name: 'scdf'
-    metrics_path: '/actuator/prometheus'
-    file_sd_configs:
-      - files:
-        - targets.json
-        refresh_interval: 30s
-```
-+
-Configure the file_sd_config discovery mechanism using the generated targets.json:
-+
-. Start Prometheus
-+
-```bash
-docker run -d --name prometheus \ 
- -p 9090:9090 \
- -v <full-path-to>/prometheus-local-file.yml:/etc/prometheus/prometheus.yml \
- -v /tmp/targets.json:/etc/prometheus/targets.json \ 
- prom/prometheus:v2.2.1
-```
-+
-Pass the prometheus.yml and map the /tmp/targets.json into /etc/prometheus/targets.json
-+
-Use the management UI:  http://localhost:9090/graph to verify that SCDF apps metrics have been collected:
-+
-```
-# Throughput
-rate(spring_integration_send_seconds_count{type="channel"}[60s])
-
-# Latency
-rate(spring_integration_send_seconds_sum{type="channel"}[60s])/rate(spring_integration_send_seconds_count{type="channel"}[60s])
-```
-+
-. Start Grafana Docker containers
-+
-```bash
-docker run -d --name grafana -p 3000:3000 grafana/grafana:5.1.0
-```
-+
-. Configure Grafana
-+
-* Open Grafana UI (http://localhost:3000) and log-in (user: `admin`, password: `admin`).
-* Create Prometheus datasource called: `ScdfPrometheus`
-+
-.DataSource Properties
-[width="60%",options=""]
-|====================
-| Name |  ScdfPrometheus
-| Type |  Prometheus
-| Host |  http://localhost:9090
-| Access | Browser  
-|====================
-+
-NOTE: For previous `Grafana 4.x` set the `Access` property to `direct` instead.
-+
-* Import the link:micrometer/prometheus/scdf-prometheus-grafana-dashboard.json[scdf-prometheus-grafana-dashboard.json] dashboard
-+
-image::grafana-prometheus-dashboard.png[]
-
-==== Summary
-
-In this sample, you have learned:
-
-* How to use Spring Cloud Data Flow's `Local` server
-* How to use Spring Cloud Data Flow's `shell` application
-* How to use `Prometheus` and `Grafana` to monitor and visualize Spring Cloud Stream application metrics.
+image:https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow/master/spring-cloud-dataflow-docs/src/main/asciidoc/images/grafana-prometheus-scdf-applications-dashboard.png[SCDF Prometheus Dashboard]

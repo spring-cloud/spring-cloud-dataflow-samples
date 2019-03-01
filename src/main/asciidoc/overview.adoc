@@ -29,6 +29,24 @@ include::datascience/species-prediction/main.adoc[]
 == Functions
 include::functions/main.adoc[]
 
-== Micrometer
+== Monitoring (Micrometer)
+Demonstrate how to monitor your  http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] (SCDF) streams using  https://docs.influxdata.com/influxdb/v1.5/[InfluxDB], http://prometheus.io[Prometheus] and https://grafana.com/grafana[Grafana].
+
+The http://docs.spring.io/spring-cloud-dataflow/docs/2.0.0.BUILD-SNAPSHOT/reference/htmlsingle/#streams-monitoring[Data Flow 2.x metrics architecture] is designed around the https://micrometer.io/[Micrometer library] and provides support for two of the most popular monitoring systems, Prometheus and InfluxDB.
+Also to help you get started monitoring Streams, Data Flow provides https://grafana.com/[Grafana Dashboards] you can install and customize for your needs.
+Support for monitoring Tasks is on the roadmap.
+
+The general architecture of how applications are monitored is shown below.
+
+image:http://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow/master/spring-cloud-dataflow-docs/src/main/asciidoc/images/micrometer-arch.png[SCDF Stream Monitoring, scaledwidth="100%"]
+
+You can find more information in the http://docs.spring.io/spring-cloud-dataflow/docs/2.0.0.BUILD-SNAPSHOT/reference/htmlsingle/#streams-monitoring[SCDF Stream Monitoring] reference manual.
+
+* http://prometheus.io[Prometheus] - pull based time series database used for monitoring of highly dynamic service-oriented architectures.
+In a world of microservices, its support for multi-dimensional data collection and querying is a particular strength.
+* https://github.com/influxdata/influxdb[InfluxDB] is a popular open-source push based time series database.
+It supports downsampling, automatically expiring and deleting unwanted data, as well as backup and restore. Analysis of data is done via a  https://docs.influxdata.com/influxdb/v1.5/query_language/[SQL-like query] language.
+* https://grafana.com/grafana[Grafana] is open source metrics Dashboard platform. It supports multiple backend time-series databases including InluxDB and Prometheus.
+
 include::micrometer/influx/main.adoc[]
 include::micrometer/prometheus/main.adoc[]

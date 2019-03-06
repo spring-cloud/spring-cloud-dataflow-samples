@@ -50,3 +50,7 @@ It supports downsampling, automatically expiring and deleting unwanted data, as 
 
 include::micrometer/influx/main.adoc[]
 include::micrometer/prometheus/main.adoc[]
+
+== Security
+
+include::security/main.adoc[]

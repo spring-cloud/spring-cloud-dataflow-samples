@@ -52,7 +52,7 @@ for an easier startup experience:
 
 [source,bash]
 ----
-$ git clone https://github.com/ghillert/uaa-bundled.git
+$ git clone https://github.com/pivotal/uaa-bundled.git
 $ cd uaa-bundled
 $ export CLOUD_FOUNDRY_CONFIG_PATH=/path/to/dev/security-ldap-uaa-example
 $ ./mvnw clean package

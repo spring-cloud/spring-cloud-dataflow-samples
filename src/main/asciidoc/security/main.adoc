@@ -1,0 +1,4 @@
+:sectnums:
+:docs_dir: ..
+
+include::{docs_dir}/../../../security-ldap-uaa-example/README.adoc[]

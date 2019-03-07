@@ -6,7 +6,7 @@ http://geode.apache.org/[Pivotal Gemfire] and start the `gfsh` CLI in a separate
    / _____/ ______/ ______/ /____/ /
   / /  __/ /___  /_____  / _____  /
  / /__/ / ____/  _____/ / /    / /
-/______/_/      /______/_/    /_/    1.2.1
+/______/_/      /______/_/    /_/    1.8.0
 
 Monitor and Manage Apache Geode
 gfsh>

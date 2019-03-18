@@ -8,7 +8,7 @@
 	<description>Spring Cloud Data Flow Samples</description>
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
-		<spring-cloud-dataflow.version>1.2.3.RELEASE</spring-cloud-dataflow.version>
+		<spring-cloud-dataflow.version>2.0.0.RELEASE</spring-cloud-dataflow.version>
 	</properties>
 
 			<build>

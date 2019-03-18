@@ -1,0 +1,28 @@
+spring.application.name: kstream-join-user-clicks-and-regions
+spring.cloud.stream.bindings.userClicksInput:
+  destination: userClicks
+  consumer:
+    useNativeDecoding: true
+spring.cloud.stream.bindings.userRegionsTableInput:
+  destination: userRegions
+  consumer:
+    useNativeDecoding: true
+spring.cloud.stream.bindings.output:
+  destination: userClickRegions
+  producer:
+    useNativeEncoding: true
+spring.cloud.stream.kafka.streams.bindings.userClicksInput:
+  consumer:
+    keySerde: org.apache.kafka.common.serialization.Serdes$StringSerde
+    valueSerde: org.apache.kafka.common.serialization.Serdes$LongSerde
+spring.cloud.stream.kafka.streams.bindings.userRegionsTableInput:
+  consumer:
+    keySerde: org.apache.kafka.common.serialization.Serdes$StringSerde
+    valueSerde: org.apache.kafka.common.serialization.Serdes$StringSerde
+spring.cloud.stream.kafka.streams.bindings.output:
+  producer:
+    keySerde: org.apache.kafka.common.serialization.Serdes$StringSerde
+    valueSerde: org.apache.kafka.common.serialization.Serdes$LongSerde
+spring.cloud.stream.kafka.streams.binder:
+  configuration:
+    commit.interval.ms: 1000

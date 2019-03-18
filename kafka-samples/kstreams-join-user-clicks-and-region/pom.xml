@@ -17,6 +17,17 @@
 	<name>kstreams-join-user-clicks-and-region</name>
 	<description>Demo project for Kafka Streams Table Join</description>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud.stream.app</groupId>
+				<artifactId>app-starters-core-dependencies</artifactId>
+				<version>2.1.0.RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 
@@ -24,7 +35,6 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-stream-binder-kafka-streams</artifactId>
-			<version>2.1.1.RELEASE</version>
 		</dependency>
 
 		<!-- This dependency exposes web endpoints for status health check etc.,  -->

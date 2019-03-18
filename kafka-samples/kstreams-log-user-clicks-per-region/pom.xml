@@ -13,13 +13,23 @@
   <version>1.0.0.BUILD-SNAPSHOT</version>
   <name>kstreams-log-user-clicks-per-region</name>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.cloud.stream.app</groupId>
+        <artifactId>app-starters-core-dependencies</artifactId>
+        <version>2.1.0.RELEASE</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <!-- This dependency adds Spring Cloud Stream Binder for Apache Kafka -->
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-stream-kafka</artifactId>
-      <version>2.1.1.RELEASE</version>
     </dependency>
     <!-- This dependency exposes web endpoints for status health check etc.,  -->
     <dependency>

@@ -6,7 +6,7 @@
 * A running local Data Flow Server
 include::{docs_dir}/local-server.adoc[]
 
-* Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
+* Running instance of link:https://kafka.apache.org/downloads.html[Kafka]
 * Either a remote or local host accepting SFTP connections.
 
 * A database tool such as link:https://dbeaver.jkiss.org/download/[DBeaver] to inspect the database contents
@@ -111,7 +111,7 @@ dataflow:>runtime apps
 ║                           │           │       port = 23057                                                                                                                                                     ║
 ║inboundSftp.sftp-0         │ deployed  │     stderr = /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-deployer-120915912946760306/inboundSftp-1540821009913/inboundSftp.sftp/stderr_0.log         ║
 ║                           │           │     stdout = /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-deployer-120915912946760306/inboundSftp-1540821009913/inboundSftp.sftp/stdout_0.log         ║
-║                           │           │        url = http://192.168.64.1:23057                                                                                                                                 ║
+║                           │           │        url = https://192.168.64.1:23057                                                                                                                                 ║
 ║                           │           │working.dir = /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-deployer-120915912946760306/inboundSftp-1540821009913/inboundSftp.sftp                      ║
 ╟───────────────────────────┼───────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╢
 ║inboundSftp.task-launcher  │ deployed  │                                                                                   1                                                                                    ║
@@ -121,7 +121,7 @@ dataflow:>runtime apps
 ║                           │           │       port = 60081                                                                                                                                                     ║
 ║inboundSftp.task-launcher-0│ deployed  │     stderr = /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-deployer-120915912946760306/inboundSftp-1540820991695/inboundSftp.task-launcher/stderr_0.log║
 ║                           │           │     stdout = /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-deployer-120915912946760306/inboundSftp-1540820991695/inboundSftp.task-launcher/stdout_0.log║
-║                           │           │        url = http://192.168.64.1:60081                                                                                                                                 ║
+║                           │           │        url = https://192.168.64.1:60081                                                                                                                                 ║
 ║                           │           │working.dir = /var/folders/hd/5yqz2v2d3sxd3n879f4sg4gr0000gn/T/spring-cloud-deployer-120915912946760306/inboundSftp-1540820991695/inboundSftp.task-launcher             ║
 ╚═══════════════════════════╧═══════════╧════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
 

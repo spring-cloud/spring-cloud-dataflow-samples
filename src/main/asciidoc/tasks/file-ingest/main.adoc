@@ -1,7 +1,7 @@
 
 === Batch File Ingest
 
-In this demonstration, you will learn how to create a data processing application using http://projects.spring.io/spring-batch/[Spring Batch] which will then be run within http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow].
+In this demonstration, you will learn how to create a data processing application using https://projects.spring.io/spring-batch/[Spring Batch] which will then be run within https://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow].
 
 ==== Prerequisites
 

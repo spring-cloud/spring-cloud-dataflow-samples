@@ -1,5 +1,5 @@
 
-The Cloud Foundry Data Flow Server is Spring Boot application available for http://cloud.spring.io/spring-cloud-dataflow/#platform-implementations/[download] or you can https://github.com/spring-cloud/spring-cloud-dataflow-server-cloudfoundry[build] it yourself.
+The Cloud Foundry Data Flow Server is Spring Boot application available for https://cloud.spring.io/spring-cloud-dataflow/#platform-implementations/[download] or you can https://github.com/spring-cloud/spring-cloud-dataflow-server-cloudfoundry[build] it yourself.
 If you build it yourself, the executable jar will be in `spring-cloud-dataflow-server-cloudfoundry/target`
 
 NOTE: Although you can run the Data Flow Cloud Foundry Server locally and configure it to deploy to any Cloud Foundry instance, we will
@@ -37,7 +37,7 @@ dataflow-server      started           1/1         1G       1G     dataflow-serv
 
 . Notice that the `dataflow-server` application is started and ready for interaction via the url endpoint
 
-. Connect the `shell` with `server` running on Cloud Foundry, e.g., `http://dataflow-server.app.io`
+. Connect the `shell` with `server` running on Cloud Foundry, e.g., `https://dataflow-server.app.io`
 +
 ```
 $ cd <PATH/TO/SPRING-CLOUD-DATAFLOW-SHELL-JAR>
@@ -60,7 +60,7 @@ server-unknown:>
 ```
 +
 ```
-server-unknown:>dataflow config server http://dataflow-server.app.io
-Successfully targeted http://dataflow-server.app.io
+server-unknown:>dataflow config server https://dataflow-server.app.io
+Successfully targeted https://dataflow-server.app.io
 dataflow:>
 ```

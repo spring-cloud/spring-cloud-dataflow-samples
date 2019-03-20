@@ -3,7 +3,7 @@
 :docs_dir: ../..
 === Twitter Analytics
 
-In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from _TwitterStream_, compute analytics over data-in-transit using https://github.com/spring-cloud-stream-app-starters/analytics[Analytics-Counter].
+In this demonstration, you will learn how to build a data pipeline using https://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from _TwitterStream_, compute analytics over data-in-transit using https://github.com/spring-cloud-stream-app-starters/analytics[Analytics-Counter].
 Use Prometheus for storing and data aggregation analysis and Grafana for visualizing the computed data.
 
 We will take you through the steps to configure Spring Cloud Data Flow's `Local` server.
@@ -21,9 +21,9 @@ Make sure to add the following properties when starting the Data Flow server:
 --spring.cloud.dataflow.applicationProperties.stream.management.endpoints.web.exposure.include=prometheus,info,health
 --spring.cloud.dataflow.grafana-info.url=http://localhost:3000
 ```
-* Running instance of link:http://docs.spring.io/spring-cloud-dataflow/docs/2.0.0.BUILD-SNAPSHOT/reference/htmlsingle/#streams-monitoring-local-prometheus[Prometheus, Service Discovery and Grafana].
-Follow the http://docs.spring.io/spring-cloud-dataflow/docs/2.0.0.BUILD-SNAPSHOT/reference/htmlsingle/#streams-monitoring-local-prometheus[instructions] to start those services in Docker containers.
-* Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
+* Running instance of link:https://docs.spring.io/spring-cloud-dataflow/docs/2.0.0.BUILD-SNAPSHOT/reference/htmlsingle/#streams-monitoring-local-prometheus[Prometheus, Service Discovery and Grafana].
+Follow the https://docs.spring.io/spring-cloud-dataflow/docs/2.0.0.BUILD-SNAPSHOT/reference/htmlsingle/#streams-monitoring-local-prometheus[instructions] to start those services in Docker containers.
+* Running instance of link:https://kafka.apache.org/downloads.html[Kafka]
 * Twitter credentials from link:https://apps.twitter.com/[Twitter Developers] site
 
 ==== Building and Running the Demo

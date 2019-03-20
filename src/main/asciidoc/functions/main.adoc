@@ -4,7 +4,7 @@
 
 This is a experiment to run Spring Cloud Function workload in Spring Cloud Data Flow. The current release of `function-runner` used in this sample is at 1.0 M1 release and it is not recommended to be used in production.
 
-In this sample, you will learn how to use https://github.com/spring-cloud/spring-cloud-function[Spring Cloud Function] based streaming applications in Spring Cloud Data Flow. To learn more about Spring Cloud Function, check out the http://cloud.spring.io/spring-cloud-function/[project page].
+In this sample, you will learn how to use https://github.com/spring-cloud/spring-cloud-function[Spring Cloud Function] based streaming applications in Spring Cloud Data Flow. To learn more about Spring Cloud Function, check out the https://cloud.spring.io/spring-cloud-function/[project page].
 
 ==== Prerequisites
 
@@ -13,7 +13,7 @@ include::{docs_dir}/shell.adoc[]
 * A running local Data Flow Server
 include::{docs_dir}/local-server.adoc[]
 
-IMPORTANT: This sample requires access to both Spring's snapshot and milestone repos. Please follow https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#howto[how-to-guides] on how to set `http://repo.spring.io/libs-release` and `http://repo.spring.io/libs-milestone` as remote repositories in SCDF.
+IMPORTANT: This sample requires access to both Spring's snapshot and milestone repos. Please follow https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#howto[how-to-guides] on how to set `https://repo.spring.io/libs-release` and `https://repo.spring.io/libs-milestone` as remote repositories in SCDF.
 
 * A local build of link:https://github.com/spring-cloud/spring-cloud-function[Spring Cloud Function]
 * A running instance of https://www.rabbitmq.com/[Rabbit MQ]

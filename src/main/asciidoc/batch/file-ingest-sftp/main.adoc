@@ -25,7 +25,7 @@ The Batch File Ingest - SFTP Demo processes a single file with 5000+ items. What
 The sftp source will process them immediately, generating 100 task launch requests. The Dataflow Server launches tasks asynchronously so this could potentially overwhelm the resources of the runtime platform.
 For example, when running the Data Flow server on your local machine, each launched task creates a new JVM. In Cloud Foundry, each task creates a new container instance.
 
-Fortunately, Spring Cloud Data Flow 1.7 introduced new features to manage concurrently running tasks, including a new configuration parameter, `spring.cloud.dataflow.task.maximum-concurrent-tasks`, to http://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#spring-cloud-dataflow-task-limit-concurrent-executions[limit the number of concurrently running tasks].
+Fortunately, Spring Cloud Data Flow 1.7 introduced new features to manage concurrently running tasks, including a new configuration parameter, `spring.cloud.dataflow.task.maximum-concurrent-tasks`, to https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#spring-cloud-dataflow-task-limit-concurrent-executions[limit the number of concurrently running tasks].
 We can use this demo to see how this works.
 
 ===== Configuring the SCDF server

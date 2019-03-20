@@ -20,7 +20,7 @@ We will be running the demo locally, but all the steps will work in a Cloud Foun
 
 . Create a new spring cloud stream project
 +
-* Create a http://start.spring.io/[Spring initializer] project
+* Create a https://start.spring.io/[Spring initializer] project
 
 * Set the group to `demo.celsius.converter` and the artifact name as `celsius-converter-processor`
 

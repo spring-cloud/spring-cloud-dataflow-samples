@@ -139,7 +139,7 @@ This should yield output similar to the following:
 
 [source,bash]
 ----
-$ wget http://repo.spring.io/snapshot/org/springframework/cloud/spring-cloud-skipper-server/2.0.0.BUILD-SNAPSHOT/spring-cloud-skipper-server-2.0.0.BUILD-SNAPSHOT.jar
+$ wget https://repo.spring.io/snapshot/org/springframework/cloud/spring-cloud-skipper-server/2.0.0.BUILD-SNAPSHOT/spring-cloud-skipper-server-2.0.0.BUILD-SNAPSHOT.jar
 $ java -jar spring-cloud-skipper-server-2.0.0.BUILD-SNAPSHOT.jar \
   --spring.config.additional-location=/path/to/ldap-uaa-example/skipper.yml
 ----
@@ -177,7 +177,7 @@ Now we need to import the Composed Task Runner and the Spring Cloud Task App Sta
 
 [source,bash]
 ----
-dataflow:> app import http://bit.ly/Dearborn-GA-task-applications-maven
+dataflow:> app import https://bit.ly/Dearborn-GA-task-applications-maven
 ----
 
 If you want to import _just_ the Composed Task Runner applications:

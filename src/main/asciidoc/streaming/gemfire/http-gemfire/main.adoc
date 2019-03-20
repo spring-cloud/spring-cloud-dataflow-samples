@@ -4,7 +4,7 @@
 
 === HTTP to Gemfire Demo
 
-In this demonstration, you will learn how to build a data pipeline using http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an `http` endpoint and write to Gemfire using the `gemfire` sink.
+In this demonstration, you will learn how to build a data pipeline using https://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] to consume data from an `http` endpoint and write to Gemfire using the `gemfire` sink.
 
 We will take you through the steps to configure and run Spring Cloud Data Flow server in either a https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#getting-started/[local] or https://docs.spring.io/spring-cloud-dataflow-server-cloudfoundry/docs/current/reference/htmlsingle/#getting-started[Cloud Foundry] environment.
 

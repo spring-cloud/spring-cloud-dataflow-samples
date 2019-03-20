@@ -1,5 +1,5 @@
 
-The Local Data Flow Server is Spring Boot application available for http://cloud.spring.io/spring-cloud-dataflow/#platform-implementations[download] or you can https://github.com/spring-cloud/spring-cloud-dataflow[build] it yourself.
+The Local Data Flow Server is Spring Boot application available for https://cloud.spring.io/spring-cloud-dataflow/#platform-implementations[download] or you can https://github.com/spring-cloud/spring-cloud-dataflow[build] it yourself.
 If you build it yourself, the executable jar will be in `spring-cloud-dataflow-server-local/target`
 
 To run the Local Data Flow server Open a new terminal session:

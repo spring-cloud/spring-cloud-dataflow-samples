@@ -7,7 +7,7 @@
 * A `rabbit` service instance
 
 * A Running instance of `cassandra` in Cloud Foundry or from another Cloud provider
-* A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] to connect to the Cassandra instance. You might have to provide `host`, `port`, `username` and `password` depending on the Cassandra configuration you are using.
+* A database utility tool such as link:https://dbeaver.jkiss.org/[DBeaver] to connect to the Cassandra instance. You might have to provide `host`, `port`, `username` and `password` depending on the Cassandra configuration you are using.
 * Create a `book` table in your Cassandra keyspace using:
 +
 ```
@@ -71,7 +71,7 @@ dataflow-server             started           1/1         1G       1G     datafl
 +
 ```
 http post --contentType 'application/json' --data '{"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}' --target http://<YOUR-cassandrastream-http-APP-URL>
-> POST (application/json;charset=UTF-8) http://cassandrastream-http.app.io {"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}
+> POST (application/json;charset=UTF-8) https://cassandrastream-http.app.io {"isbn": "1599869772", "title": "The Art of War", "author": "Sun Tzu"}
 > 202 ACCEPTED
 ```
 +

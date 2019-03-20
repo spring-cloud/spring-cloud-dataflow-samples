@@ -37,7 +37,7 @@ Getting key my-service-key for service instance cloudcache as <user>...
  ],
  "urls": {
   "gfsh": "http://...",
-  "pulse": "http://.../pulse"
+  "pulse": "https://.../pulse"
  },
  "users": [
   {

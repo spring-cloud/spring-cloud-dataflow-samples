@@ -392,7 +392,7 @@ login:
 #    providers:
 #      my-oauth-provider:
 #        type: oauth2.0
-#        authUrl: http://my-auth.com
+#        authUrl: https://my-auth.com
 #        tokenUrl: http://my-token.com
 #        tokenKey: my-token-key
 #        tokenKeyUrl:
@@ -416,7 +416,7 @@ login:
 #            - roles_example_group
 #      my-oidc-provider:
 #        type: oidc1.0
-#        discoveryUrl: http://my-auth.com
+#        discoveryUrl: https://my-auth.com
 #        tokenKey: my-token-key
 #        issuer: token issuer (iss)
 #        scopes:
@@ -523,7 +523,7 @@ login:
 #    providers:
 #      okta-signed-or-encrypted:
 #        idpMetadata: |
-#          <?xml version="1.0" encoding="UTF-8"?><md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="http://www.okta.com/k36wkjw6EAEJVZXFFDAU"><md:IDPSSODescriptor WantAuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"><md:KeyDescriptor use="signing"><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:X509Data><ds:X509Certificate>MIICmTCCAgKgAwIBAgIGAUPATqmEMA0GCSqGSIb3DQEBBQUAMIGPMQswCQYDVQQGEwJVUzETMBEG
+#          <?xml version="1.0" encoding="UTF-8"?><md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://www.okta.com/k36wkjw6EAEJVZXFFDAU"><md:IDPSSODescriptor WantAuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"><md:KeyDescriptor use="signing"><ds:KeyInfo xmlns:ds="https://www.w3.org/2000/09/xmldsig#"><ds:X509Data><ds:X509Certificate>MIICmTCCAgKgAwIBAgIGAUPATqmEMA0GCSqGSIb3DQEBBQUAMIGPMQswCQYDVQQGEwJVUzETMBEG
 #          A1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5jaXNjbzENMAsGA1UECgwET2t0YTEU
 #          MBIGA1UECwwLU1NPUHJvdmlkZXIxEDAOBgNVBAMMB1Bpdm90YWwxHDAaBgkqhkiG9w0BCQEWDWlu
 #          Zm9Ab2t0YS5jb20wHhcNMTQwMTIzMTgxMjM3WhcNNDQwMTIzMTgxMzM3WjCBjzELMAkGA1UEBhMC
@@ -547,7 +547,7 @@ login:
 #        metadataTrustCheck: true
 #        showSamlLoginLink: true
 #        linkText: 'Okta Preview 1'
-#        iconUrl: 'http://link.to/icon.jpg'
+#        iconUrl: 'https://link.to/icon.jpg'
 #        addShadowUserOnLogin: true
 #        externalGroupsWhitelist:
 #          - admin
@@ -560,7 +560,7 @@ login:
 #        providerDescription: 'Human readable description of this provider'
 #      okta-local-2:
 #        idpMetadata: |
-#          <?xml version="1.0" encoding="UTF-8"?><md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="http://www.okta.com/k2lw4l5bPODCMIIDBRYZ"><md:IDPSSODescriptor WantAuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"><md:KeyDescriptor use="signing"><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:X509Data><ds:X509Certificate>MIICmTCCAgKgAwIBAgIGAUPATqmEMA0GCSqGSIb3DQEBBQUAMIGPMQswCQYDVQQGEwJVUzETMBEG
+#          <?xml version="1.0" encoding="UTF-8"?><md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://www.okta.com/k2lw4l5bPODCMIIDBRYZ"><md:IDPSSODescriptor WantAuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"><md:KeyDescriptor use="signing"><ds:KeyInfo xmlns:ds="https://www.w3.org/2000/09/xmldsig#"><ds:X509Data><ds:X509Certificate>MIICmTCCAgKgAwIBAgIGAUPATqmEMA0GCSqGSIb3DQEBBQUAMIGPMQswCQYDVQQGEwJVUzETMBEG
 #          A1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5jaXNjbzENMAsGA1UECgwET2t0YTEU
 #          MBIGA1UECwwLU1NPUHJvdmlkZXIxEDAOBgNVBAMMB1Bpdm90YWwxHDAaBgkqhkiG9w0BCQEWDWlu
 #          Zm9Ab2t0YS5jb20wHhcNMTQwMTIzMTgxMjM3WhcNNDQwMTIzMTgxMzM3WjCBjzELMAkGA1UEBhMC
@@ -601,7 +601,7 @@ login:
   authorize:
     url: http://localhost:8080/uaa/oauth/authorize
 
-#  homeRedirect: http://example.com/
+#  homeRedirect: https://example.com/
 
 #  branding:
 #    consent:
@@ -614,7 +614,7 @@ login:
 #    footerLinks:
 #      Terms: /exampleTerms
 #      Privacy Agreement: privacy_example.html
-#      Licensing: http://example.com/
+#      Licensing: https://example.com/
 #    banner:
 #      logo: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABSUlEQVQ4EaVTO04DMRB9YdOTC+QcK46wFU3apclKuQMH4AYUkUxFmyY0PgLac3AB6ImM3kyePYkQDZZ27Zl58+aNP8A/x2J7ixI5Xr6wiHaMX8eIW/L3/tlStisUAZm8fx1acMxWTPFK0BBORhL5ukP2ZQ9UsjHXIqZA4LuVrwjsPjxxenRfAtAh47QenCiQgFL5fb8NpTyjlAf/5KOfa/llk/pG1WvV2T3T0We1wLh8jNAmaSUwyTMMRGC6dxDXIlExtUd7SZb0BKhXU3LIRrTfKKXNpsLU+R7VTWTFKJEpuzGbktNmuFiLjnEj4M52s4OnMVt/CedTYLWjx9Artc1269hG3MSohMps9LAjVCqrc9QWaJgSZCRWOp+GoX5J5u3lvan3nioIphIOnQr711BVXf0LAoGuieRnMt8A438SKEFEsuMDirEf/oirUgza/ucAAAAASUVORK5CYII=
 #      text: Welcome to UAA! We will be undergoing system maintenance tonight.

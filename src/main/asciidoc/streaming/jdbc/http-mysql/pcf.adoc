@@ -7,7 +7,7 @@
 
 * Running instance of `rabbit` in Cloud Foundry
 * Running instance of `mysql` in Cloud Foundry
-* A database utility tool such as link:http://dbeaver.jkiss.org/[DBeaver] or link:https://www.dbvis.com/[DbVisualizer]
+* A database utility tool such as link:https://dbeaver.jkiss.org/[DBeaver] or link:https://www.dbvis.com/[DbVisualizer]
 * Create the `names` table (in MySQL) using:
 +
 ```
@@ -71,8 +71,8 @@ dataflow-server             started           1/1         1G       1G     datafl
 . Lookup the `url` for `mysqlstream-http` application from the list above. Post sample data pointing to the `http` endpoint: `<YOUR-mysqlstream-http-APP-URL>`
 +
 ```
-http post --contentType 'application/json' --data "{\"name\": \"Bar"} --target http://mysqlstream-http.app.io "
-> POST (application/json;charset=UTF-8) http://mysqlstream-http.app.io {"name": "Bar"}
+http post --contentType 'application/json' --data "{\"name\": \"Bar"} --target https://mysqlstream-http.app.io "
+> POST (application/json;charset=UTF-8) https://mysqlstream-http.app.io {"name": "Bar"}
 > 202 ACCEPTED
 ```
 +

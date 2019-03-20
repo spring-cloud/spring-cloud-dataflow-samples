@@ -2,7 +2,7 @@
 :docs_dir: ../..
 === Species Prediction
 
-In this demonstration, you will learn how to use https://en.wikipedia.org/wiki/Predictive_Model_Markup_Language[PMML] model in the context of streaming data pipeline orchestrated by http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow].
+In this demonstration, you will learn how to use https://en.wikipedia.org/wiki/Predictive_Model_Markup_Language[PMML] model in the context of streaming data pipeline orchestrated by https://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow].
 
 We will present the steps to prep, configure and rub Spring Cloud Data Flow's `Local` server, a Spring Boot application.
 
@@ -12,7 +12,7 @@ We will present the steps to prep, configure and rub Spring Cloud Data Flow's `L
 include::{docs_dir}/shell.adoc[]
 * A running local Data Flow Server
 include::{docs_dir}/local-server.adoc[]
-* Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
+* Running instance of link:https://kafka.apache.org/downloads.html[Kafka]
 
 ==== Building and Running the Demo
 

@@ -1,6 +1,6 @@
 
-If you do not have access an existing Geode installation, install http://geode.apache.org[Apache Geode] or
-http://geode.apache.org/[Pivotal Gemfire] and start the `gfsh` CLI in a separate terminal.
+If you do not have access an existing Geode installation, install https://geode.apache.org[Apache Geode] or
+https://geode.apache.org/[Pivotal Gemfire] and start the `gfsh` CLI in a separate terminal.
 ```
     _________________________     __
    / _____/ ______/ ______/ /____/ /

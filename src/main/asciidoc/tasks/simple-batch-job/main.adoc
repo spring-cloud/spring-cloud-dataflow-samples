@@ -2,7 +2,7 @@
 :docs_dir: ../..
 === Batch Job on Cloud Foundry
 
-In this demonstration, you will learn how to orchestrate short-lived data processing application (_eg: Spring Batch Jobs_) using http://cloud.spring.io/spring-cloud-task/[Spring Cloud Task] and http://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] on Cloud Foundry.
+In this demonstration, you will learn how to orchestrate short-lived data processing application (_eg: Spring Batch Jobs_) using https://cloud.spring.io/spring-cloud-task/[Spring Cloud Task] and https://cloud.spring.io/spring-cloud-dataflow/[Spring Cloud Data Flow] on Cloud Foundry.
 
 ==== Prerequisites
 
@@ -35,7 +35,7 @@ NOTE: For this sample, all you need is the `mysql` service and in PCFDev, the `m
 NOTE: All the apps deployed to PCFDev start with low memory by default. It is recommended to change it to at least 768MB for `dataflow-server`. Ditto for every app spawned *by* Spring Cloud Data Flow. Change the memory by: `cf set-env dataflow-server SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_MEMORY 512`. Likewise, we would have to skip SSL validation by: `cf set-env dataflow-server SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_SKIP_SSL_VALIDATION true`.
 
 
-. Tasks in Spring Cloud Data Flow require an RDBMS to host "task repository" (see http://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#spring-cloud-dataflow-task-repository[here] for more details), so let's instruct the Spring Cloud Data Flow server to bind the `mysql` service to each deployed task:
+. Tasks in Spring Cloud Data Flow require an RDBMS to host "task repository" (see https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#spring-cloud-dataflow-task-repository[here] for more details), so let's instruct the Spring Cloud Data Flow server to bind the `mysql` service to each deployed task:
 
 +
 
@@ -70,7 +70,7 @@ No staging env variables have been set
 ```
 +
 
-. Notice that `dataflow-server` application is started and ready for interaction via `http://dataflow-server.local.pcfdev.io` endpoint
+. Notice that `dataflow-server` application is started and ready for interaction via `https://dataflow-server.local.pcfdev.io` endpoint
 
 +
 . Build and register the batch-job https://github.com/spring-cloud/spring-cloud-task/tree/master/spring-cloud-task-samples/batch-job[example] from Spring Cloud Task samples. For convenience, the final https://github.com/spring-cloud/spring-cloud-dataflow-samples/raw/master/src/main/asciidoc/tasks/simple-batch-job/batch-job-1.3.0.BUILD-SNAPSHOT.jar[uber-jar artifact] is provided with this sample.

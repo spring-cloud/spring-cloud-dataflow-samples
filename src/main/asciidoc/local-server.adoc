@@ -1,2 +1,1 @@
-
 Follow the https://dataflow.spring.io/docs/installation/local/[installation] instructions to run Spring Cloud Data Flow on a local host.

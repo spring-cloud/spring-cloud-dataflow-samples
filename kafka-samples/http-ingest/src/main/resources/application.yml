@@ -2,5 +2,7 @@ spring.cloud.stream.kafka.binder.configuration.key:
   serializer: org.apache.kafka.common.serialization.StringSerializer
 spring.cloud.stream.kafka.binder.configuration.value:
   serializer: org.apache.kafka.common.serialization.StringSerializer
+mapped-request-headers: username
 spring.cloud.stream.bindings.output.producer:
+  messageKeyExpression: headers['username']
   useNativeEncoding: true

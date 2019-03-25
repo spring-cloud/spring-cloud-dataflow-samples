@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.cloud.dataflow.samples.source.http;
+package org.springframework.cloud.dataflow.samples.source;
 
 import java.util.function.Function;
 

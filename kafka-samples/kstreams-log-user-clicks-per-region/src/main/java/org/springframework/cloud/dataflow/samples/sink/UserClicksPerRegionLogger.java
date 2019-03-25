@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.cloud.stream.app.log;
+package org.springframework.cloud.dataflow.samples.sink;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,7 +32,7 @@ public class UserClicksPerRegionLogger {
 
 	@Bean
 	@ServiceActivator(inputChannel = Sink.INPUT)
-	public LoggingHandler userClicksPerRegionLogger() {
+	public LoggingHandler logger() {
 		LoggingHandler loggingHandler = new LoggingHandler(LoggingHandler.Level.INFO) {
 
 			@Override

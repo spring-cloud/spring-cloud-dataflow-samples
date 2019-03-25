@@ -8,7 +8,7 @@ spring.cloud.stream.bindings.userRegionsTableInput:
   consumer:
     useNativeDecoding: true
 spring.cloud.stream.bindings.output:
-  destination: userClickRegions
+  destination: userClicksPerRegion
   producer:
     useNativeEncoding: true
 spring.cloud.stream.kafka.streams.bindings.userClicksInput:

@@ -1,5 +1,5 @@
 spring.cloud.stream.bindings.input:
-  destination: userClickRegions
+  destination: userClicksPerRegion
   consumer:
     useNativeEncoding: true
 spring.cloud.stream.kafka.binder.configuration.key:

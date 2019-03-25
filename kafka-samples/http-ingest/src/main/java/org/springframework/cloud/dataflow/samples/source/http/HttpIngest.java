@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.cloud.stream.app.http.source.kafka;
+package org.springframework.cloud.dataflow.samples.source.http;
 
 import java.util.function.Function;
 

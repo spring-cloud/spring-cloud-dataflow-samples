@@ -27,30 +27,26 @@ import org.springframework.integration.support.MutableMessage;
 import org.springframework.messaging.Message;
 
 @SpringBootApplication
-public class UserClicksPerRegion {
+@EnableBinding(Sink.class)
+public class UserClicksPerRegionLogger {
 
-	@EnableBinding(Sink.class)
-	public static class Logger {
+	@Bean
+	@ServiceActivator(inputChannel = Sink.INPUT)
+	public LoggingHandler userClicksPerRegionLogger() {
+		LoggingHandler loggingHandler = new LoggingHandler(LoggingHandler.Level.INFO) {
 
-		@Bean
-		@ServiceActivator(inputChannel = Sink.INPUT)
-		public LoggingHandler logSinkHandler() {
-			LoggingHandler loggingHandler = new LoggingHandler(LoggingHandler.Level.INFO) {
-
-				@Override
-				protected void handleMessageInternal(Message<?> message) throws Exception {
-					Long userClicksPerRegion = (Long) message.getPayload();
-					String userRegion = (String) message.getHeaders().get("kafka_receivedMessageKey");
-					message = new MutableMessage<>(userRegion + " : " + userClicksPerRegion.toString());
-					super.handleMessageInternal(message);
-				}
-			};
-			return loggingHandler;
-		}
-
+			@Override
+			protected void handleMessageInternal(Message<?> message) throws Exception {
+				Long userClicksPerRegion = (Long) message.getPayload();
+				String userRegion = (String) message.getHeaders().get("kafka_receivedMessageKey");
+				message = new MutableMessage<>(userRegion + " : " + userClicksPerRegion.toString());
+				super.handleMessageInternal(message);
+			}
+		};
+		return loggingHandler;
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(UserClicksPerRegion.class, args);
+		SpringApplication.run(UserClicksPerRegionLogger.class, args);
 	}
 }

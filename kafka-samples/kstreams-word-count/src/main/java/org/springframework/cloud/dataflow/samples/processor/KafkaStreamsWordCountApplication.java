@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package kafka.streams.word.count;
+package org.springframework.cloud.dataflow.samples.processor;
+
+import java.util.Arrays;
+import java.util.Date;
 
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
@@ -22,15 +25,13 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Serialized;
 import org.apache.kafka.streams.kstream.TimeWindows;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.binder.kafka.streams.annotations.KafkaStreamsProcessor;
 import org.springframework.messaging.handler.annotation.SendTo;
-
-import java.util.Arrays;
-import java.util.Date;
 
 @SpringBootApplication
 public class KafkaStreamsWordCountApplication {

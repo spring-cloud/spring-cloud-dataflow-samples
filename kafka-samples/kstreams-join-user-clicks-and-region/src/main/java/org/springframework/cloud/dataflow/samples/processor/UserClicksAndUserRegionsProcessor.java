@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package kafka.streams.table.join;
+package org.springframework.cloud.dataflow.samples.processor;
 
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
@@ -31,10 +31,10 @@ import org.springframework.cloud.stream.binder.kafka.streams.annotations.KafkaSt
 import org.springframework.messaging.handler.annotation.SendTo;
 
 @SpringBootApplication
-public class KafkaStreamsTableJoin {
+public class UserClicksAndUserRegionsProcessor {
 
 	public static void main(String[] args) {
-		SpringApplication.run(KafkaStreamsTableJoin.class, args);
+		SpringApplication.run(UserClicksAndUserRegionsProcessor.class, args);
 	}
 
 	@EnableBinding(KStreamProcessorX.class)

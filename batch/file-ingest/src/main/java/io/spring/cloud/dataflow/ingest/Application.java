@@ -18,6 +18,7 @@ package io.spring.cloud.dataflow.ingest;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.task.configuration.EnableTask;
 
 /**
  * Main entry point for the ingest sample application.
@@ -26,6 +27,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author David Turanski
  */
 @SpringBootApplication
+@EnableTask
 public class Application {
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);

@@ -2,28 +2,25 @@ package io.spring.billrun;
 
 import java.util.List;
 
-import io.spring.billrun.configuration.Usage;
+import io.spring.billrun.model.Bill;
+import io.spring.billrun.model.Usage;
 import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @SpringBatchTest
 public class BillrunApplicationTests {
-
-	@Autowired
-	private JobLauncherTestUtils jobLauncherTestUtils;
 
 	@Autowired
 	private DataSource dataSource;
@@ -36,46 +33,26 @@ public class BillrunApplicationTests {
 	}
 
 	@Test
-	public void testJobResults() throws Exception{
+	public void testJobResults() {
 		testResult();
 	}
 
-
 	private void testResult() {
-		List<BillStatement> billStatements = this.jdbcTemplate.query("select ID, " +
-						"first_name, last_name, minutes, data_usage, bill_amount FROM bill_statements",
-				(rs, rowNum) -> new BillStatement(rs.getLong("id"),
+		List<Bill> billStatements = this.jdbcTemplate.query("select id, " +
+						"first_name, last_name, minutes, data_usage, bill_amount " +
+						"FROM bill_statements ORDER BY id",
+				(rs, rowNum) -> new Bill(rs.getLong("id"),
 						rs.getString("FIRST_NAME"), rs.getString("LAST_NAME"),
-						rs.getLong("MINUTES"), rs.getLong("DATA_USAGE"),
+						rs.getLong("DATA_USAGE"), rs.getLong("MINUTES"),
 						rs.getDouble("bill_amount")));
-		assertThat(billStatements.size()).isEqualTo(5);
+		assertEquals(5, billStatements.size());
 
-		BillStatement billStatement = billStatements.get(0);
-		assertThat(billStatement.getBillAmount()).isEqualTo(6);
-		assertThat(billStatement.getFirstName()).isEqualTo("jane");
-		assertThat(billStatement.getLastName()).isEqualTo("doe");
-		assertThat(billStatement.getId()).isEqualTo(1);
-		assertThat(billStatement.getMinutes()).isEqualTo(500);
-		assertThat(billStatement.getDataUsage()).isEqualTo(1000);
-
+		Bill billStatement = billStatements.get(0);
+		assertEquals(6, billStatement.getBillAmount(), 1e-15);
+		assertEquals("jane", billStatement.getFirstName());
+		assertEquals("doe", billStatement.getLastName());
+		assertEquals(new Long(1), billStatement.getId());
+		assertEquals(new Long(500), billStatement.getMinutes());
+		assertEquals(new Long(1000), billStatement.getDataUsage());
 	}
-
-	public static class BillStatement extends Usage {
-
-		public BillStatement(Long id, String firstName, String lastName, Long minutes, Long dataUsage, double billAmount) {
-			super(id, firstName, lastName, minutes, dataUsage);
-			this.billAmount = billAmount;
-		}
-
-		private double billAmount;
-
-		public double getBillAmount() {
-			return billAmount;
-		}
-
-		public void setBillAmount(double billAmount) {
-			this.billAmount = billAmount;
-		}
-	}
-
 }

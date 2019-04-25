@@ -25,7 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 
 @RunWith(SpringRunner.class)
@@ -39,8 +39,8 @@ public class BillsetuptaskApplicationTests {
 	public void testRepository() {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(this.dataSource);
 		int result = jdbcTemplate.queryForObject(
-		"SELECT COUNT(*) FROM BILL_STATEMENTS", Integer.class);
+				"SELECT COUNT(*) FROM BILL_STATEMENTS", Integer.class);
 
-		assertThat(result).isEqualTo(0);
+		assertEquals(0, result);
 	}
 }

@@ -14,9 +14,9 @@
  *  limitations under the License.
  */
 
-package io.spring.billrun.configuration;
+package io.spring.billrun.model;
 
-public class Bill {
+public class Usage {
 
 	private Long id;
 
@@ -24,22 +24,27 @@ public class Bill {
 
 	private String lastName;
 
-	private Long dataUsage;
-
 	private Long minutes;
 
-	private Double billAmount;
+	private Long dataUsage;
 
-	public Bill(Long id, String firstName, String lastName, Long dataUsage, Long minutes, Double billAmount) {
+	public Usage() {
+	}
+
+	public Usage(Long id, String firstName, String lastName, Long minutes, Long dataUsage) {
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.dataUsage = dataUsage;
 		this.minutes = minutes;
-		this.billAmount = billAmount;
+		this.dataUsage = dataUsage;
 		this.id = id;
 	}
 
-	public Bill() {
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getFirstName() {
@@ -74,19 +79,14 @@ public class Bill {
 		this.minutes = minutes;
 	}
 
-	public Double getBillAmount() {
-		return billAmount;
-	}
-
-	public void setBillAmount(Double billAmount) {
-		this.billAmount = billAmount;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
+	@Override
+	public String toString() {
+		return "Usage{" +
+				"id=" + id +
+				", firstName='" + firstName + '\'' +
+				", lastName='" + lastName + '\'' +
+				", minutes=" + minutes +
+				", dataUsage=" + dataUsage +
+				'}';
 	}
 }

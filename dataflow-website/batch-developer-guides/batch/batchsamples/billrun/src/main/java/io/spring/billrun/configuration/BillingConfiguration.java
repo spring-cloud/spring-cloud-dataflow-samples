@@ -17,6 +17,8 @@
 package io.spring.billrun.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.spring.billrun.model.Bill;
+import io.spring.billrun.model.Usage;
 import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,7 +61,7 @@ public class BillingConfiguration {
 	private Resource usageResource;
 
 	@Bean
-	public Job job1(ItemReader<Usage> reader, ItemProcessor<Usage,Bill> itemProcessor, ItemWriter<Bill> writer) {
+	public Job job1(ItemReader<Usage> reader, ItemProcessor<Usage, Bill> itemProcessor, ItemWriter<Bill> writer) {
 		Step step = stepBuilderFactory.get("BillProcessing")
 				.<Usage, Bill>chunk(1)
 				.reader(reader)

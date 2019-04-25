@@ -16,6 +16,9 @@
 
 package io.spring.billrun.configuration;
 
+import io.spring.billrun.model.Bill;
+import io.spring.billrun.model.Usage;
+
 import org.springframework.batch.item.ItemProcessor;
 
 public class BillProcessor implements ItemProcessor<Usage, Bill> {

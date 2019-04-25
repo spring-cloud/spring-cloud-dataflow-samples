@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>spring-cloud-task-edu-samples</artifactId>
 		<groupId>io.spring</groupId>
-		<version>1.0.0.BUILD-SNAPSHOT</version>
+		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>billsetuptask</artifactId>

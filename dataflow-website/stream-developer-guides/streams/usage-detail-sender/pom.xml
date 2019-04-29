@@ -8,11 +8,11 @@
     <version>2.1.4.RELEASE</version>
     <relativePath></relativePath>
   </parent>
-  <groupId>com.example</groupId>
+  <groupId>io.spring.dataflow.sample</groupId>
   <artifactId>usage-detail-sender</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>usage-detail-sender</name>
-  <description>Demo project for Spring Boot</description>
+  <description>Sample project for Spring Cloud Stream Source</description>
   <build>
     <plugins>
       <plugin>

@@ -49,8 +49,6 @@ import org.springframework.core.io.Resource;
 @EnableTask
 @EnableBatchProcessing
 public class BillingConfiguration {
-	private static final Log logger = LogFactory.getLog(BillingConfiguration.class);
-
 	@Autowired
 	public JobBuilderFactory jobBuilderFactory;
 

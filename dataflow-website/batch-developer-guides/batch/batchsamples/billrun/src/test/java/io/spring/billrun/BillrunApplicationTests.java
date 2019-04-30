@@ -3,7 +3,6 @@ package io.spring.billrun;
 import java.util.List;
 
 import io.spring.billrun.model.Bill;
-import io.spring.billrun.model.Usage;
 import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;

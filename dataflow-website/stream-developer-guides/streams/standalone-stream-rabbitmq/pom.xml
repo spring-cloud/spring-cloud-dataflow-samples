@@ -89,7 +89,7 @@
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
-                                <phase>verify</phase>
+                                <phase>package</phase>
                                 <configuration>
                                     <tasks>
                                         <copy file="${streams.basedir}/target/usage-cost-stream-rabbit-${project.version}.zip"
@@ -108,7 +108,7 @@
                         <artifactId>maven-assembly-plugin</artifactId>
                         <executions>
                             <execution>
-                                <phase>package</phase>
+                                <phase>prepare-package</phase>
                                 <goals>
                                     <goal>single</goal>
                                 </goals>

@@ -9,7 +9,7 @@ $./mvnw clean package
 ## Building the distribution
 
 ```bash
-$./mvnw verify -Pdist
+$./mvnw package -Pdist
 
 ```
 

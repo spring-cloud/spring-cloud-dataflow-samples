@@ -13,6 +13,12 @@ From the root project execute the following:
 ```
 $ ./mvnw clean package
 ```
+
+== Build the project zip file
+```
+$./mvnw clean package -Pdist
+```
+
 == Build the Docker Images for the project
 ```
 $ ./mvnw clean package jib:dockerBuild

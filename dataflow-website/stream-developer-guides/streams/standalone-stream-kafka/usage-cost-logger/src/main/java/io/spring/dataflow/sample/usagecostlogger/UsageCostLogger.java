@@ -1,6 +1,6 @@
 package io.spring.dataflow.sample.usagecostlogger;
 
-import io.spring.dataflow.sample.domain.UsageCostDetail;
+import io.spring.dataflow.sample.UsageCostDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

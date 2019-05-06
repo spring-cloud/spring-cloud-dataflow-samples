@@ -2,7 +2,7 @@ package io.spring.dataflow.sample.usagedetailsender;
 
 import java.util.Random;
 
-import io.spring.dataflow.sample.domain.UsageDetail;
+import io.spring.dataflow.sample.UsageDetail;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;

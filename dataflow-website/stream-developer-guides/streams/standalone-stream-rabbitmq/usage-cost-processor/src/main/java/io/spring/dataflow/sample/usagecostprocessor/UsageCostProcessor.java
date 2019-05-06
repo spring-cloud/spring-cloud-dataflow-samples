@@ -1,7 +1,7 @@
 package io.spring.dataflow.sample.usagecostprocessor;
 
-import io.spring.dataflow.sample.domain.UsageCostDetail;
-import io.spring.dataflow.sample.domain.UsageDetail;
+import io.spring.dataflow.sample.UsageCostDetail;
+import io.spring.dataflow.sample.UsageDetail;
 
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;

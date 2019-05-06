@@ -1,4 +1,4 @@
-package io.spring.dataflow.sample.domain;
+package io.spring.dataflow.sample;
 
 public class UsageCostDetail {
 

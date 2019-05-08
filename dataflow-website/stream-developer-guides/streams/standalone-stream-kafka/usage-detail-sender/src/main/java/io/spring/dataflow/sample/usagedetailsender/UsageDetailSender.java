@@ -18,7 +18,7 @@ public class UsageDetailSender {
 	@Autowired
 	private Source source;
 
-	private String[] users = {"Glenn", "Sabby", "Mark", "Janne", "Ilaya"};
+	private String[] users = {"user1", "user2", "user3", "user4", "user5"};
 
 	@Scheduled(fixedDelay = 1000)
 	public void sendEvents() {

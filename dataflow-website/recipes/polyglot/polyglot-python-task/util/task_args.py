@@ -16,8 +16,10 @@ def get_cmd_arg(name):
     for k, v in ((k.lstrip('-'), v) for k, v in (a.split('=') for a in sys.argv[1:])):
         d[k].append(v)
 
-    return d[name][0]
-
+    if bool(d[name]):
+        return d[name][0]
+    else:
+        return None
 
 def get_db_url():
     """Computes sqlalchemy connection URL

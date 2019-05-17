@@ -67,8 +67,8 @@ def get_env_info():
     props = '  stream-name={}\n  app-name={}\n  app-guid={}\n  app-group={}\n  kafka-brokers={}\n  ' \
             'kafka-zk={}\n'.format(get_stream_name(), get_stream_app_label(), get_application_guid(),
                                    get_application_group(), get_kafka_brokers(), get_kafka_zk_nodes())
-    channels = '  Inputs:\n    orders={}\n  Outputs: \n    hot.drink={}\n    cold.drink={}\n'.format(
-        get_channel_topic('orders'), get_channel_topic('hot.drink'), get_channel_topic('cold.drink'))
+    channels = '  Inputs:\n    input={}\n  Outputs: \n    even={}\n    odd={}\n'.format(
+        get_channel_topic('input'), get_channel_topic('even'), get_channel_topic('odd'))
     args = '\n   '.join(sys.argv)
     envs = ''
     # envs = '\n  '.join(list(map(lambda k: '{}={}'.format(k, os.environ[k]), os.environ)))

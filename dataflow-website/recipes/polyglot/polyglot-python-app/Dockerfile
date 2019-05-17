@@ -4,6 +4,6 @@ RUN pip install kafka-python
 RUN pip install flask
 
 ADD /util/* /util/
-ADD barista_app.py /
-ENTRYPOINT ["python","/barista_app.py"]
+ADD python_router_app.py /
+ENTRYPOINT ["python","/python_router_app.py"]
 CMD []

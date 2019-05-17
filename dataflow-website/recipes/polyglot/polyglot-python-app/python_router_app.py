@@ -45,20 +45,20 @@ class Router:
             except TopicAlreadyExistsError:
                 print ('Topic: {} already exists!')
 
-    def process_orders(self):
+    def process_timestamps(self):
         """
         Continuously consumes timestamps form the input channel and send even or odd timestamps to the output channels.
         """
         while True:
             for message in self.consumer:
                 if message.value is not None:
-                    if self.is_even_order(message.value):
+                    if self.is_even_timestamp(message.value):
                         self.producer.send(self.even_topic, b'Even timestamp: ' + message.value)
                     else:
                         self.producer.send(self.odd_topic, b'Odd timestamp:' + message.value)
 
     @staticmethod
-    def is_even_order(value):
+    def is_even_timestamp(value):
         return int(value[-1:]) % 2 == 0
 
 
@@ -68,4 +68,4 @@ Router(
     get_channel_topic('input'),
     get_channel_topic('even'),
     get_channel_topic('odd')
-).process_orders()
+).process_timestamps()

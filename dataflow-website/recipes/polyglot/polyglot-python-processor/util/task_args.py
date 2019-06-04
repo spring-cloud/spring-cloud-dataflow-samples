@@ -30,4 +30,4 @@ def get_output_channel():
     return get_cmd_arg("spring.cloud.stream.bindings.output.destination")
 
 def get_reverse_string():
-    return get_cmd_arg("reverestring")
+    return get_cmd_arg("reversestring")

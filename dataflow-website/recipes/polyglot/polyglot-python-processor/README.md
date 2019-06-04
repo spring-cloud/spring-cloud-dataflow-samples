@@ -52,7 +52,7 @@ INFO 1 --- [container-0-C-1] log-sink                                 : hello wo
 Post and log a reversed string:
 
 ```
-dataflow:>stream create --name test --definition "http --server.port=32123 | python-processor --reverestring=true  | log"
+dataflow:>stream create --name test --definition "http --server.port=32123 | python-processor --reversestring=true  | log"
 dataflow:>stream deploy test --properties "deployer.http.kubernetes.createNodePort=32123"
 dataflow:>http post --target http://192.168.99.104:32123 --data "hello world"
 > POST (text/plain) http://192.168.99.104:32123 hello world

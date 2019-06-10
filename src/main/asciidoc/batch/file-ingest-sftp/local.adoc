@@ -1,9 +1,10 @@
 [[sftp-file-ingest-local]]
-==== Using the Local Server
+==== Running Locally
 
 ===== Additional Prerequisites
 
-* A running local Data Flow Server
+* Spring Cloud Data Flow installed locally
+
 include::{docs_dir}/local-server.adoc[]
 
 * Running instance of link:http://kafka.apache.org/downloads.html[Kafka]
@@ -49,9 +50,9 @@ In the Spring Cloud Data Flow shell:
 +
 [source,console,options=nowrap]
 ----
-dataflow:>app register --name sftp --type source --uri maven://org.springframework.cloud.stream.app:sftp-dataflow-source-kafka:2.0.3.BUILD-SNAPSHOT
+dataflow:>app register --name sftp --type source --uri maven://org.springframework.cloud.stream.app:sftp-dataflow-source-kafka:2.1.0.RELEASE
 Successfully registered application 'source:sftp'
-dataflow:>app register --name task-launcher --type sink --uri maven://org.springframework.cloud.stream.app:task-launcher-dataflow-sink-kafka:1.0.0.BUILD-SNAPSHOT
+dataflow:>app register --name task-launcher --type sink --uri maven://org.springframework.cloud.stream.app:task-launcher-dataflow-sink-kafka:1.0.1.RELEASE
 Successfully registered application 'sink:task-launcher'
 ----
 +

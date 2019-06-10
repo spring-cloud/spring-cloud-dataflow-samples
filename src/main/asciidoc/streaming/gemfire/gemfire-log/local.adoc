@@ -1,9 +1,10 @@
 [[gemfire-log-local]]
-==== Using the Local Server
+==== Running Locally
 ===== Additional Prerequisites
 
-* A Running Data Flow Server
+* Spring Cloud Data Flow installed locally
 include::{docs_dir}/local-server.adoc[]
+
 * A running instance of https://www.rabbitmq.com[Rabbit MQ]
 
 ===== Building and Running the Demo

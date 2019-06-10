@@ -1,6 +1,6 @@
 [[sftp-file-ingest-kubernetes]]
 :docs_dir: ../..
-==== Using the Kubernetes Server
+==== Running on Kubernetes
 
 ===== Additional Prerequisites
 * A Kubernetes cluster
@@ -10,7 +10,7 @@
 
 NOTE: For this example, we use an NFS host configured to allow https://www.tldp.org/HOWTO/NFS-HOWTO/server.html[read-write access].
 
-* The Spring Cloud Data Flow Kubernetes Server
+* Spring Cloud Data Flow installed on Kubernetes
 +
 include::{docs_dir}/kubernetes-server.adoc[]
 +
@@ -105,9 +105,9 @@ In the Spring Cloud Data Flow shell:
 +
 [source,console,options=nowrap]
 ----
-dataflow:>dataflow:>app register --name sftp --type source --uri docker:springcloud/sftp-dataflow-source-kafka --metadata-uri maven://org.springframework.cloud.stream.app:sftp-dataflow-source-kafka:jar:metadata:2.1.0.BUILD-SNAPSHOT
+dataflow:>dataflow:>app register --name sftp --type source --uri docker:springcloud/sftp-dataflow-source-kafka --metadata-uri maven://org.springframework.cloud.stream.app:sftp-dataflow-source-kafka:jar:metadata:2.1.0.RELEASE
 Successfully registered application 'source:sftp'
-dataflow:>app register --name task-launcher --type sink --uri docker:springcloud/task-launcher-dataflow-sink-kafka --metadata-uri maven://org.springframework.cloud.stream.app:task-launcher-dataflow-sink-kafka:jar:metadata:1.0.0.BUILD-SNAPSHOT
+dataflow:>app register --name task-launcher --type sink --uri docker:springcloud/task-launcher-dataflow-sink-kafka --metadata-uri maven://org.springframework.cloud.stream.app:task-launcher-dataflow-sink-kafka:jar:metadata:1.0.1.RELEASE
 Successfully registered application 'sink:task-launcher'
 ----
 +
@@ -125,7 +125,7 @@ Once deployed, the stream will start polling the SFTP server and, when new files
 +
 [source,console,options=nowrap]
 ----
-dataflow:>stream create inboundSftp --definition "sftp --host=<host> --username=<user> --password=<password> --allow-unknown-keys=true --remote-dir=/remote-files --local-dir=/staging/shared-files --task.launch.request.taskName=fileIngestTask --task.launch.request.deployment-properties='deployer.*.kubernetes.volumes=[{\"name\":\"staging\",\"persistentVolumeClaim\":{\"claimName\":\"nfs\"}}],deployer.*.kubernetes.volumeMounts=[{\"mountPath\":\"/staging\",\"name\":\"staging\"}]'| task-launcher --spring.cloud.dataflow.client.server-uri=http://<dataflow-server-ip> --spring.cloud.dataflow.client.authentication.basic.username=user --spring.cloud.dataflow.client.authentication.basic.password=password"
+dataflow:>stream create inboundSftp --definition "sftp --host=<host> --username=<user> --password=<password> --allow-unknown-keys=true --remote-dir=/remote-files --local-dir=/staging/shared-files --task.launch.request.taskName=fileIngestTask --task.launch.request.deployment-properties="deployer.*.kubernetes.volumes=[{'name':'staging','persistentVolumeClaim':{'claimName':'nfs'}}],deployer.*.kubernetes.volumeMounts=[{'mountPath':'/staging','name':'staging'}]"| task-launcher --spring.cloud.dataflow.client.server-uri=http://<dataflow-server-ip> --spring.cloud.dataflow.client.authentication.basic.username=user --spring.cloud.dataflow.client.authentication.basic.password=password"
 ----
 +
 NOTE: Replace `<user>`, '<pass>`, and `<host>` above.
@@ -144,9 +144,8 @@ Now let's deploy the stream.
 +
 [source, console, options=nowrap]
 ----
-dataflow:>stream deploy inboundSftp --properties 'deployer.sftp.kubernetes.volumes=[{"name":"staging","persistentVolumeClaim":{"claimName":"nfs"}}],deployer.sftp.kubernetes.volumeMounts=[{"mountPath":"/staging","name":"staging"}],deployer.*.kubernetes.bootMajorVersion=2'
+dataflow:>stream deploy inboundSftp --properties "deployer.sftp.kubernetes.volumes=[{'name':'staging','persistentVolumeClaim':{'claimName':'nfs'}}],deployer.sftp.kubernetes.volumeMounts=[{'mountPath':'/staging','name':'staging'}]"
 ----
-NOTE: The deployment property `deployer.*.kubernetes.bootMajorVersion=2` tells the deployer to configure the liveness and readiness probes for Spring Boot 2.x applications, as actuator endpoints have changed in Spring Boot 2.0. This will likely become the default in a future SCDF release.
 +
 . Verify Stream deployment
 +
@@ -159,7 +158,7 @@ dataflow:>stream list
 ║Stream Name│                                                                                                     Stream Definition                                                                                                     │   Status   ║
 ╠═══════════╪═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╪════════════╣
 ║inboundSftp│sftp                                                                                                                                                                                                                       │The stream  ║
-║           │--task.launch.request.deployment-properties='deployer.*.kubernetes.volumes=[{"name":"staging","persistentVolumeClaim":{"claimName":"nfs"}}],deployer.*.kubernetes.volumeMounts=[{"mountPath":"/staging","name":"staging"}]'│has been    ║
+║           │--task.launch.request.deployment-properties="deployer.*.kubernetes.volumes=[{'name':'staging','persistentVolumeClaim':{'claimName':'nfs'}}],deployer.*.kubernetes.volumeMounts=[{'mountPath':'/staging','name':'staging'}]"│has been    ║
 ║           │--password='******' --local-dir=/staging/shared-files --host=<host> --remote-dir=/remote-files --task.launch.request.taskName=fileIngestTask --allow-unknown-keys=true --username=<user> | task-launcher                   │successfully║
 ║           │--spring.cloud.dataflow.client.server-uri=http://<dataflow-server-ip> --spring.cloud.dataflow.client.authentication.basic.username=user --spring.cloud.dataflow.client.authentication.basic.password='******'              │deployed    ║
 ╚═══════════╧═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╧════════════╝

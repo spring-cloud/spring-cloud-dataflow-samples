@@ -1,5 +1,5 @@
 [[gemfire-http-cf]]
-==== Using the Cloud Foundry Server
+==== Running on Cloud Foundry
 ===== Additional Prerequisites
 
 * A Cloud Foundry instance
@@ -8,7 +8,7 @@
 
 * Running instance of the https://docs.pivotal.io/p-cloud-cache/1-0/developer.html[Pivotal Cloud Cache for PCF] (PCC) service `cloudcache` in Cloud Foundry.
 
-* Cloud Data Flow Cloud Foundry Server
+* Spring Cloud Data Flow installed on Cloud Foundry
 include::{docs_dir}/cloudfoundry-server.adoc[]
 
 ===== Building and Running the Demo

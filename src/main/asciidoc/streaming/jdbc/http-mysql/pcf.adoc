@@ -1,5 +1,5 @@
 
-==== Using the Cloud Foundry Server
+==== Running on Cloud Foundry
 
 ===== Additional Prerequisites
 
@@ -17,7 +17,8 @@ CREATE TABLE names
 );
 ```
 +
-* The Spring Cloud Data Flow Cloud Foundry Server
+* Spring Cloud Data Flow installed on Cloud Foundry
+
 include::{docs_dir}/cloudfoundry-server.adoc[]
 
 ===== Building and Running the Demo

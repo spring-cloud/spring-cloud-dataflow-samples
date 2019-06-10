@@ -25,14 +25,14 @@ The Batch File Ingest - SFTP Demo processes a single file with 5000+ items. What
 The sftp source will process them immediately, generating 100 task launch requests. The Dataflow Server launches tasks asynchronously so this could potentially overwhelm the resources of the runtime platform.
 For example, when running the Data Flow server on your local machine, each launched task creates a new JVM. In Cloud Foundry, each task creates a new container instance.
 
-Fortunately, Spring Cloud Data Flow 1.7 introduced new features to manage concurrently running tasks, including a new configuration parameter, `spring.cloud.dataflow.task.maximum-concurrent-tasks`, to http://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#spring-cloud-dataflow-task-limit-concurrent-executions[limit the number of concurrently running tasks].
+Fortunately, Spring Cloud Data Flow provides configuration settings to https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#spring-cloud-dataflow-task-limit-concurrent-executions[limit the number of concurrently running tasks].
 We can use this demo to see how this works.
 
 ===== Configuring the SCDF server
 Set the maximum concurrent tasks to 3.
-For the local server, restart the server, adding a command line argument `--spring.cloud.dataflow.task.maximum-concurrent-tasks=3`.
+For running tasks on a local server, restart the server, adding a command line argument `spring.cloud.dataflow.task.platform.local.accounts[default].maximum-concurrent-tasks=3`.
 
-For the Cloud Foundry server, `cf set-env <dataflow-server> SPRING_CLOUD_DATAFLOW_TASK_MAXIMUM_CONCURRENT_TASKS 3`, and restage.
+If running on Cloud Foundry, `cf set-env <dataflow-server> SPRING_CLOUD_DATAFLOW_TASK_PLATFORM_LOCAL_ACCOUNTS[DEFAULT].MAXIMUM_CONCURRENT_TASKS 3`, and restage.
 
 ===== Running the demo
 Follow the main demo instructions but change the `Add Data` step, as described below.

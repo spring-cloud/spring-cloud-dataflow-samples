@@ -1,9 +1,9 @@
 [[http-cassandra-local]]
-==== Using the Local Server
+==== Running Locally
 
 ===== Additional Prerequisites
 
-* A running local Data Flow Server
+* Spring Cloud Data Flow installed locally
 include::{docs_dir}/local-server.adoc[]
 
 * Running instance of link:http://kafka.apache.org/downloads.html[Kafka]

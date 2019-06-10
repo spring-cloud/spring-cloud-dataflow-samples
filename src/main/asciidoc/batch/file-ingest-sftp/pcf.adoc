@@ -1,14 +1,14 @@
 [sftp-file-ingest-pcf]]
-==== Using the Cloud Foundry Server
+==== Running on Cloud Foundry
 
 ===== Additional Prerequisites
 
 NOTE: Running this demo in Cloud Foundry requires a shared file system that is accessed by apps running in different containers.
-This feature is provided by https://docs.pivotal.io/pivotalcf/2-3/devguide/services/using-vol-services.html[NFS Volume Services].
+This feature is provided by https://docs.pivotal.io/pivotalcf/2-5/devguide/services/using-vol-services.html[NFS Volume Services].
 To use Volume Services with SCDF, it is required that we provide `nfs` configuration via `cf create-service` rather than `cf bind-service`.
 Cloud Foundry introduced the `cf create-service` configuration option for Volume Services in version 2.3.
 
-* A Cloud Foundry instance v2.3+ with  NFS Volume Services https://docs.pivotal.io/pivotalcf/2-3/opsguide/enable-vol-services.html[enabled]
+* A Cloud Foundry instance v2.3+ with  NFS Volume Services https://docs.pivotal.io/pivotalcf/2-5/opsguide/enable-vol-services.html[enabled]
 * An SFTP server accessible from the Cloud Foundry instance
 * An `nfs` service instance properly configured
 
@@ -23,23 +23,27 @@ $ cf create-service nfs Existing nfs -c '{"share":"<nfs_host_ip>/export","uid":"
 * A `rabbit` service instance
 * https://github.com/pivotal-cf/PivotalMySQLWeb[PivotalMySQLWeb] or another database tool to view the data
 
-* The Spring Cloud Data Flow Cloud Foundry Server
+* Spring Cloud Data Flow installed on Cloud Foundry
+
 include::{docs_dir}/cloudfoundry-server.adoc[]
 
-===== Configuring the SCDF server
+===== Configuring the SCDF and Skipper servers
 
 For convenience, we will configure the SCDF server to bind all stream and task apps to the `nfs` service. Using the Cloud Foundry CLI,
 set the following environment variables (or set them in the manifest):
 ```
-cf set-env <dataflow-server-app-name> SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_STREAM_SERVICES rabbitmq,nfs
-cf set-env <dataflow-server-app-name> SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_TASK_SERVICES mysql,nfs
+cf set-env <dataflow-server-app-name> SPRING_CLOUD_DATAFLOW_TASK_PLATFORM_CLOUDFOUNDRY_ACCOUNTS[default]_DEPLOYMENT_SERVICES: mysql,nfs
+```
+
+For the Skipper server:
+```
+cf set-env <skipper-server-app-name> SPRING_CLOUD_SKIPPER_SERVER_PLATFORM_CLOUDFOUNDRY_ACCOUNTS[default]_DEPLOYMENT_SERVICES: rabbit,nfs
 ```
 
 NOTE: Normally, for security and operational efficiency, we may want more fine grained control of which apps bind to the nfs service.
 One way to do this is to set deployment properties when creating and deploying the stream, as shown below.
 
 ===== Running the Demo
-
 
 The source code for the <<Batch File Ingest>> batch job is located in `batch/file-ingest`.
 The resulting executable jar file must be available in a location that is accessible to your Cloud Foundry instance, such as an HTTP server or Maven repository.
@@ -73,9 +77,9 @@ In the Spring Cloud Data Flow shell:
 +
 [source,console,options=nowrap]
 ----
-dataflow:>app register --name sftp --type source --uri maven://org.springframework.cloud.stream.app:sftp-dataflow-source-rabbit:2.0.3.BUILD-SNAPSHOT
+dataflow:>app register --name sftp --type source --uri maven://org.springframework.cloud.stream.app:sftp-dataflow-source-rabbit:2.1.0.RELEASE
 Successfully registered application 'source:sftp'
-dataflow:>app register --name task-launcher --type sink --uri maven://org.springframework.cloud.stream.app:task-launcher-dataflow-sink-rabbit:1.0.0.BUILD-SNAPSHOT
+dataflow:>app register --name task-launcher --type sink --uri maven://org.springframework.cloud.stream.app:task-launcher-dataflow-sink-rabbit:1.0.1.RELEASE
 Successfully registered application 'sink:task-launcher'
 ----
 +
@@ -102,6 +106,9 @@ dataflow:> app info --name task-launcher --type sink
 ╔══════════════════════════════╤══════════════════════════════╤══════════════════════════════╤══════════════════════════════╗
 ║         Option Name          │         Description          │           Default            │             Type             ║
 ╠══════════════════════════════╪══════════════════════════════╪══════════════════════════════╪══════════════════════════════╣
+║platform-name                 │The Spring Cloud Data Flow    │default                       │java.lang.String              ║
+║                              │platform to use for launching │                              │                              ║
+║                              │tasks.                        |                                                             ║
 ║spring.cloud.dataflow.client.a│The login username.           │<none>                        │java.lang.String              ║
 ║uthentication.basic.username  │                              │                              │                              ║
 ║spring.cloud.dataflow.client.a│The login password.           │<none>                        │java.lang.String              ║
@@ -167,17 +174,19 @@ $ cf apps
 Getting apps in org cf_org / space cf_space as cf_user...
 OK
 
-name                                                             requested state   instances   memory   disk   urls
-dataflow-server                                                  started           1/1         2G       2G     dataflow-server.app.io
-dataflow-server-N5RYLDj-inboundSftp-sftp                         started           1/1         1G       1G     dataflow-server-N5RYLDj-inboundSftp-sftp.dataflow-server.app.io
-dataflow-server-N5RYLDj-inboundSftp-task-launcher-cloudfoundry   started           1/1         1G       1G     dataflow-server-N5RYLDj-inboundSftp-task-launcher-cloudfoundry.dataflow-server.app.io
+name                                   requested state   instances   memory   disk   urls
+skipper-server                         started           1/1         1G       1G     skipper-server.cfapps.io
+data-flow-server                       started           1/1         2G       2G     data-flow-server.cfapps.io
+fileIngestTask                         stopped           0/1         1G       1G
+bxZZ5Yv-inboundSftp-task-launcher-v1   started           1/1         2G       1G     bxZZ5Yv-inboundSftp-task-launcher-v1.cfapps.io
+bxZZ5Yv-inboundSftp-sftp-v1            started           1/1         2G       1G     bxZZ5Yv-inboundSftp-sftp-v1.cfapps.io
 ----
 +
 In this example, the logs for the `sftp` application can be viewed by:
 +
 [source, console, options=nowrap]
 ----
-cf logs dataflow-server-N5RYLDj-inboundSftp-sftp --recent
+cf logs bxZZ5Yv-inboundSftp-sftp-v1 --recent
 ----
 +
 The log files of this application would be useful to debug issues such as SFTP connection failures.
@@ -185,7 +194,7 @@ The log files of this application would be useful to debug issues such as SFTP c
 Additionally, the logs for the `task-launcher` application can be viewed by:
 +
 ```
-cf logs dataflow-server-N5RYLDj-inboundSftp-task-launcher --recent
+cf logs bxZZ5Yv-inboundSftp-task-launcher-v1 --recent
 ```
 
 . Add data

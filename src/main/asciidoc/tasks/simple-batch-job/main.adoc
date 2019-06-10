@@ -11,7 +11,7 @@ In this demonstration, you will learn how to orchestrate short-lived data proces
 * Running instance of mysql in PCFDev
 * A Running Data Flow Shell
 include::{docs_dir}/shell.adoc[]
-* The Spring Cloud Data Flow Cloud Foundry Server running in PCFDev
+* Spring Cloud Data Flow installed on Cloud Foundry
 include::{docs_dir}/cloudfoundry-server.adoc[]
 
 ==== Building and Running the Demo

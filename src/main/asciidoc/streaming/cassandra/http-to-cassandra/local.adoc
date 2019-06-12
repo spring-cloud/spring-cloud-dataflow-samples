@@ -3,7 +3,7 @@
 
 ===== Additional Prerequisites
 
-* Spring CLoud Data Flow installed locally
+* Spring Cloud Data Flow installed locally
 include::{docs_dir}/local-server.adoc[]
 
 * Running instance of link:http://kafka.apache.org/downloads.html[Kafka]

@@ -178,8 +178,8 @@ name                                   requested state   instances   memory   di
 skipper-server                         started           1/1         1G       1G     skipper-server.cfapps.io
 data-flow-server                       started           1/1         2G       2G     data-flow-server.cfapps.io
 fileIngestTask                         stopped           0/1         1G       1G
-bxZZ5Yv-inboundSftp-task-launcher-v1   started           1/1         2G       1G     bxZZ5Yv-inboundSftp-task-launcher-v2.cfapps.io
-bxZZ5Yv-inboundSftp-sftp-v1            started           1/1         2G       1G     bxZZ5Yv-inboundSftp-sftp-v2.cfapps.io
+bxZZ5Yv-inboundSftp-task-launcher-v1   started           1/1         2G       1G     bxZZ5Yv-inboundSftp-task-launcher-v1.cfapps.io
+bxZZ5Yv-inboundSftp-sftp-v1            started           1/1         2G       1G     bxZZ5Yv-inboundSftp-sftp-v1.cfapps.io
 ----
 +
 In this example, the logs for the `sftp` application can be viewed by:

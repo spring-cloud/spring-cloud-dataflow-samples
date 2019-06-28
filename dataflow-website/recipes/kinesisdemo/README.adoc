@@ -1,0 +1,46 @@
+# Spring Cloud Stream and Kinesis Binder in Action
+
+A simple demonstration of a SCSt producer [i.e., `kinesisproducer`] producing random UUID's to Kinesis Streams, which in turn are cosumed by a SCSt consumer [i.e., `kinesisconsumer`] for donwstream processing.
+
+## Notes
+
+Change the following properties in `application.yml` for both the applications.
+
+[source,yaml,options=nowrap,subs=attributes]
+----
+cloud:
+  aws:
+    credentials:
+      accessKey: 
+      secretKey:
+    region:
+      static: 
+    stack:
+      auto: false
+----
+
+NOTE: You can read more about the credentials and the other applicable properties in link:http://cloud.spring.io/spring-cloud-aws/spring-cloud-aws.html#_simple_credentials_configuration[Spring Cloud AWS reference guide].
+
+## Build
+
+[source,bash,options=nowrap,subs=attributes]
+----
+mvn clean -U install
+----
+
+## Run
+
+Open two different terminals and start the producer and consumer as follows:
+
+[source,bash,options=nowrap,subs=attributes]
+----
+java -jar kinesisproducer/target/kinesisproducer-0.0.1-SNAPSHOT.jar
+
+java -jar kinesisconsumer/target/kinesisconsumer-0.0.1-SNAPSHOT.jar
+----
+
+## Results
+
+If all goes well, you should see something like this in the terminals.
+
+image::https://github.com/sabbyanandan/kinesisdemo/raw/master/images/producer-consumer-in-action.png[Sample Results]

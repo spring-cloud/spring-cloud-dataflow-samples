@@ -5,6 +5,7 @@ spring:
       bindings:
         input:
           destination: test-kinesis-stream
+          group: test-kinesis-stream-group
           content-type: text/plain
 
 cloud:

@@ -1,0 +1,18 @@
+
+spring:
+  cloud:
+    stream:
+      bindings:
+        output:
+          destination: test-kinesis-stream
+          content-type: text/plain
+
+cloud:
+  aws:
+    credentials:
+      accessKey:
+      secretKey:
+    region:
+      static: us-east-2
+    stack:
+      auto: false

@@ -32,7 +32,7 @@ We can use this demo to see how this works.
 Set the maximum concurrent tasks to 3.
 For running tasks on a local server, restart the server, adding a command line argument `spring.cloud.dataflow.task.platform.local.accounts[default].maximum-concurrent-tasks=3`.
 
-If running on Cloud Foundry, `cf set-env <dataflow-server> SPRING_CLOUD_DATAFLOW_TASK_PLATFORM_LOCAL_ACCOUNTS[DEFAULT].MAXIMUM_CONCURRENT_TASKS 3`, and restage.
+If running on Cloud Foundry, `cf set-env <dataflow-server> SPRING_CLOUD_DATAFLOW_TASK_PLATFORM_CLOUDFOUNDRY_ACCOUNTS[DEFAULT]_DEPLOYMENT_MAXIMUMCONCURRENTTASKS 3`, and restage.
 
 ===== Running the demo
 Follow the main demo instructions but change the `Add Data` step, as described below.

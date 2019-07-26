@@ -1,0 +1,16 @@
+#!/bin/bash
+cd "$(dirname "$0")"
+
+rm -fr spring-cloud-dataflow-server*.jar
+wget https://repo.spring.io/libs-release-local/org/springframework/cloud/spring-cloud-dataflow-server/2.1.2.RELEASE/spring-cloud-dataflow-server-2.1.2.RELEASE.jar
+
+pushd ..
+./gradlew clean build
+./mvnw clean package
+popd
+
+echo "Diff gradle build"
+diff <(unzip -l spring-cloud-dataflow-server-2.1.2.RELEASE.jar|grep BOOT-INF/lib|awk '{print $4}'|sort) <(unzip -l ../build/libs/custom-dataflow-server-gradle-0.0.1-SNAPSHOT.jar|grep BOOT-INF/lib|awk '{print $4}'|sort)
+
+echo "Diff maven build"
+diff <(unzip -l spring-cloud-dataflow-server-2.1.2.RELEASE.jar|grep BOOT-INF/lib|awk '{print $4}'|sort) <(unzip -l ../target/custom-dataflow-server-maven-0.0.1-SNAPSHOT.jar|grep BOOT-INF/lib|awk '{print $4}'|sort)

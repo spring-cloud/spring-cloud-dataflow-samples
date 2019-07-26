@@ -1,0 +1,45 @@
+plugins {
+	id 'org.springframework.boot' version '2.1.3.RELEASE'
+	id 'java'
+}
+
+ext {
+	springCloudVersion = 'Greenwich.SR1'
+	springCloudDataflowVersion = '2.1.2.RELEASE'
+	springSecurityOauth2AutoconfigureVersion = '2.1.3.RELEASE'
+	springSecurityOauth2Version = '2.3.4.RELEASE'
+	kubernetesClientVersion = '4.0.4'
+	mysqlJdbcDriverVersion = '8.0.16'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+	maven { url "https://repo.springsource.org/libs-release" }
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+		mavenBom "org.springframework.cloud:spring-cloud-dataflow-dependencies:${springCloudDataflowVersion}"
+	}
+	dependencies {
+		dependency "org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:${springSecurityOauth2AutoconfigureVersion}"
+		dependency "org.springframework.security.oauth:spring-security-oauth2:${springSecurityOauth2Version}"
+		dependency "io.fabric8:kubernetes-client:${kubernetesClientVersion}"
+		dependency("mysql:mysql-connector-java:${mysqlJdbcDriverVersion}") {
+			exclude 'com.google.protobuf:protobuf-java'
+		}
+	}
+}
+
+dependencies {
+	implementation 'org.springframework.cloud:spring-cloud-starter-dataflow-server'
+	runtime 'mysql:mysql-connector-java'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

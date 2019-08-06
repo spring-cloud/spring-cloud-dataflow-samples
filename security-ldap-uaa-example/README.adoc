@@ -177,7 +177,7 @@ Now we need to import the Composed Task Runner and the Spring Cloud Task App Sta
 
 [source,bash]
 ----
-dataflow:> app import https://bit.ly/Dearborn-GA-task-applications-maven
+dataflow:> app import https://dataflow.spring.io/task-maven-latest
 ----
 
 If you want to import _just_ the Composed Task Runner applications:

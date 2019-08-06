@@ -49,7 +49,7 @@ public class DataflowTemplateApplication implements ApplicationRunner {
 	public void run(ApplicationArguments applicationArguments) throws Exception {
 		final DataFlowTemplate dataFlowTemplate = getDataFlowTemplate("user", "secret99", "http://localhost:9393");
 
-		final String appRegistrationUrl = "http://bit.ly/Einstein-RC1-stream-applications-rabbit-maven";
+		final String appRegistrationUrl = "https://dataflow.spring.io/rabbitmq-maven-latest";
 		logger.info("\n\nImporting Applications from: {}.\n", appRegistrationUrl);
 
 		final PagedResources<AppRegistrationResource> appRegistrations =

@@ -12,7 +12,7 @@ NOTE: replace `chrisjs` with your docker hub user/org
 Register a stream using this processor in between `http` and `log`:
 
 ```
-dataflow:>app import --uri http://bit.ly/Einstein-SR2-stream-applications-kafka-docker
+dataflow:>app import --uri https://dataflow.spring.io/kafka-docker-latest
 dataflow:>app register --type processor --name python-processor --uri docker://chrisjs/python-processor:latest
 ```
 

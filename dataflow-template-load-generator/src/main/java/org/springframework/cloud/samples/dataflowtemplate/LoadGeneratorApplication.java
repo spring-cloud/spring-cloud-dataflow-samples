@@ -103,8 +103,8 @@ public class LoadGeneratorApplication implements ApplicationRunner {
 	}
 
 	private void importApps(DataFlowTemplate dataFlowTemplate) {
-		final String taskAppRegistrationUrl = "https://dataflow.spring.io/Elston-GA-task-applications-maven";
-		final String appRegistrationUrl = "https://dataflow.spring.io/Einstein-SR3-stream-applications-rabbit-maven";
+		final String taskAppRegistrationUrl = "https://dataflow.spring.io/task-maven-latest";
+		final String appRegistrationUrl = "https://dataflow.spring.io/rabbitmq-maven-latest";
 		logger.info("\n\nImporting Stream Applications from: {}.\n", appRegistrationUrl);
 		logger.info("\n\nImporting Task Applications from: {}.\n", taskAppRegistrationUrl);
 

@@ -1,7 +1,7 @@
 
-# How to monitor Spring Cloud Tasks
+# How to monitor Spring Cloud Task
 
-The `task-demo-metrics-influx` project creates a sample Spring Cloud Task (and Spring Batch) enabled for Spring Cloud Data Flow monitoring.  
+The `task-demo-metrics-influx` project creates a sample Spring Cloud Task (and Spring Batch) with the monitoring infrastructure, so it can be monitored in Spring Cloud Data Flow.
 
 ## Create custom Spring Cloud Task
 If you use the provided `task-demo-metrics-influx` source code you can skip this section. 
@@ -10,7 +10,7 @@ Otherwise follow the instructions below to build your own `monitorable` Task fro
 
 Bootstrap by follow the [Task development instructions](https://docs.spring.io/spring-cloud-task/docs/2.0.0.RELEASE/reference/htmlsingle/#getting-started-developing-first-task) and then: 
 
-* Set the POM parent to Boot 2.2.0.M6 or newer
+* Set the parent POM version of Boot to 2.2.0.M6 or latest
 
 ```xml
 <parent>
@@ -119,7 +119,7 @@ Will produce `task-demo-metrics-influx-0.0.1-SNAPSHOT.jar` task application unde
 
 ## Spring Cloud Data FLow server
 
-Follow the [Task Monitoring](https://dataflow.spring.io/docs/feature-guides/batch/monitoring) instructions to register, run and monitor the demo tasks with Influx or Prometheus on various platforms.
+Follow the [Task Monitoring](https://dataflow.spring.io/docs/feature-guides/batch/monitoring) instructions  to register, run and monitor the task sample using Influx or Prometheus on the desired platform.
 
 ## Docker images
 

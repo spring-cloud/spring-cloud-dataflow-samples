@@ -12,19 +12,6 @@ image::scdf-twitter-analytics-animated.gif[Twitter Analytics Animation, scaledwi
 
 ==== Prerequisites
 
-* A running link:https://dataflow.spring.io/docs/installation/local/docker/#shell[Data Flow Shell]
-+
-```
-$ wget https://repo.spring.io/release/org/springframework/cloud/spring-cloud-dataflow-shell/2.2.1.RELEASE/spring-cloud-dataflow-shell-2.2.1.RELEASE.jar
-$ java -jar spring-cloud-dataflow-shell-2.2.1.RELEASE.jar
-Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
-dataflow:>
-```
-+
-The Shell connects to the Data Flow Server’s REST API and supports a DSL for stream or task lifecycle managing.
-+
-If you prefer, you can use the Data Flow UI: link:localhost:9393/dashboard[localhost:9393/dashboard], (or wherever it the server is hosted) to perform equivalent operations.
-+
 * A running link:https://dataflow.spring.io/docs/installation/local/docker/[Local Data Flow Server] with enabled link:https://dataflow.spring.io/docs/installation/local/docker-customize/#monitoring-with-prometheus-and-grafana[Prometheus and Grafana] monitoring.
 +
 On Linux/Mac, installation instructions would look like this:
@@ -41,7 +28,21 @@ $ docker-compose -f ./docker-compose.yml -f ./docker-compose-prometheus.yml up
 ```
 +
 NOTE: The Data Flow server should be `2.3.0.M1` or newer and make sure the Stream applications (e.g. `STREAM_APPS_URI`) use version `Einstein.SR4` or newer.
++
+* A running link:https://dataflow.spring.io/docs/installation/local/docker/#shell[Data Flow Shell]
++
+```
+$ wget https://repo.spring.io/release/org/springframework/cloud/spring-cloud-dataflow-shell/2.2.1.RELEASE/spring-cloud-dataflow-shell-2.2.1.RELEASE.jar
+$ java -jar spring-cloud-dataflow-shell-2.2.1.RELEASE.jar
 
+Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
+dataflow:>
+```
++
+The Shell connects to the Data Flow Server’s REST API and supports a DSL for stream or task lifecycle managing.
++
+If you prefer, you can use the Data Flow UI: link:localhost:9393/dashboard[localhost:9393/dashboard], (or wherever it the server is hosted) to perform equivalent operations.
++
 * Twitter credentials from link:https://apps.twitter.com/[Twitter Developers] site
 
 ==== Building and Running the Demo
@@ -53,7 +54,6 @@ The `tweets` stream subscribes to the provided twitter account, reads the incomi
 +
 ```
 dataflow:>stream create tweets --definition "twitterstream --consumerKey=<CONSUMER_KEY> --consumerSecret=<CONSUMER_SECRET> --accessToken=<ACCESS_TOKEN> --accessTokenSecret=<ACCESS_TOKEN_SECRET> | log"
-Created new stream 'tweets'
 ```
 +
 NOTE: To get a consumerKey and consumerSecret you need to register a twitter application. If you don’t already have one set up, you can create an app at the link:https://apps.twitter.com/[Twitter Developers] site to get these credentials. The tokens `<CONSUMER_KEY>`, `<CONSUMER_SECRET>`, `<ACCESS_TOKEN>`, and `<ACCESS_TOKEN_SECRET>` are required to be replaced with your account credentials.
@@ -98,7 +98,6 @@ This counter generates the `language_total` time-series send to Prometheus.
 +
 ```
 dataflow:>stream create tweetlang  --definition ":tweets.twitterstream > counter --counter.name=language --counter.tag.expression.lang=#jsonPath(payload,'$..lang')" --deploy
-Created and deployed new stream 'tweetlang'
 ```
 +
 Similarly, we can use the `#jsonPath(payload,'$.entities.hashtags[*].text')` expression to extract and count the hastags in the incoming tweets.
@@ -106,14 +105,12 @@ The following stream uses the counter-sink to compute real-time counts (named as
 +
 ```
 dataflow:>stream create tagcount  --definition ":tweets.twitterstream > counter --counter.name=hashtags --counter.tag.expression.htag=#jsonPath(payload,'$.entities.hashtags[*].text')" --deploy
-Created and deployed new stream 'tagcount'
 ```
 +
 Now we can deploy the `tweets` stream to start tweet analysis.
 +
 ```
 dataflow:>stream deploy tweets
-Deployed stream 'tweets'
 ```
 +
 . Verify the streams are successfully deployed. Where: (1) is the primary pipeline; (2) and (3) are tapping the primary pipeline with the DSL syntax `<stream-name>.<label/app name>` [e.x. `:tweets.twitterstream`]; and (4) is the final deployment of primary pipeline
@@ -137,7 +134,6 @@ The following Prometheus queries have been used to aggregate the `lang` and `hta
 sort_desc(topk(10, sum(language_total) by (lang)))
 sort_desc(topk(100, sum(hashtags_total) by (htag)))
 ----
-
 
 
 ==== Summary

@@ -8,7 +8,7 @@ Use Prometheus for storing and data aggregation analysis and Grafana for visuali
 
 We will take you through the steps to configure Spring Cloud Data Flow's `Local` server.
 
-image::scdf-twitter-analytics.gif[Twitter Analytics Animation, scaledwidth="50%"]
+image::scdf-twitter-analytics-animated.gif[Twitter Analytics Animation, scaledwidth="50%"]
 
 ==== Prerequisites
 

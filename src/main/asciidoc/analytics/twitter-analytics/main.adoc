@@ -8,35 +8,43 @@ Use Prometheus for storing and data aggregation analysis and Grafana for visuali
 
 We will take you through the steps to configure Spring Cloud Data Flow's `Local` server.
 
+image::scdf-twitter-analytics.gif[Twitter Analytics Animation, scaledwidth="50%"]
+
 ==== Prerequisites
 
-* A Running Data Flow Shell
-include::{docs_dir}/shell.adoc[]
-* A running local Data Flow Server
-include::{docs_dir}/local-server.adoc[]
-Make sure to add the following properties when starting the Data Flow server:
+* A running link:https://dataflow.spring.io/docs/installation/local/docker/#shell[Data Flow Shell]
++
 ```
---spring.cloud.dataflow.applicationProperties.stream.management.metrics.export.prometheus.enabled=true
---spring.cloud.dataflow.applicationProperties.stream.spring.cloud.streamapp.security.enabled=false
---spring.cloud.dataflow.applicationProperties.stream.management.endpoints.web.exposure.include=prometheus,info,health
---spring.cloud.dataflow.grafana-info.url=http://localhost:3000
+$ wget https://repo.spring.io/release/org/springframework/cloud/spring-cloud-dataflow-shell/2.2.1.RELEASE/spring-cloud-dataflow-shell-2.2.1.RELEASE.jar
+$ java -jar spring-cloud-dataflow-shell-2.2.1.RELEASE.jar
+Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
+dataflow:>
 ```
-* Running instance of link:https://docs.spring.io/spring-cloud-dataflow/docs/2.0.0.BUILD-SNAPSHOT/reference/htmlsingle/#streams-monitoring-local-prometheus[Prometheus, Service Discovery and Grafana].
-Follow the https://docs.spring.io/spring-cloud-dataflow/docs/2.0.0.BUILD-SNAPSHOT/reference/htmlsingle/#streams-monitoring-local-prometheus[instructions] to start those services in Docker containers.
-* Running instance of link:https://kafka.apache.org/downloads.html[Kafka]
++
+The Shell connects to the Data Flow Server’s REST API and supports a DSL for stream or task lifecycle managing.
++
+If you prefer, you can use the Data Flow UI: link:localhost:9393/dashboard[localhost:9393/dashboard], (or wherever it the server is hosted) to perform equivalent operations.
++
+* A running link:https://dataflow.spring.io/docs/installation/local/docker/[Local Data Flow Server] with enabled link:https://dataflow.spring.io/docs/installation/local/docker-customize/#monitoring-with-prometheus-and-grafana[Prometheus and Grafana] monitoring.
++
+On Linux/Mac, installation instructions would look like this:
++
+```
+$ wget https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow/v2.3.0.M1/spring-cloud-dataflow-server/docker-compose-prometheus.yml
+$ wget https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow/v2.3.0.M1/spring-cloud-dataflow-server/docker-compose.yml
+
+$ export DATAFLOW_VERSION=2.3.0.M1
+$ export SKIPPER_VERSION=2.1.2.RELEASE
+$ export STREAM_APPS_URI=https://dataflow.spring.io/Einstein-BUILD-SNAPSHOT-stream-applications-kafka-maven
+
+$ docker-compose -f ./docker-compose.yml -f ./docker-compose-prometheus.yml up
+```
++
+NOTE: The Data Flow server should be `2.3.0.M1` or newer and make sure the Stream applications (e.g. `STREAM_APPS_URI`) use version `Einstein.SR4` or newer.
+
 * Twitter credentials from link:https://apps.twitter.com/[Twitter Developers] site
 
 ==== Building and Running the Demo
-
-. https://github.com/spring-cloud/spring-cloud-dataflow/blob/master/spring-cloud-dataflow-docs/src/main/asciidoc/streams.adoc#register-a-stream-app[Register] the out-of-the-box applications for the Kafka binder
-+
-include::{docs_dir}/maven-access.adoc[]
-+
-[subs="attributes"]
-```
-dataflow:>app import --uri {app-import-kafka-maven}
-```
-+
 
 . Create and deploy the following streams
 +
@@ -47,7 +55,10 @@ The `tweets` stream subscribes to the provided twitter account, reads the incomi
 dataflow:>stream create tweets --definition "twitterstream --consumerKey=<CONSUMER_KEY> --consumerSecret=<CONSUMER_SECRET> --accessToken=<ACCESS_TOKEN> --accessTokenSecret=<ACCESS_TOKEN_SECRET> | log"
 Created new stream 'tweets'
 ```
-The received https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/intro-to-tweet-json.html[tweet messages] have a format similar to this:
++
+NOTE: To get a consumerKey and consumerSecret you need to register a twitter application. If you don’t already have one set up, you can create an app at the link:https://apps.twitter.com/[Twitter Developers] site to get these credentials. The tokens `<CONSUMER_KEY>`, `<CONSUMER_SECRET>`, `<ACCESS_TOKEN>`, and `<ACCESS_TOKEN_SECRET>` are required to be replaced with your account credentials.
++
+The received https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/intro-to-tweet-json.html[tweet messages] would have a JSON format similar to this:
 +
 [source,json]
 ----
@@ -86,7 +97,7 @@ The counter, named `language`, applies the `--counter.tag.expression.lang=#jsonP
 This counter generates the `language_total` time-series send to Prometheus.
 +
 ```
-dataflow:>stream create tweetlang  --definition ":tweets.twitterstream > counter --name=language --counter.tag.expression.lang=#jsonPath(payload,'$..lang')" --deploy
+dataflow:>stream create tweetlang  --definition ":tweets.twitterstream > counter --counter.name=language --counter.tag.expression.lang=#jsonPath(payload,'$..lang')" --deploy
 Created and deployed new stream 'tweetlang'
 ```
 +
@@ -94,7 +105,7 @@ Similarly, we can use the `#jsonPath(payload,'$.entities.hashtags[*].text')` exp
 The following stream uses the counter-sink to compute real-time counts (named as `hashtags`) and the `htag` attribute in `counter.tag.expression.htag` indicate to Micrometer in what tag to hold the extracted hashtag values from the incoming tweets.
 +
 ```
-dataflow:>stream create tagcount  --definition ":tweets.twitterstream > counter --name=hashtags --counter.tag.expression.htag=#jsonPath(payload,'$.entities.hashtags[*].text')" --deploy
+dataflow:>stream create tagcount  --definition ":tweets.twitterstream > counter --counter.name=hashtags --counter.tag.expression.htag=#jsonPath(payload,'$.entities.hashtags[*].text')" --deploy
 Created and deployed new stream 'tagcount'
 ```
 +
@@ -105,8 +116,6 @@ dataflow:>stream deploy tweets
 Deployed stream 'tweets'
 ```
 +
-NOTE: To get a consumerKey and consumerSecret you need to register a twitter application. If you don’t already have one set up, you can create an app at the link:https://apps.twitter.com/[Twitter Developers] site to get these credentials. The tokens `<CONSUMER_KEY>`, `<CONSUMER_SECRET>`, `<ACCESS_TOKEN>`, and `<ACCESS_TOKEN_SECRET>` are required to be replaced with your account credentials.
-+
 . Verify the streams are successfully deployed. Where: (1) is the primary pipeline; (2) and (3) are tapping the primary pipeline with the DSL syntax `<stream-name>.<label/app name>` [e.x. `:tweets.twitterstream`]; and (4) is the final deployment of primary pipeline
 +
 ```
@@ -115,7 +124,7 @@ dataflow:>stream list
 +
 . Notice that `tweetlang.counter`, `tagcount.counter`, `tweets.log` and `tweets.twitterstream` link:https://github.com/spring-cloud-stream-app-starters/[Spring Cloud Stream] applications are running as Spring Boot applications within the `local-server`.
 +
-. Go to `Grafana Dashboard` accessible at `http://localhost:3000`, login as admin:admin.
+. Go to `Grafana Dashboard` accessible at `http://localhost:3000`, login as `admin`:`admin`.
 Import the https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow-samples/master/src/main/asciidoc/micrometer/prometheus/grafana-twitter-scdf-analytics.json[grafana-twitter-scdf-analytics.json] dashboard.
 You will see a dashboard similar to this:
 

@@ -18,7 +18,7 @@
 		<java.version>1.8</java.version>
 		<spring-cloud.version>Hoxton.M2</spring-cloud.version>
 		<spring-cloud-task.version>2.2.0.M2</spring-cloud-task.version>
-		<prometheus-rsocket-spring.version>0.8.0</prometheus-rsocket-spring.version>
+		<prometheus-rsocket-spring.version>0.9.0</prometheus-rsocket-spring.version>
 	</properties>
 
 	<dependencies>

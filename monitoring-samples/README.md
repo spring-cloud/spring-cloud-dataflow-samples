@@ -1,4 +1,4 @@
-# Spring Cloud Data Flow Monitoring - Prometheus RSocket Proxy Architecture
+# Monitoring Architecture: Spring Cloud Data Flow + Prometheus RSocket Proxy
 
 The Data Flow metrics architecture is designed around the [Micrometer](https://micrometer.io/) library - vendor-neutral application metrics facade.
 The Spring Cloud Data Flow server leverages the [Prometheus RSocket Proxy](https://github.com/micrometer-metrics/prometheus-rsocket-proxy), 
@@ -15,7 +15,7 @@ The following image shows the general architecture of how the Stream application
 
 ![Stream App Monitoring](./images/SCDF-monitoring-prometheus-streams.png)
 
-and the same architecture is used for monitoring tasks as wel. 
+and the same architecture is used for monitoring the tasks as well. 
  
 ![Stream App Monitoring](./images/SCDF-monitoring-prometheus-tasks.png)
 

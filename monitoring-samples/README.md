@@ -26,3 +26,9 @@ The scraped metrics are then viewable through Grafana dashboards.
 Following animated diagram shows the metrics collection flow:
  
 ![Stream App Monitoring](./images/SCDF-monitoring-promethesu-proxy.gif)
+
+#### Spring Cloud Data Flow Monitoring Related Documentation
+
+- [SCDF Monitoring](https://dataflow.spring.io/docs/2.3.0.SNAPSHOT/concepts/monitoring/)
+- [Stream Monitoring with Prometheus and InfluxDB](https://dataflow.spring.io/docs/2.3.0.SNAPSHOT/feature-guides/streams/monitoring/).
+- [Task and Batch Monitoring with Prometheus and InfluxDB](https://dataflow.spring.io/docs/2.3.0.SNAPSHOT/feature-guides/batch/monitoring/#task-and-batch-monitoring-with-prometheus-and-influxdb)

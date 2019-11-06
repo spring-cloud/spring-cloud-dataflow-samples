@@ -1,0 +1,23 @@
+[[spring-cloud-data-flow-samples-monitoring]]
+:sectnums:
+:docs_dir: ..
+
+=== Spring Cloud Data Flow Monitoring
+
+The https://dataflow.spring.io/docs/2.3.0.SNAPSHOT/concepts/monitoring/[Data Flow Monitoring Architecture] is designed around the Micrometer library and is configured to support two of the most popular monitoring systems, https://docs.influxdata.com/influxdb/v1.5/[InfluxDB], https://prometheus.io[Prometheus].
+To help you get started monitoring Streams and Tasks, Data Flow provides https://grafana.com/[Grafana Dashboards] that you can customize for your needs.
+
+image:https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow-samples/master/monitoring-samples/images/SCDF-monitoring-promethesu-proxy.gif[SCDF Stream Monitoring, scaledwidth="100%"]
+
+Following links will provide you with information about installing, enabling and using the monitoring across the Local, Kubernetes and Cloud Foundry platforms for Streams and Tasks:
+
+- https://dataflow.spring.io/docs/2.3.0.SNAPSHOT/feature-guides/streams/monitoring/[Stream Monitoring with Prometheus and InfluxDB]
+- https://dataflow.spring.io/docs/2.3.0.SNAPSHOT/feature-guides/batch/monitoring/#task-and-batch-monitoring-with-prometheus-and-influxdb[Task and Batch Monitoring with Prometheus and InfluxDB]
+
+All provided https://cloud.spring.io/spring-cloud-stream-app-starters/[Stream application starters] are configured for Prometheus and InfluxDB.
+
+To integrate custom applications with the Data Flow Monitoring you can follow the https://github.com/spring-cloud/spring-cloud-dataflow-samples/tree/master/monitoring-samples[monitoring-samples]:
+- The https://github.com/spring-cloud/spring-cloud-dataflow-samples/tree/master/monitoring-samples/stream-apps[stream-apps] shows how to enable monitoring for custom built source, processor and sink apps.
+- The https://github.com/spring-cloud/spring-cloud-dataflow-samples/tree/master/monitoring-samples/task-apps[task-apps] sample shows how to enable monitoring for custom built task apps.
+
+

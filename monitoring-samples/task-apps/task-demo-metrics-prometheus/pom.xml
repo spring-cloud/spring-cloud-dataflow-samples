@@ -76,21 +76,14 @@
 			<optional>true</optional>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.boot</groupId>-->
-<!--			<artifactId>spring-boot-actuator-autoconfigure</artifactId>-->
-<!--		</dependency>-->
-
 		<!-- Enable Prometheus metrics collection (via Prometheus RSocket Proxy) -->
+		<!-- Internally it imports the org.springframework.boot:spring-boot-actuator-autoconfigure dependency -->
 		<dependency>
 			<groupId>io.micrometer.prometheus</groupId>
 			<artifactId>prometheus-rsocket-spring</artifactId>
 			<version>${prometheus-rsocket-spring.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>io.micrometer.prometheus</groupId>
 			<artifactId>prometheus-rsocket-client</artifactId>

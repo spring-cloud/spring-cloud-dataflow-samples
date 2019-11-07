@@ -10,17 +10,18 @@ Otherwise follow the instructions below to build your own `monitorable` Task fro
 
 Bootstrap by follow the [Task development instructions](https://docs.spring.io/spring-cloud-task/docs/2.0.0.RELEASE/reference/htmlsingle/#getting-started-developing-first-task) and then: 
 
-* Set the parent POM version of Boot to 2.2.0.M6 or latest
+* Set the parent POM version of Boot to 2.2.1.RELEASE or latest
 
 ```xml
 <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.2.0.M6</version>
+    <version>2.2.1.RELEASE</version>
     <relativePath/>
 </parent>
 ``` 
-* Make sure that `spring-cloud-dependencies` version `Hoxton.M2` or newer are imported: 
+
+* Make sure that `spring-cloud-dependencies` version `Hoxton.RC1` or newer are imported: 
 
 ```xml
 <dependencyManagement>
@@ -28,7 +29,7 @@ Bootstrap by follow the [Task development instructions](https://docs.spring.io/s
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-dependencies</artifactId>
-            <version>Hoxton.M2</version>
+            <version>Hoxton.RC1</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -36,31 +37,31 @@ Bootstrap by follow the [Task development instructions](https://docs.spring.io/s
 ```
 
 * Add dependencies to enable the `Spring Cloud Task` (and optionally `Spring Task Batch`) functionality and to configure the jdbc dependencies for the task repository.
-Use version `2.2.0.M2` or newer! 
+Use version `2.2.0.RC1` or newer! 
 
 ```xml
 <dependencies>
     <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-starter-task</artifactId>
-        <version>2.2.0.M2</version>
+        <version>2.2.0.RC1</version>
     </dependency>
     <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-task-core</artifactId>
-        <version>2.2.0.M2</version>
+        <version>2.2.0.RC1</version>
     </dependency>
     
     <!-- Required when Spring Batch is used -->
     <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-task-batch</artifactId>
-        <version>2.2.0.M2</version>
+        <version>2.2.0.RC1</version>
     </dependency>
     <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-task-stream</artifactId>
-        <version>2.2.0.M2</version>
+        <version>2.2.0.RC1</version>
     </dependency>
 </dependencies>
 
@@ -69,7 +70,7 @@ Use version `2.2.0.M2` or newer!
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-task-dependencies</artifactId>
-            <version>2.2.0.M2</version>
+            <version>2.2.0.RC1</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>

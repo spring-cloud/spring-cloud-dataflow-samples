@@ -93,14 +93,6 @@ Use version `2.2.0.RC1` or newer!
 
 * Add dependencies to configure Micrometer integration: 
 
-The Micrometer library uses the actuator internally: 
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-actuator</artifactId>
-</dependency>
-```
-
 To enable Prometheus metrics collection add:
 
 ```xml

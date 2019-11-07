@@ -16,7 +16,8 @@ Following links will provide you with information about installing, enabling and
 
 All provided https://cloud.spring.io/spring-cloud-stream-app-starters/[Stream application starters] are configured for Prometheus and InfluxDB.
 
-To integrate custom applications with the Data Flow Monitoring you can follow the https://github.com/spring-cloud/spring-cloud-dataflow-samples/tree/master/monitoring-samples[monitoring-samples]:
+To integrate custom applications with the Data Flow Monitoring you can follow the https://github.com/spring-cloud/spring-cloud-dataflow-samples/tree/master/monitoring-samples[monitoring-samples] projects:
+
 - The https://github.com/spring-cloud/spring-cloud-dataflow-samples/tree/master/monitoring-samples/stream-apps[stream-apps] shows how to enable monitoring for custom built source, processor and sink apps.
 - The https://github.com/spring-cloud/spring-cloud-dataflow-samples/tree/master/monitoring-samples/task-apps[task-apps] sample shows how to enable monitoring for custom built task apps.
 

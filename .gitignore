@@ -34,3 +34,6 @@ spring-*/src/main/java/META-INF/MANIFEST.MF
 **/.idea/*
 rebel.xml
 **/.vscode/
+
+dataflow-migrate-schedules/manifest.yml
+

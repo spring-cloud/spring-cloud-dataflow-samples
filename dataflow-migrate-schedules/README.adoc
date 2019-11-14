@@ -1,0 +1,125 @@
+= Cloud Scheduler Migration
+
+The purpose of this project is to migrate existing schedules created with Spring
+Cloud Data Flow 2.2.x and before to the new 2.3.0 format and stage the
+SchedulerTaskLauncher.  This is a Spring Boot application that utilizes Spring Batch to create a workflow
+to migrate the schedules.  This is a single step Spring Batch Job that does the following:
+
+* Read - Retrieves all schedules from scheduler.
+
+* Process - Enriches the Schedule request with App and Deployer properties from the scheduler (or deployed app)
+as well as data from the TaskDefinition.
+
+* Write - Deploys artifacts if required and creates the new schedule.  Once the migrated
+schedule has been created, the old schedule is destroyed.
+
+In the case that the application fails with an exception.  You can re-execute the
+application and it will pick up where it left off.   Thanks Spring Batch! :-)
+
+== Build the project
+
+=== Services Required
+In order to migrate the existing schedules to the 2.3.x Spring Cloud Data Flow Scheduling format, the Schedule Migrator requires the following services:
+
+1. Access to the database where Spring Cloud Data Flow stores its Task Definitions.  For Cloud Foundry we need to bind the database to the Schedule Migrator.
+2. Access to the Scheduling Agent.  For Cloud Foundry we need to bind the PCF Scheduler to the Scheduler Migrator.
+
+=== Running the maven command
+
+```
+./mvnw clean package
+```
+
+== Running The Project For Cloud Foundry
+
+=== Prerequisites
+
+Spring Cloud Data Flow 2.3+ must be installed and running prior to launching the Cloud Scheduler Migration app.
+
+=== Launching your migration
+1) Create a manifest.yml file in a work directory.
+```
+---
+applications:
+- name: schedulemigrator
+  host: schedulemigrator
+  memory: 1G
+  disk_quota: 1G
+  instances: 0
+  path: <location of the jar>
+  env:
+    SPRING_APPLICATION_NAME: schedulemigrator
+    spring_cloud_deployer_cloudfoundry_url: <CF API URL>
+    spring_cloud_deployer_cloudfoundry_org: <Your org>
+    spring_cloud_deployer_cloudfoundry_space: <your space>
+    spring_cloud_deployer_cloudfoundry_username: <Your CF user name>
+    spring_cloud_deployer_cloudfoundry_password: <Your CF password>
+    spring_cloud_deployer_cloudfoundry_skipSslValidation: <true/false>
+    spring_cloud_deployer_cloudfoundry_services: <your SCDF database service,your scheduler service>
+    spring_cloud_scheduler_cloudfoundry_schedulerUrl: <URL to scheduler service>
+    spring_profiles_active: cf
+    spring.cloud.deployer.cloudfoundry.healthCheckTimeout: 300
+    spring.cloud.deployer.cloudfoundry.apiTimeout: 300
+    dataflowServerUri: <Your SCDF version 2.3+ server URI>
+    spring_cloud_task_closecontextEnabled: true
+    remoteRepositories_repo1_url: https://repo.spring.io/libs-snapshot
+  services:
+  - <Your SCDF database service>
+  - <Your SCDF scheduler service>
+```
+2) From the command line use the cf cli to log into your org and space for which you will migrate your schedules
+```
+cf login -a <your CF API endpoint>
+```
+-or if you need to skip ssl validation-
+```
+cf login -a <your CF API endpoint> --skip-ssl-validation
+```
+
+3) Now push the schedulemigrator from the directory where the manifest.yml is present:
+```
+cf push
+```
+
+3) To start the migration:
+From the `dataflow-migrate-schedules` directory launch the `runMigration.sh` using the commands below:
+```
+chmod +x scripts/runMigration.sh
+./scripts/runMigration.sh
+```
+=== Picking which schedules to migrate
+Use the `scheduleNamesToMigrate` property to specify a comma delimited list of
+the schedules you wish to migrate.  If you don't specify this property
+all schedules will be migrated.  For example:
+```
+./scripts/runMigration.sh --scheduleNamesToMigrate=task-job3,task-job1
+```
+
+=== Limiting one Scheduler to run at a time
+If there is a requirement that only one `schedulemigrator` should run at a time you can set the `spring.cloud.task.single-instance-enabled` property to true.   This will stop other executions of the schedulemigrator till the currently running instance completes.
+To enable this feature use the `runMigration.sh` script as follows.
+```
+./scripts/runMigration.sh --spring.cloud.task.single-instance-enabled=true
+```
+
+=== Configuring Your Deployer Properties
+The following deployer properties will affect all schedules to be migrated.
+If a property is not set then the default will be used.
+
+==== Deployer properties to be applied to all migrated schedules:
+* healthCheckTimeout
+* apiTimeout
+* statusTimeout
+* stagingTimeout
+* startupTimeout
+* maximumConcurrentTasks
+* javaOpts
+
+NOTE: Descriptions of these properties can be found : https://github.com/cppwfs/spring-cloud-dataflow-samples/blob/SCDF-121/dataflow-migrate-schedules/src/main/java/io/spring/migrateschedule/service/MigrateProperties.java[here]
+
+=== Supported Databases
+The database supported are enumerated https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#configuration-local-rdbms[here].
+
+=== Previously Pushed Apps
+The Cloud Schedule Migration app does not delete previously scheduled applications.
+If these apps are no longer needed it is up to the user to delete them.

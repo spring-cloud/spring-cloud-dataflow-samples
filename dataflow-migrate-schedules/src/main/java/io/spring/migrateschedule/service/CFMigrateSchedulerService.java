@@ -18,6 +18,7 @@ package io.spring.migrateschedule.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.pivotal.scheduler.SchedulerClient;
 import io.pivotal.scheduler.v1.jobs.ListJobsRequest;
 import io.pivotal.scheduler.v1.jobs.ListJobsResponse;
-import org.cloudfoundry.client.CloudFoundryClient;
 import org.cloudfoundry.operations.CloudFoundryOperations;
 import org.cloudfoundry.operations.applications.ApplicationEnvironments;
 import org.cloudfoundry.operations.applications.ApplicationManifest;
@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.dataflow.core.TaskDefinition;
 import org.springframework.cloud.deployer.resource.maven.MavenProperties;
 import org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryConnectionProperties;
@@ -51,17 +50,6 @@ import org.springframework.cloud.deployer.spi.scheduler.Scheduler;
 import org.springframework.cloud.deployer.spi.scheduler.SchedulerException;
 import org.springframework.cloud.deployer.spi.scheduler.SchedulerPropertyKeys;
 import org.springframework.util.StringUtils;
-
-import static org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryConnectionProperties.CLOUDFOUNDRY_PROPERTIES;
-import static org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryDeploymentProperties.BUILDPACK_PROPERTY_KEY;
-import static org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryDeploymentProperties.DOMAIN_PROPERTY;
-import static org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryDeploymentProperties.HEALTHCHECK_HTTP_ENDPOINT_PROPERTY_KEY;
-import static org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryDeploymentProperties.HEALTHCHECK_PROPERTY_KEY;
-import static org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryDeploymentProperties.HEALTHCHECK_TIMEOUT_PROPERTY_KEY;
-import static org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryDeploymentProperties.HOST_PROPERTY;
-import static org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryDeploymentProperties.JAVA_OPTS_PROPERTY_KEY;
-import static org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryDeploymentProperties.ROUTE_PATH_PROPERTY;
-import static org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryDeploymentProperties.SERVICES_PROPERTY_KEY;
 
 /**
  * Services required to migrate schedules to the 2.3.0 format in Cloud Foundry
@@ -85,8 +73,6 @@ public class CFMigrateSchedulerService extends AbstractMigrateService {
 
 	private CloudFoundryConnectionProperties properties;
 
-	@Autowired
-	CloudFoundryClient cloudFoundryClient;
 
 	public CFMigrateSchedulerService(CloudFoundryOperations cloudFoundryOperations,
 			SchedulerClient schedulerClient,
@@ -110,6 +96,7 @@ public class CFMigrateSchedulerService extends AbstractMigrateService {
 			}
 			result.addAll(scheduleInfoPage);
 		}
+		Collections.sort(result);
 		return result;
 	}
 
@@ -150,7 +137,20 @@ public class CFMigrateSchedulerService extends AbstractMigrateService {
 								}
 								return scheduleInfo;
 							});
-				}).collectList().block();
+				})
+				.filter(job -> isScheduleMigratable(job.getScheduleName()))
+				.collectList().block();
+	}
+
+	private boolean isScheduleMigratable(String scheduleName) {
+		boolean result;
+		if(migrateProperties.getScheduleNamesToMigrate().size() > 0) {
+			result = migrateProperties.getScheduleNamesToMigrate().contains(scheduleName);
+		}
+		else {
+			result = true;
+		}
+		return result;
 	}
 
 	@Override
@@ -161,7 +161,6 @@ public class CFMigrateSchedulerService extends AbstractMigrateService {
 						name(scheduleInfo.getTaskDefinitionName()).
 						build()).
 				block();
-		// this.cloudFoundryClient.processes().get(GetProcessRequest.builder()..build())
 
 		logger.info(String.format("Retrieving ApplicationManifest for application %s for schedule %s", scheduleInfo.getTaskDefinitionName(), scheduleInfo.getScheduleName()));
 		ApplicationManifest applicationManifest = getApplicationManifest(scheduleInfo.getTaskDefinitionName());

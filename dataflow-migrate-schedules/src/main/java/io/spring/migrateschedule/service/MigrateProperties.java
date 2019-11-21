@@ -16,6 +16,9 @@
 
 package io.spring.migrateschedule.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Allows user to configure the migration application.
  *
@@ -77,6 +80,10 @@ public class MigrateProperties {
 	 */
 	private int scheduleTimeoutInSeconds = 30;
 
+	/**
+	 * Comma delimited list of schedules to migrate.  If empty then all schedules will be migrated.
+	 */
+	private List<String> scheduleNamesToMigrate = new ArrayList<>();
 
 	public String getSchedulerTaskLauncherUrl() {
 		return schedulerTaskLauncherUrl;
@@ -172,5 +179,13 @@ public class MigrateProperties {
 
 	public void setMaximumConcurrentTasks(Integer maximumConcurrentTasks) {
 		this.maximumConcurrentTasks = maximumConcurrentTasks;
+	}
+
+	public List<String> getScheduleNamesToMigrate() {
+		return scheduleNamesToMigrate;
+	}
+
+	public void setScheduleNamesToMigrate(List<String> scheduleNamesToMigrate) {
+		this.scheduleNamesToMigrate = scheduleNamesToMigrate;
 	}
 }

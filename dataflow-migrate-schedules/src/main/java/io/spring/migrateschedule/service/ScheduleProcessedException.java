@@ -14,16 +14,15 @@
  *  limitations under the License.
  */
 
-package io.spring.migrateschedule;
+package io.spring.migrateschedule.service;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
-public class MigrateScheduleApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(MigrateScheduleApplication.class, args);
+/**
+ * Thrown if a schedule has already been processed.
+ *
+ * @author Glenn Renfro
+ */
+public class ScheduleProcessedException extends RuntimeException {
+	public ScheduleProcessedException(String scheduleName) {
+		super(String.format("Schedule %s has already been migrated", scheduleName));
 	}
-
 }

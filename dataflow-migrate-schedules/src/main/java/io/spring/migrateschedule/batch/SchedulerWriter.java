@@ -23,20 +23,17 @@ import io.spring.migrateschedule.service.MigrateScheduleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.cloud.deployer.spi.scheduler.ScheduleInfo;
 import org.springframework.cloud.deployer.spi.scheduler.Scheduler;
 
 /**
  * Migrates the original schedule to the new scheduler format required for SCDF
  * and stages the SchedulerTaskLauncher.
  *
- * @param <T> The ConvertSchedulerInfo class.
- *
  * @author Glenn Renfro
  */
-public class SchedulerWriter<T> implements ItemWriter {
+public class SchedulerWriter<C extends ScheduleInfo> implements ItemWriter<ConvertScheduleInfo> {
 
 	private static final Logger logger = LoggerFactory.getLogger(SchedulerWriter.class);
 
@@ -44,29 +41,17 @@ public class SchedulerWriter<T> implements ItemWriter {
 
 	private MigrateScheduleService scheduleService;
 
-	private StepExecution stepExecution;
-
-	@Override
-	public void write(List list) {
-		list.stream().forEach(item -> {
-			ConvertScheduleInfo scheduleInfo = ((ConvertScheduleInfo) item);
-			logger.info(String.format("Migrating Schedule %s ", scheduleInfo.getScheduleName()));
-			this.scheduleService.migrateSchedule(this.scheduler, scheduleInfo);
-			logger.info(String.format("Migrated Schedule %s ", scheduleInfo.getScheduleName()));
-			this.stepExecution.getExecutionContext().put("scheduleName", scheduleInfo.getScheduleName());
-		});
-	}
-
-	public void setScheduler(Scheduler scheduler) {
+	public SchedulerWriter (MigrateScheduleService scheduleService, Scheduler scheduler) {
+		this.scheduleService = scheduleService;
 		this.scheduler = scheduler;
 	}
 
-	public void setScheduleService(MigrateScheduleService scheduleService) {
-		this.scheduleService = scheduleService;
-	}
-
-	@BeforeStep
-	public void saveStepExecution(StepExecution stepExecution) {
-		this.stepExecution = stepExecution;
+	@Override
+	public void write(List<? extends ConvertScheduleInfo> list) {
+		for(ConvertScheduleInfo scheduleInfo : list) {
+			logger.info(String.format("Migrating Schedule %s ", scheduleInfo.getScheduleName()));
+			this.scheduleService.migrateSchedule(this.scheduler, scheduleInfo);
+			logger.info(String.format("Migrated Schedule %s ", scheduleInfo.getScheduleName()));
+		};
 	}
 }

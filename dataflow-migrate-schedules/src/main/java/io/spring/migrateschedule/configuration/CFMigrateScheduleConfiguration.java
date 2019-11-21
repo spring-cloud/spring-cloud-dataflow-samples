@@ -44,14 +44,12 @@ import org.springframework.context.annotation.Profile;
  * @author Glenn Renfro
  */
 @Configuration
-@Profile("cf")
 @EntityScan({
 		"org.springframework.cloud.dataflow.core"
 })
 public class CFMigrateScheduleConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
 	public ReactorSchedulerClient reactorSchedulerClient(ConnectionContext context,
 			TokenProvider passwordGrantTokenProvider,
 			CloudFoundrySchedulerProperties properties) {
@@ -63,13 +61,12 @@ public class CFMigrateScheduleConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
 	public CloudFoundrySchedulerProperties cloudFoundrySchedulerProperties() {
 		return new CloudFoundrySchedulerProperties();
 	}
 
 	@Bean
-	MigrateScheduleService scheduleService(CloudFoundryOperations cloudFoundryOperations,
+	public CFMigrateSchedulerService scheduleService(CloudFoundryOperations cloudFoundryOperations,
 			SchedulerClient schedulerClient,
 			CloudFoundryConnectionProperties properties, MigrateProperties migrateProperties,
 			TaskDefinitionRepository taskDefinitionRepository, MavenProperties mavenProperties) {

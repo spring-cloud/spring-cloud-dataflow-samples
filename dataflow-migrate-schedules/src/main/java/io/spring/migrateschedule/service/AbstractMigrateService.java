@@ -26,6 +26,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.springframework.cloud.dataflow.core.TaskDefinition;
+import org.springframework.cloud.dataflow.registry.support.AppResourceCommon;
 import org.springframework.cloud.deployer.resource.maven.MavenProperties;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -96,7 +97,7 @@ public abstract class AbstractMigrateService implements MigrateScheduleService {
 			new URI(this.migrateProperties.getSchedulerTaskLauncherUrl()); //verify url
 		}
 		catch (URISyntaxException uriSyntaxException) {
-			throw new IllegalStateException(uriSyntaxException);
+			throw new IllegalArgumentException(uriSyntaxException);
 		}
 		AppResourceCommon appResourceCommon = new AppResourceCommon(this.mavenProperties, new DefaultResourceLoader());
 		return appResourceCommon.getResource(this.migrateProperties.getSchedulerTaskLauncherUrl());
@@ -128,7 +129,9 @@ public abstract class AbstractMigrateService implements MigrateScheduleService {
 	/**
 	 * Add the appropriate tags to the command line args so that the SchedulerTaskLauncher can
 	 * extract them.
-	 * @param args the command line args to be tagged.
+	 * @param appName the name of the application to be associated with the property
+	 * @param appProperties the properties to be tagged
+	 * @param prefix the prefix to mark the property as to be used by the SchedulerTaskLauncher.
 	 * @return the tagged command line args.
 	 */
 	protected Map<String, String> tagProperties(String appName, Map<String, String> appProperties, String prefix) {

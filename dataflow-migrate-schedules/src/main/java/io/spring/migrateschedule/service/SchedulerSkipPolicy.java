@@ -14,16 +14,24 @@
  *  limitations under the License.
  */
 
-package io.spring.migrateschedule;
+package io.spring.migrateschedule.service;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.batch.core.step.skip.SkipLimitExceededException;
+import org.springframework.batch.core.step.skip.SkipPolicy;
 
-@SpringBootApplication
-public class MigrateScheduleApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(MigrateScheduleApplication.class, args);
+/**
+ * Establish that there is no max maximum skip count if {@link ScheduleProcessedException} is thrown.
+ *
+ * @author Glenn Renfro
+ *
+ */
+public class SchedulerSkipPolicy implements SkipPolicy {
+	@Override
+	public boolean shouldSkip(Throwable t, int skipCount) throws SkipLimitExceededException {
+		boolean result = false;
+		if(t instanceof ScheduleProcessedException) {
+			result = true;
+		}
+		return result;
 	}
-
 }

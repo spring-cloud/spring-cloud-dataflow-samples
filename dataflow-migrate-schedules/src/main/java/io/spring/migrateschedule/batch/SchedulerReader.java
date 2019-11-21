@@ -16,84 +16,50 @@
 
 package io.spring.migrateschedule.batch;
 
-import java.util.Collections;
 import java.util.List;
 
-import io.jsonwebtoken.lang.Assert;
 import io.spring.migrateschedule.service.ConvertScheduleInfo;
 import io.spring.migrateschedule.service.MigrateScheduleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.annotation.BeforeStep;
-import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.support.AbstractItemCountingItemStreamItemReader;
 import org.springframework.cloud.deployer.spi.scheduler.ScheduleInfo;
-import org.springframework.util.StringUtils;
+import org.springframework.util.Assert;
 
 /**
  * Retrieves all of the available schedules.
  *
- * @param <T> The  ConvertSchedulerInfo class.
- *
  * @author Glenn Renfro
  */
-public class SchedulerReader<T> implements ItemReader {
+public class SchedulerReader<C extends ScheduleInfo> extends AbstractItemCountingItemStreamItemReader<ConvertScheduleInfo> {
 
 	private static final Logger logger = LoggerFactory.getLogger(SchedulerReader.class);
 
 	private List<ConvertScheduleInfo> scheduleInfoList;
 
-	private int currentOffset;
-
-	private int scheduleCount;
-
-	private StepExecution stepExecution;
-
-	private boolean initialized;
+	private MigrateScheduleService migrateScheduleService;
 
 	public SchedulerReader(MigrateScheduleService migrateScheduleService) {
 		Assert.notNull(migrateScheduleService, "convertScheduleService must not be null");
 		logger.info("Retrieving schedules from PCF Scheduler");
-		this.scheduleInfoList = migrateScheduleService.scheduleInfoList();
-		this.scheduleCount = this.scheduleInfoList.size();
+		this.migrateScheduleService = migrateScheduleService;
 	}
 
 	@Override
-	public Object read() {
-		if(!this.initialized) {
-			this.currentOffset = getCurrentOffset();
-			this.initialized = true;
-		}
-		ScheduleInfo result = null;
-		if(this.currentOffset < this.scheduleCount) {
-			result =  this.scheduleInfoList.get(this.currentOffset++);
-		}
-		return result;
+	protected ConvertScheduleInfo doRead(){
+		  return this.scheduleInfoList.get(this.getCurrentItemCount()-1);
 	}
 
-
-
-	private int getCurrentOffset() {
-		int result = 0;
-		Collections.sort(this.scheduleInfoList);
-		String lastSuccessfulScheduleName = (String)this.stepExecution.getExecutionContext().get("scheduleName");
-		if (StringUtils.hasText(lastSuccessfulScheduleName) && this.scheduleCount != 0) {
-			for(; result < this.scheduleCount; result++) {
-				ScheduleInfo scheduleInfo =  this.scheduleInfoList.get(result);
-				logger.info(String.format("Skipping %s, it has already been processed", scheduleInfo.getScheduleName()));
-				if(scheduleInfo.getScheduleName().equals(lastSuccessfulScheduleName)) {
-					result++;
-					break;
-				}
-			}
-		}
-		 return result;
+	@Override
+	protected void doOpen() {
+		this.scheduleInfoList = migrateScheduleService.scheduleInfoList();
+		this.setMaxItemCount(this.scheduleInfoList.size());
+		this.setName("scheduler-reader");
 	}
 
-	@BeforeStep
-	public void saveStepExecution(StepExecution stepExecution) {
-		this.stepExecution = stepExecution;
+	@Override
+	protected void doClose(){
+
 	}
 }

@@ -36,7 +36,7 @@ public interface MigrateScheduleService {
 
 	/**
 	 * Add properties and commandLine args to the {@link ScheduleInfo}
-	 * @return enriched {@link ScheduleInfo}
+	 * @return enriched {@link ConvertScheduleInfo}
 	 */
 	ConvertScheduleInfo enrichScheduleMetadata(ConvertScheduleInfo scheduleInfo);
 

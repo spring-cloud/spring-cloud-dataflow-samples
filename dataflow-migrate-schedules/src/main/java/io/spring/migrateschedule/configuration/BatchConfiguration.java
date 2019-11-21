@@ -16,11 +16,14 @@
 
 package io.spring.migrateschedule.configuration;
 
+import io.spring.migrateschedule.service.ConvertScheduleInfo;
 import io.spring.migrateschedule.service.MigrateScheduleService;
 import io.spring.migrateschedule.service.MigrateProperties;
 import io.spring.migrateschedule.batch.SchedulerProcessor;
 import io.spring.migrateschedule.batch.SchedulerReader;
 import io.spring.migrateschedule.batch.SchedulerWriter;
+import io.spring.migrateschedule.service.ScheduleProcessedException;
+import io.spring.migrateschedule.service.SchedulerSkipPolicy;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -56,38 +59,37 @@ public class BatchConfiguration {
 	public Job importUserJob(Step migrationStep) {
 		return this.jobBuilderFactory.get("migrationJob")
 				.incrementer(new RunIdIncrementer())
-				.flow(migrationStep)
-				.end()
+				.start(migrationStep)
 				.build();
 	}
 
 	@Bean
-	public Step migrationStep(SchedulerReader<ScheduleInfo> itemReader,
-			SchedulerProcessor<ScheduleInfo> schedulerProcessor, SchedulerWriter writer) {
+	public Step migrationStep(SchedulerReader itemReader,
+			SchedulerProcessor schedulerProcessor, SchedulerWriter writer) {
 		return this.stepBuilderFactory.get("migrationStep")
-				.<ScheduleInfo, ScheduleInfo> chunk(10)
+				.<ScheduleInfo, ScheduleInfo> chunk(1)
 				.reader(itemReader)
 				.processor(schedulerProcessor)
 				.writer(writer)
+				.faultTolerant()
+				.skip(ScheduleProcessedException.class)
+				.skipPolicy(new SchedulerSkipPolicy())
 				.build();
 	}
 
 	@Bean
-	public SchedulerReader<ScheduleInfo> itemReader(MigrateScheduleService scheduler) {
-		return new SchedulerReader<>(scheduler);
+	public SchedulerReader<ConvertScheduleInfo> itemReader(MigrateScheduleService scheduler) {
+		return new SchedulerReader(scheduler);
 	}
 
 	@Bean
-	public SchedulerWriter<ScheduleInfo> itemWriter(Scheduler scheduler, MigrateScheduleService scheduleService) {
-		SchedulerWriter<ScheduleInfo> result = new SchedulerWriter<>();
-		result.setScheduler(scheduler);
-		result.setScheduleService(scheduleService);
-		return result;
+	public SchedulerWriter<ConvertScheduleInfo> itemWriter(Scheduler scheduler, MigrateScheduleService scheduleService) {
+		return new SchedulerWriter(scheduleService, scheduler);
 	}
 
 	@Bean
-	public SchedulerProcessor<ScheduleInfo> itemProcessor(MigrateScheduleService migrateScheduleService) {
-		return new SchedulerProcessor<>(migrateScheduleService);
+	public SchedulerProcessor<ConvertScheduleInfo, ConvertScheduleInfo> itemProcessor(MigrateScheduleService migrateScheduleService, MigrateProperties migrateProperties) {
+		return new SchedulerProcessor(migrateScheduleService, migrateProperties);
 	}
 
 	@Bean

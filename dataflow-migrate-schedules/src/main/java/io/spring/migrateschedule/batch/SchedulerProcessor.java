@@ -17,36 +17,41 @@
 package io.spring.migrateschedule.batch;
 
 import io.spring.migrateschedule.service.ConvertScheduleInfo;
+import io.spring.migrateschedule.service.MigrateProperties;
 import io.spring.migrateschedule.service.MigrateScheduleService;
+import io.spring.migrateschedule.service.ScheduleProcessedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.cloud.deployer.spi.scheduler.ScheduleInfo;
 
 /**
- * Enriches the ConvertScheduleInfo with information obtained from the platform.
+ * Enriches the {@link ConvertScheduleInfo} with information obtained from the platform.
  * The new name for the schedule is established and the properties as well as commandline args
  * so that the SchedulerTaskLauncher can process the entries.
  *
- * @param <T> The  ConvertSchedulerInfo class.
- *
  * @author Glenn Renfro
  */
-public class SchedulerProcessor<T> implements ItemProcessor {
+public class SchedulerProcessor<T, C extends ScheduleInfo> implements ItemProcessor<ConvertScheduleInfo, ConvertScheduleInfo>{
 
 	private static final Logger logger = LoggerFactory.getLogger(SchedulerProcessor.class);
 
 	private MigrateScheduleService migrateScheduleService;
 
-	public SchedulerProcessor(MigrateScheduleService migrateScheduleService) {
+	private MigrateProperties migrateProperties;
+
+	public SchedulerProcessor(MigrateScheduleService migrateScheduleService, MigrateProperties migrateProperties) {
 		this.migrateScheduleService = migrateScheduleService;
+		this.migrateProperties = migrateProperties;
 	}
 
 	@Override
-	public Object process(Object o){
-		ConvertScheduleInfo scheduleInfo = (ConvertScheduleInfo) o;
+	public ConvertScheduleInfo process(ConvertScheduleInfo scheduleInfo){
+		if(scheduleInfo.getScheduleName().contains(migrateProperties.getSchedulerToken())) {
+			throw new ScheduleProcessedException(scheduleInfo.getScheduleName());
+		}
 		logger.info(String.format("Processing Schedule %s", scheduleInfo.getScheduleName()));
 		return this.migrateScheduleService.enrichScheduleMetadata(scheduleInfo);
 	}
-
 }

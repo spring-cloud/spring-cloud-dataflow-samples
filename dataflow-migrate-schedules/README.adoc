@@ -1,9 +1,9 @@
 = Cloud Scheduler Migration
 
 The purpose of this project is to migrate existing schedules created with Spring
-Cloud Data Flow 2.2.0 and before to the new 2.3.0 format and stage the
+Cloud Data Flow 2.2.x and before to the new 2.3.0 format and stage the
 SchedulerTaskLauncher.  This is a Spring Boot application that utilizes Spring Batch to create a workflow
-to migrate the schedules.  This is a Single Step Spring Batch Job that does the following:
+to migrate the schedules.  This is a single step Spring Batch Job that does the following:
 
 * Read - Retrieves all schedules from scheduler.
 
@@ -18,8 +18,16 @@ application and it will pick up where it left off.   Thanks Spring Batch! :-)
 
 == Build the project
 
+=== Services Required
+In order to migrate the existing schedules to the 2.3.x Spring Cloud Data Flow Scheduling format, the Schedule Migrator requires the following services:
+
+1. Access to the database where Spring Cloud Data Flow stores its Task Definitions.  For Cloud Foundry we need to bind the database to the Schedule Migrator.
+2. Access to the Scheduling Agent.  For Cloud Foundry we need to bind the PCF Scheduler to the Scheduler Migrator.
+
+=== Running the maven command
+
 ```
-mvn clean install
+./mvnw clean package
 ```
 
 == Running The Project For Cloud Foundry
@@ -64,36 +72,31 @@ cf login -a <your CF API endpoint>
 cf login -a <your CF API endpoint> --skip-ssl-validation
 ```
 
-
 3) Now push the schedulemigrator from the directory where the manifest.yml is present:
 ```
 cf push
 ```
 
-3) Now launch the schedulemigrator using the command below:
+3) To start the migration:
+From the `dataflow-migrate-schedules` directory launch the `runMigration.sh` using the commands below:
 ```
-cf rt schedulemigrator "JAVA_OPTS=\"-agentpath:\$PWD/.java-buildpack/open_jdk_jre/bin/jvmkill-1.16.0_RELEASE=printHeapHistogram=1 -Djava.io.tmpdir=\$TMPDIR -XX:ActiveProcessorCount=\$(nproc) -Djava.ext.dirs=\$PWD/.java-buildpack/container_security_provider:\$PWD/.java-buildpack/open_jdk_jre/lib/ext -Djava.security.properties=\$PWD/.java-buildpack/java_security/java.security \$JAVA_OPTS\" && CALCULATED_MEMORY=\$(\$PWD/.java-buildpack/open_jdk_jre/bin/java-buildpack-memory-calculator-3.13.0_RELEASE -totMemory=\$MEMORY_LIMIT -loadedClasses=26092 -poolType=metaspace -stackThreads=250 -vmOptions=\"\$JAVA_OPTS\") && echo JVM Memory Configuration: \$CALCULATED_MEMORY && JAVA_OPTS=\"\$JAVA_OPTS \$CALCULATED_MEMORY\" && MALLOC_ARENA_MAX=2 SERVER_PORT=\$PORT eval exec \$PWD/.java-buildpack/open_jdk_jre/bin/java \$JAVA_OPTS -cp \$PWD/. org.springframework.boot.loader.JarLauncher"
+chmod +x scripts/runMigration.sh
+./scripts/runMigration.sh
+```
+=== Picking which schedules to migrate
+Use the `scheduleNamesToMigrate` property to specify a comma delimited list of
+the schedules you wish to migrate.  If you don't specify this property
+all schedules will be migrated.  For example:
+```
+./scripts/runMigration.sh --scheduleNamesToMigrate=task-job3,task-job1
 ```
 
 === Configuring Your Deployer Properties
 When migrating deployer properties there are some properties that can be obtained
 from the deployed droplets or the schedule to be migrated.  Others can not
-be obtained from the system and must be set as a property that will affect all
-schedules to be migrated.  If a property is in MigrateProperties is not set then
+be obtained from the system and must be set by the migrator. Changing these properties will affect all
+schedules to be migrated.  If a property is in `MigrateProperties` is not set then
 the default will be used.
-
-
-==== Obtained from Schedule or droplet
-* buildpack
-* memory
-* disk
-* healthcheck
-* healthCheckHttpEndpoint
-* useSpringApplicationJson
-* services
-* domain
-* routes
-* host
 
 ==== Deployer properties to be applied to all migrated schedules:
 * healthCheckTimeout
@@ -106,15 +109,5 @@ the default will be used.
 
 NOTE: Descriptions of these properties can be found : https://github.com/cppwfs/spring-cloud-dataflow-samples/blob/SCDF-121/dataflow-migrate-schedules/src/main/java/io/spring/migrateschedule/service/MigrateProperties.java[here]
 
-==== Properties Not Migrated:
-* instances
-* enableRandomAppNamePrefix
-* appNamePrefix
-* deleteRoutes
-* pushTaskAppsEnabled
-
-
-
-
-== Running The Project For Kubernetes
-TBD
+=== Supported Databases
+The database supported are enumerated https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#configuration-local-rdbms[here].

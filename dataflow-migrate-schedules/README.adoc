@@ -59,9 +59,9 @@ applications:
     dataflowServerUri: <Your SCDF server URI>
     spring_cloud_task_closecontextEnabled: true
     remoteRepositories_repo1_url: https://repo.spring.io/libs-snapshot
-services:
-- <Your SCDF database service>
-- <Your SCDF scheduler service>
+  services:
+  - <Your SCDF database service>
+  - <Your SCDF scheduler service>
 ```
 2) From the command line use the cf cli to log into your org and space for which you will migrate your schedules
 ```
@@ -92,11 +92,8 @@ all schedules will be migrated.  For example:
 ```
 
 === Configuring Your Deployer Properties
-When migrating deployer properties there are some properties that can be obtained
-from the deployed droplets or the schedule to be migrated.  Others can not
-be obtained from the system and must be set by the migrator. Changing these properties will affect all
-schedules to be migrated.  If a property is in `MigrateProperties` is not set then
-the default will be used.
+The following deployer properties will affect all schedules to be migrated.
+If a property is not set then the default will be used.
 
 ==== Deployer properties to be applied to all migrated schedules:
 * healthCheckTimeout

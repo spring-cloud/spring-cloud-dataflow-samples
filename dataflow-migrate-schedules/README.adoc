@@ -32,6 +32,10 @@ In order to migrate the existing schedules to the 2.3.x Spring Cloud Data Flow S
 
 == Running The Project For Cloud Foundry
 
+=== Prerequisites
+
+Spring Cloud Data Flow 2.3+ must be installed and running prior to launching the Cloud Scheduler Migration app.
+
 === Launching your migration
 1) Create a manifest.yml file in a work directory.
 ```
@@ -56,7 +60,7 @@ applications:
     spring_profiles_active: cf
     spring.cloud.deployer.cloudfoundry.healthCheckTimeout: 300
     spring.cloud.deployer.cloudfoundry.apiTimeout: 300
-    dataflowServerUri: <Your SCDF server URI>
+    dataflowServerUri: <Your SCDF version 2.3+ server URI>
     spring_cloud_task_closecontextEnabled: true
     remoteRepositories_repo1_url: https://repo.spring.io/libs-snapshot
   services:
@@ -108,3 +112,7 @@ NOTE: Descriptions of these properties can be found : https://github.com/cppwfs/
 
 === Supported Databases
 The database supported are enumerated https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#configuration-local-rdbms[here].
+
+=== Previously Pushed Apps
+The Cloud Schedule Migration app does not delete previously scheduled applications.
+If these apps are no longer needed it is up to the user to delete them.

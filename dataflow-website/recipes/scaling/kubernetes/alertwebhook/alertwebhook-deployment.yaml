@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertwebhook
+  labels:
+    app: alertwebhook
+spec:
+  selector:
+    matchLabels:
+      app: alertwebhook
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: alertwebhook
+    spec:
+      containers:
+        - image: tzolov/scdf-alert-webhook:latest
+          name: alertwebhook
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8085
+          resources:
+            limits:
+              cpu: 0.5
+              memory: 2048Mi
+            requests:
+              cpu: 0.5
+              memory: 1024Mi
+          env:
+          - name: SPRING_CLOUD_DATAFLOW_CLIENT_SERVER_URI
+            value: 'http://${SCDF_SERVER_SERVICE_HOST}:${SCDF_SERVER_SERVICE_PORT}'
+          - name: SERVER_PORT
+            value: '8085'
+          - name: SCDF_ALERT_WEBHOOK_SCALE_IN_FACTOR
+            value: '1'
+          - name: SCDF_ALERT_WEBHOOK_SCALE_OUT_FACTOR
+            value: '3'
+          - name: SCDF_ALERT_WEBHOOK_SCALE_APPLICATION_NAME
+            value: 'transform'
+          - name: SCDF_ALERT_WEBHOOK_SCALE_OUT_ALERT_NAME
+            value: 'ThroughputDeltaHigh'
+          - name: SCDF_ALERT_WEBHOOK_SCALE_IN_ALERT_NAME
+            value: 'ZeroThroughputDelta'

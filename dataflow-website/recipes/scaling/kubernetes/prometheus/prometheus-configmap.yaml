@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+data:
+  alert.rules.yml: |-
+    groups:
+      - name: scdfrules
+        rules:
+          - alert: HighThroughputDifference
+            expr: avg(irate(spring_integration_send_seconds_count{name!="errorChannel",name!="nullChannel",result="success",type="channel",application_name="time"}[1m])) by(stream_name)  - avg(irate(spring_integration_send_seconds_count{name!="errorChannel",name!="nullChannel",result="success",type="channel",application_name="transform"}[1m])) by(stream_name) > 100
+            for: 30s
+            annotations:
+              summary: "The throughput difference between time and transform for the {{ $labels.stream_name }}"
+              description: "The load-generator throughput is larger than the transform throughput for {{ $labels.stream_name }}"
+          - alert: ZeroThroughputDifference
+            expr: avg(irate(spring_integration_send_seconds_count{name!="errorChannel",name!="nullChannel",result="success",type="channel",application_name="time"}[1m])) by(stream_name)  - 4 * (avg(irate(spring_integration_send_seconds_count{name!="errorChannel",name!="nullChannel",result="success",type="channel",application_name="transform"}[1m])) by(stream_name)) <= 1
+            for: 3m
+            annotations:
+              summary: "The throughput difference between time and transform for the {{ $labels.stream_name }} is zero"
+              description: "The load-generator throughput matches the tranformer throughput for {{ $labels.stream_name }}"
+
+  prometheus.yml: |-
+    global:
+      scrape_interval: 10s
+      scrape_timeout: 9s
+      evaluation_interval: 10s
+    rule_files:
+      - /etc/prometheus/alert.rules.yml
+    alerting:
+      alertmanagers:
+      - scheme: http
+        static_configs:
+        - targets:
+          - "alertmanager:9093"
+    scrape_configs:
+    - job_name: 'proxied-applications'
+      metrics_path: '/metrics/connected'
+      kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+              - default
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_label_app]
+          action: keep
+          regex: prometheus-proxy
+        - source_labels: [__meta_kubernetes_pod_container_port_number]
+          action: keep
+          regex: 8080
+    - job_name: 'proxies'
+      metrics_path: '/metrics/proxy'
+      kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+              - default
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_label_app]
+          action: keep
+          regex: prometheus-proxy
+        - source_labels: [__meta_kubernetes_pod_container_port_number]
+          action: keep
+          regex: 8080
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+        - source_labels: [__meta_kubernetes_pod_name]
+          action: replace
+          target_label: kubernetes_pod_name

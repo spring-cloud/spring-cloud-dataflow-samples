@@ -59,6 +59,10 @@ import org.springframework.util.StringUtils;
  */
 public class CFMigrateSchedulerService extends AbstractMigrateService {
 
+	private static final String JAR_LAUNCHER = "org.springframework.boot.loader.JarLauncher";
+
+	private static final int JAR_LAUNCHER_LENGTH = "org.springframework.boot.loader.JarLauncher".length();
+
 	private static final Logger logger = LoggerFactory.getLogger(CFMigrateSchedulerService.class);
 
 	private static final String CLOUD_FOUNDRY_PREFIX = "cloudfoundry";
@@ -117,9 +121,15 @@ public class CFMigrateSchedulerService extends AbstractMigrateService {
 								scheduleInfo.setScheduleProperties(new HashMap<>());
 								scheduleInfo.setScheduleName(job.getName());
 								scheduleInfo.setTaskDefinitionName(optionalApp.getName());
-
-								int locationOfArgs = job.getCommand().indexOf("org.springframework.boot.loader.JarLauncher") + "org.springframework.boot.loader.JarLauncher".length();
-								String commandArgs = job.getCommand().substring(locationOfArgs);
+								String jobCommandLine = job.getCommand();
+								String commandArgs = "";
+								if (jobCommandLine != null && jobCommandLine.length() > JAR_LAUNCHER_LENGTH) {
+									int locationOfArgs = job.getCommand().indexOf(JAR_LAUNCHER) + JAR_LAUNCHER_LENGTH;
+									commandArgs = job.getCommand().substring(locationOfArgs);
+								}
+								else {
+									logger.warn(String.format("Job %s does not have commandArgs associated with it.", job.getName()));
+								}
 								if (StringUtils.hasText(commandArgs)) {
 									try {
 										scheduleInfo.setCommandLineArgs(Arrays.asList(CommandLineUtils.translateCommandline(commandArgs)));

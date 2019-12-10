@@ -53,15 +53,15 @@ import org.springframework.util.StringUtils;
 
 /**
  * Services required to migrate schedules to the 2.3.0 format in Cloud Foundry
- * and stage the ShedulerTaskLauncher.
+ * and stage the SchedulerTaskLauncher.
  *
  * @author Glenn Renfro
  */
 public class CFMigrateSchedulerService extends AbstractMigrateService {
 
-	private static final String JAR_LAUNCHER = "org.springframework.boot.loader.JarLauncher";
+	public static final String JAR_LAUNCHER = "org.springframework.boot.loader.JarLauncher";
 
-	private static final int JAR_LAUNCHER_LENGTH = "org.springframework.boot.loader.JarLauncher".length();
+	private static final int JAR_LAUNCHER_LENGTH = JAR_LAUNCHER.length();
 
 	private static final Logger logger = LoggerFactory.getLogger(CFMigrateSchedulerService.class);
 

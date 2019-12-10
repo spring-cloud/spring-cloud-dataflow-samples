@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: prometheus-configmap-reload-watch
+  name: prometheus-configmap-reload-watch
+spec:
+  selector:
+    matchLabels:
+      app: prometheus-configmap-reload-watch
+  template:
+    metadata:
+      labels:
+        app: prometheus-configmap-reload-watch
+    spec:
+      containers:
+        - name: prometheus-configmap-reload-watch
+          image: weaveworks/watch:master-85fdf1d
+          args: ["-v", "-t", "-p=/etc/prometheus", "curl", "-X", "POST", "--fail", "-o", "-", "-sS", "http://prometheus:9090/-/reload"]
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/prometheus

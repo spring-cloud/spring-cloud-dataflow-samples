@@ -95,6 +95,13 @@ all schedules will be migrated.  For example:
 ./scripts/runMigration.sh --scheduleNamesToMigrate=task-job3,task-job1
 ```
 
+=== Limiting one Scheduler to run at a time
+If there is a requirement that only one `schedulemigrator` should run at a time you can set the `spring.cloud.task.single-instance-enabled` property to true.   This will stop other executions of the schedulemigrator till the currently running instance completes.
+To enable this feature use the `runMigration.sh` script as follows.
+```
+./scripts/runMigration.sh --spring.cloud.task.single-instance-enabled=true
+```
+
 === Configuring Your Deployer Properties
 The following deployer properties will affect all schedules to be migrated.
 If a property is not set then the default will be used.

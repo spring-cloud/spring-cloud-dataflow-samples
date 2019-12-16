@@ -9,13 +9,13 @@ data:
     groups:
       - name: scdfrules
         rules:
-          - alert: ThroughputDeltaHigh
+          - alert: HighThroughputDifference
             expr: avg(irate(spring_integration_send_seconds_count{name!="errorChannel",name!="nullChannel",result="success",type="channel",application_name="time"}[1m])) by(stream_name)  - avg(irate(spring_integration_send_seconds_count{name!="errorChannel",name!="nullChannel",result="success",type="channel",application_name="transform"}[1m])) by(stream_name) > 100
             for: 30s
             annotations:
               summary: "Throughput delta displace for {{ $labels.stream_name }}"
               description: "The load-generator throughput is larger than the transform throughput for {{ $labels.stream_name }}"
-          - alert: ZeroThroughputDelta
+          - alert: ZeroThroughputDifference
             expr: avg(irate(spring_integration_send_seconds_count{name!="errorChannel",name!="nullChannel",result="success",type="channel",application_name="time"}[1m])) by(stream_name)  - 3 * (avg(irate(spring_integration_send_seconds_count{name!="errorChannel",name!="nullChannel",result="success",type="channel",application_name="transform"}[1m])) by(stream_name)) <= 1
             for: 3m
             annotations:

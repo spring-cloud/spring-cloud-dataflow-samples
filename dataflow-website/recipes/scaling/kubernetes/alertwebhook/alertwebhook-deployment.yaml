@@ -39,6 +39,6 @@ spec:
           - name: SCDF_ALERT_WEBHOOK_SCALE_APPLICATION_NAME
             value: 'transform'
           - name: SCDF_ALERT_WEBHOOK_SCALE_OUT_ALERT_NAME
-            value: 'ThroughputDeltaHigh'
+            value: 'HighThroughputDifference'
           - name: SCDF_ALERT_WEBHOOK_SCALE_IN_ALERT_NAME
-            value: 'ZeroThroughputDelta'
+            value: 'ZeroThroughputDifference'

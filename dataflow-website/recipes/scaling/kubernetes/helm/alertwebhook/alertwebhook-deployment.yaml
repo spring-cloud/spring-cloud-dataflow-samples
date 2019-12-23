@@ -15,7 +15,7 @@ spec:
         app: alertwebhook
     spec:
       containers:
-        - image: tzolov/scdf-alert-webhook:latest
+        - image: springcloud/scdf-alert-webhook:latest
           name: alertwebhook
           imagePullPolicy: Always
           ports:

@@ -56,7 +56,7 @@
 				<configuration>
 					<images>
 						<image>
-							<name>tzolov/${project.artifactId}</name>
+							<name>springcloud/${project.artifactId}</name>
 							<build>
 								<from>springcloud/openjdk</from>
 								<tags>

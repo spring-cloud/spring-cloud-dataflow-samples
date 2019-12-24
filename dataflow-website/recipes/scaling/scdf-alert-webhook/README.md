@@ -19,14 +19,3 @@ Internally, `AlertWebHookApplication` uses the Data Flow Scale REST API to scale
 
 Use the `spring.cloud.dataflow.client.server-uri` property to configure url of the Data Flow server.
 
-## Build
-
-Change directory to `spring-cloud-dataflow-samples/dataflow-website/recipes/scaling/scdf-alert-webhook` and run:
-
-```
-./mvnw clean install 
-./mvnw docker:build
-./mvnw docker:push
-```
-
-The last two commands build a `springcloud/scdf-alert-webhook` docker image and publish it to Docker Hub. 

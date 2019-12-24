@@ -13,14 +13,14 @@ data:
             expr: avg(irate(spring_integration_send_seconds_count{name!="errorChannel",name!="nullChannel",result="success",type="channel",application_name="time"}[1m])) by(stream_name)  - avg(irate(spring_integration_send_seconds_count{name!="errorChannel",name!="nullChannel",result="success",type="channel",application_name="transform"}[1m])) by(stream_name) > 500
             for: 30s
             annotations:
-              summary: "Throughput delta displace for {{ $labels.stream_name }}"
-              description: "The load-generator throughput is larger than the transform throughput for {{ $labels.stream_name }}"
+              summary: "The throughput difference between time and transform for the {{ $labels.stream_name }} stream exceeded the threshold "
+              description: "The time app throughput is larger than the transform throughput for {{ $labels.stream_name }}"
           - alert: ZeroThroughputDifference
-            expr: avg(irate(spring_integration_send_seconds_count{name!="errorChannel",name!="nullChannel",result="success",type="channel",application_name="time"}[1m])) by(stream_name)  - 3 * (avg(irate(spring_integration_send_seconds_count{name!="errorChannel",name!="nullChannel",result="success",type="channel",application_name="transform"}[1m])) by(stream_name)) <= 1
+            expr: avg(irate(spring_integration_send_seconds_count{name!="errorChannel",name!="nullChannel",result="success",type="channel",application_name="time"}[1m])) by(stream_name)  - 4 * (avg(irate(spring_integration_send_seconds_count{name!="errorChannel",name!="nullChannel",result="success",type="channel",application_name="transform"}[1m])) by(stream_name)) <= 1
             for: 3m
             annotations:
-              summary: "Throughput delta for {{ $labels.stream_name }} is zero"
-              description: "The load-generator throughput matches the tranformer throughput for {{ $labels.stream_name }}"
+              summary: "The throughput difference between time and transform for the {{ $labels.stream_name }} stream is zero"
+              description: "The time throughput matches the tranformer throughput for {{ $labels.stream_name }}"
 
   prometheus.yml: |-
     global:

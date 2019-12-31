@@ -125,6 +125,12 @@ public class AlertWebHookApplication {
 							this.properties.getScaleOutFactor()));
 					this.scale(streamName, applicationName, this.properties.getScaleInFactor());
 				}
+				else {
+					logger.warn(String.format("Fired, non-scale alert: %s with labels: %s", alertName, labels));
+				}
+			}
+			else {
+				logger.warn(String.format("Non Firing Alert: %s", alerts));
 			}
 		}
 	}

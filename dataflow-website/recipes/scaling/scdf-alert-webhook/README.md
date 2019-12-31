@@ -19,3 +19,9 @@ Internally, `AlertWebHookApplication` uses the Data Flow Scale REST API to scale
 
 Use the `spring.cloud.dataflow.client.server-uri` property to configure url of the Data Flow server.
 
+Following video illustrates the overall flow and the role for the AlertWebHookApplication: 
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=IDH6X1pmgxc
+" target="_blank"><img src="http://img.youtube.com/vi/IDH6X1pmgxc/0.jpg" 
+alt="SCDF Auto Scaling" width="240" height="180" border="10" /></a>
+

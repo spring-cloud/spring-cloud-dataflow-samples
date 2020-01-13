@@ -1,0 +1,23 @@
+//tag::ref-doc[]
+:image-root: https://raw.githubusercontent.com/cppwfs/funwithctr/master/images
+
+= Sample Composed Task Runner Tour
+
+The purpose of this project is to provide an application to be used when experimenting Composed Task transitions in Spring Cloud Data Flow.  Explore what you can do with this app  http://localhost:9000/docs/feature-guides/batch/composed-task/[here].
+
+== Overview
+This sample task application allows the user to specify the Task Exit Message via a property.
+This allows the user to test various transition paths through a Composed Task directed graph.
+
+=== Building the Application
+To build the application:
+```
+./mvnw clean install
+```
+To build the docker image:
+```
+./mvnw dockerfile:build
+```
+
+=== Running the Application
+java -jar target/transition-sample-1.0.0.BUILD-SNAPSHOT.jar --taskapp.exitMessage=<yourexitmessage>

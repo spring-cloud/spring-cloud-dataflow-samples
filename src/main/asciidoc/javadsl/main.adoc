@@ -4,7 +4,7 @@
 This sample shows the two usage styles of the Java DSL to create and deploy a stream.
 You should look in the https://github.com/spring-cloud/spring-cloud-dataflow-samples/tree/master/batch/javadsl/src/main[source code] to get a feel for the different styles.
 
-1) Build the sample application
+==== Step 1 Build the sample application
 
 [source,bash]
 ----
@@ -67,7 +67,8 @@ Another useful class is the `DeploymentPropertiesBuilder` which aids in the crea
 		return propertiesBuilder.build();
 	}
 ----
-2) Run a local Data Flow Server and run the sample application.
+
+==== Step 2 Run a local Data Flow Server and run the sample application.
 This sample demonstrates the use of the local Data Flow Server, but you can pass in the option `--uri` to point to another Data Flow server instance that is running elsewhere.
 [source,bash]
 ----
@@ -87,13 +88,13 @@ Letting the stream run for 2 minutes.
 To verify that the application has been deployed successfully, will tail the logs of one of the log sinks and post some data to the http source.
 You can find the location for the logs of one of the log sink applications by looking in the Data Flow server's log file.
 
-3) Post some data to the server
+==== Step 3 Post some data to the server
 
 ```
 curl http://localhost:9900 -H "Content-Type:text/plain"   -X POST -d "how much wood would a woodchuck chuck if a woodchuck could chuck wood"
 ```
 
-5) Verify the output
+==== Step 4 Verify the output
 Tailing the log file of the first instance
 [source,bash,options="nowrap"]
 ----
@@ -130,3 +131,47 @@ $ tail -f stdout_1.log
 2017-11-22 18:04:08.647  INFO 26655 --- [r.woodchuck-1-1] log-sink          : wood
 ----
 Note that the partitioning is done based on the hash of the `java.lang.String` object.
+
+==== Step 5 Use Authentication
+Optionally if you have enabled authentication on a server there are 3
+different ways to authorize a client.
+
+Use basic authentication:
+[source,bash,options="nowrap"]
+----
+$ java -jar target/scdfdsl-0.0.1-SNAPSHOT.jar \
+  --spring.cloud.dataflow.client.authentication.basic.username=user \
+  --spring.cloud.dataflow.client.authentication.basic.password=password
+----
+
+Use OAuth client settings:
+[source,bash,options="nowrap"]
+----
+$ java -jar target/scdfdsl-0.0.1-SNAPSHOT.jar \
+  --spring.cloud.dataflow.client.authentication.client-id=dataflow \
+  --spring.cloud.dataflow.client.authentication.client-secret=secret \
+  --spring.cloud.dataflow.client.authentication.token-uri=http://localhost:8080/uaa/oauth/token \
+  --spring.cloud.dataflow.client.authentication.scope=dataflow.create,dataflow.deploy,dataflow.destroy,dataflow.manage,dataflow.modify,dataflow.schedule,dataflow.view
+----
+
+
+Use OAuth access token:
+[source,bash,options="nowrap"]
+----
+$ java -jar target/scdfdsl-0.0.1-SNAPSHOT.jar \
+  --spring.cloud.dataflow.client.authentication.access-token=849228ed663e450ab5051c998eb71a4a
+----
+
+For example with _uaa_ access token can be requested with:
+[source,bash,options="nowrap"]
+----
+$ curl 'http://localhost:8080/uaa/oauth/token' -i -X POST \
+    -H 'Content-Type: application/x-www-form-urlencoded' \
+    -H 'Accept: application/json' \
+    -d 'client_id=dataflow&client_secret=secret&grant_type=password&username=user&password=password&token_format=opaque'
+
+{
+  "access_token":"849228ed663e450ab5051c998eb71a4a",
+  ...
+}
+----

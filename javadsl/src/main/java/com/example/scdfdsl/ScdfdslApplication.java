@@ -100,16 +100,16 @@ public class ScdfdslApplication implements ApplicationRunner {
 
 	private void importApplications() {
 		this.dataFlowOperations.appRegistryOperations().register("log", ApplicationType.sink,
-				"maven://org.springframework.cloud.stream.app:log-sink-rabbit:1.3.1.RELEASE",
-				"maven://org.springframework.cloud.stream.app:log-sink-rabbit:jar:metadata:1.3.1.RELEASE",
+				"maven://org.springframework.cloud.stream.app:log-sink-rabbit:2.1.2.RELEASE",
+				"maven://org.springframework.cloud.stream.app:log-sink-rabbit:jar:metadata:2.1.2.RELEASE",
 				true);
 		this.dataFlowOperations.appRegistryOperations().register("splitter", ApplicationType.processor,
-				"maven://org.springframework.cloud.stream.app:splitter-processor-rabbit:1.3.1.RELEASE",
-				"maven://org.springframework.cloud.stream.app:splitter-processor-rabbit:jar:metadata:1.3.1.RELEASE",
+				"maven://org.springframework.cloud.stream.app:splitter-processor-rabbit:2.1.1.RELEASE",
+				"maven://org.springframework.cloud.stream.app:splitter-processor-rabbit:jar:metadata:2.1.1.RELEASE",
 				true);
 		this.dataFlowOperations.appRegistryOperations().register("http", ApplicationType.source,
-				"maven://org.springframework.cloud.stream.app:http-source-rabbit:1.3.1.RELEASE",
-				"maven://org.springframework.cloud.stream.app:http-source-rabbit:jar:metadata:1.3.1.RELEASE",
+				"maven://org.springframework.cloud.stream.app:http-source-rabbit:2.1.1.RELEASE",
+				"maven://org.springframework.cloud.stream.app:http-source-rabbit:jar:metadata:2.1.1.RELEASE",
 				true);
 	}
 

@@ -68,7 +68,7 @@ Another useful class is the `DeploymentPropertiesBuilder` which aids in the crea
 	}
 ----
 
-==== Step 2 Run a local Data Flow Server and run the sample application.
+==== Step 2 Start Data Flow and run the sample application
 This sample demonstrates the use of the local Data Flow Server, but you can pass in the option `--uri` to point to another Data Flow server instance that is running elsewhere.
 [source,bash]
 ----
@@ -133,8 +133,8 @@ $ tail -f stdout_1.log
 Note that the partitioning is done based on the hash of the `java.lang.String` object.
 
 ==== Step 5 Use Authentication
-Optionally if you have enabled authentication on a server there are 3
-different ways to authorize a client.
+Optionally, if you have enabled authentication in SCDF, there are three
+different ways to authorize the sample application (i.e. the client).
 
 Use basic authentication:
 [source,bash,options="nowrap"]
@@ -144,7 +144,7 @@ $ java -jar target/scdfdsl-0.0.1-SNAPSHOT.jar \
   --spring.cloud.dataflow.client.authentication.basic.password=password
 ----
 
-Use OAuth client settings:
+Use OAuth client settings (UAA is used as the identity provider in this sample):
 [source,bash,options="nowrap"]
 ----
 $ java -jar target/scdfdsl-0.0.1-SNAPSHOT.jar \
@@ -162,7 +162,7 @@ $ java -jar target/scdfdsl-0.0.1-SNAPSHOT.jar \
   --spring.cloud.dataflow.client.authentication.access-token=849228ed663e450ab5051c998eb71a4a
 ----
 
-For example with _uaa_ access token can be requested with:
+For example, if you're using UAA as the identity provider backend, the access token can be requested with the following command:
 [source,bash,options="nowrap"]
 ----
 $ curl 'http://localhost:8080/uaa/oauth/token' -i -X POST \

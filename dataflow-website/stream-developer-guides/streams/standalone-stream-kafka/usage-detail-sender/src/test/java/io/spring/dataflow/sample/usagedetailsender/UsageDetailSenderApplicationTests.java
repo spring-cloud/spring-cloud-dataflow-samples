@@ -1,44 +1,42 @@
 package io.spring.dataflow.sample.usagedetailsender;
 
-import java.util.concurrent.TimeUnit;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.spring.dataflow.sample.UsageDetail;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.stream.messaging.Source;
-import org.springframework.cloud.stream.test.binder.MessageCollector;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.cloud.stream.binder.test.OutputDestination;
+import org.springframework.cloud.stream.binder.test.TestChannelBinderConfiguration;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.messaging.Message;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.Assert;
+import org.springframework.messaging.converter.CompositeMessageConverter;
+import org.springframework.messaging.converter.MessageConverter;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UsageDetailSenderApplicationTests {
-
-	@Autowired
-	private MessageCollector messageCollector;
-
-	@Autowired
-	private Source source;
 
 	@Test
 	public void contextLoads() {
 	}
 
 	@Test
-	public void testUsageDetailSender() throws Exception {
-		Message message = this.messageCollector.forChannel(this.source.output()).poll(1, TimeUnit.SECONDS);
-		String usageDetailJSON = message.getPayload().toString();
-		assertTrue(usageDetailJSON.contains("userId"));
-		assertTrue(usageDetailJSON.contains("duration"));
-		assertTrue(usageDetailJSON.contains("data"));
-	}
+	public void testUsageDetailSender() {
+		try (ConfigurableApplicationContext context = new SpringApplicationBuilder(
+				TestChannelBinderConfiguration
+						.getCompleteConfiguration(UsageDetailSenderApplication.class))
+				.web(WebApplicationType.NONE)
+				.run()) {
 
+			OutputDestination target = context.getBean(OutputDestination.class);
+			Message<byte[]> sourceMessage = target.receive(10000);
+
+			final MessageConverter converter = context.getBean(CompositeMessageConverter.class);
+			UsageDetail usageDetail = (UsageDetail) converter
+					.fromMessage(sourceMessage, UsageDetail.class);
+
+			assertThat(usageDetail.getUserId()).isBetween("user1", "user5");
+			assertThat(usageDetail.getData()).isBetween(0L, 700L);
+			assertThat(usageDetail.getDuration()).isBetween(0L, 300L);
+		}
+	}
 }

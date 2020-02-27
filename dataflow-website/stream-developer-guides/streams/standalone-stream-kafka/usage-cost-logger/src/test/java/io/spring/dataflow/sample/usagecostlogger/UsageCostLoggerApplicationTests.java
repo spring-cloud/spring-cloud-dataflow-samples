@@ -1,53 +1,55 @@
 package io.spring.dataflow.sample.usagecostlogger;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import io.spring.dataflow.sample.UsageCostDetail;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
+import org.awaitility.Awaitility;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.cloud.stream.binder.test.InputDestination;
+import org.springframework.cloud.stream.binder.test.TestChannelBinderConfiguration;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.converter.CompositeMessageConverter;
+import org.springframework.messaging.converter.MessageConverter;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.cloud.stream.messaging.Sink;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
-import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ExtendWith(OutputCaptureExtension.class)
 public class UsageCostLoggerApplicationTests {
-
-	@Autowired
-	protected Sink sink;
-
-	@Autowired
-	protected UsageCostLogger usageCostLogger;
 
 	@Test
 	public void contextLoads() {
 	}
 
 	@Test
-	public void testUsageCostLogger() throws Exception {
-		ArgumentCaptor<UsageCostDetail> captor = ArgumentCaptor.forClass(UsageCostDetail.class);
-		this.sink.input().send(MessageBuilder.withPayload("{\"userId\":\"user3\",\"callCost\":10.100000000000001,\"dataCost\":25.1}").build());
-		verify(this.usageCostLogger).process(captor.capture());
-	}
+	public void testUsageCostLogger(CapturedOutput output) {
+		try (ConfigurableApplicationContext context = new SpringApplicationBuilder(
+				TestChannelBinderConfiguration
+						.getCompleteConfiguration(UsageCostLoggerApplication.class))
+				.web(WebApplicationType.NONE)
+				.run()) {
 
-	@EnableAutoConfiguration
-	@EnableBinding(Sink.class)
-	static class TestConfig {
+			InputDestination source = context.getBean(InputDestination.class);
 
-		// Override `UsageCostLogger` bean for spying.
-		@Bean
-		@Primary
-		public UsageCostLogger usageCostLogger() {
-			return spy(new UsageCostLogger());
+			UsageCostDetail usageCostDetail = new UsageCostDetail();
+			usageCostDetail.setUserId("user1");
+			usageCostDetail.setCallCost(3.0);
+			usageCostDetail.setDataCost(5.0);
+
+			final MessageConverter converter = context.getBean(CompositeMessageConverter.class);
+			Map<String, Object> headers = new HashMap<>();
+			headers.put("contentType", "application/json");
+			MessageHeaders messageHeaders = new MessageHeaders(headers);
+			final Message<?> message = converter.toMessage(usageCostDetail, messageHeaders);
+
+			source.send(message);
+
+			Awaitility.await().until(output::getOut, value -> value.contains("{\"userId\": \"user1\", \"callCost\": \"3.0\", \"dataCost\": \"5.0\" }"));
 		}
 	}
 }

@@ -43,14 +43,12 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-stream-test-support</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.kafka</groupId>
-			<artifactId>spring-kafka-test</artifactId>
+			<artifactId>spring-cloud-stream</artifactId>
+			<type>test-jar</type>
+			<classifier>test-binder</classifier>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

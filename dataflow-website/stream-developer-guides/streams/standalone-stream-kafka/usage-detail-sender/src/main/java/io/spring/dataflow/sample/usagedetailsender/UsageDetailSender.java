@@ -1,31 +1,25 @@
 package io.spring.dataflow.sample.usagedetailsender;
 
 import java.util.Random;
+import java.util.function.Supplier;
 
 import io.spring.dataflow.sample.UsageDetail;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.cloud.stream.messaging.Source;
-import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-
-@EnableScheduling
-@EnableBinding(Source.class)
+@Configuration
 public class UsageDetailSender {
-
-	@Autowired
-	private Source source;
 
 	private String[] users = {"user1", "user2", "user3", "user4", "user5"};
 
-	@Scheduled(fixedDelay = 1000)
-	public void sendEvents() {
-		UsageDetail usageDetail = new UsageDetail();
-		usageDetail.setUserId(this.users[new Random().nextInt(5)]);
-		usageDetail.setDuration(new Random().nextInt(300));
-		usageDetail.setData(new Random().nextInt(700));
-		this.source.output().send(MessageBuilder.withPayload(usageDetail).build());
+	@Bean
+	public Supplier<UsageDetail> sendEvents() {
+		return () -> {
+			UsageDetail usageDetail = new UsageDetail();
+			usageDetail.setUserId(this.users[new Random().nextInt(5)]);
+			usageDetail.setDuration(new Random().nextInt(300));
+			usageDetail.setData(new Random().nextInt(700));
+			return usageDetail;
+		};
 	}
 }

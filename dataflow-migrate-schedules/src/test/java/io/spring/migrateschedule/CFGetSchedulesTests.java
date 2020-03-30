@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2020 the original author or authors.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ import io.pivotal.scheduler.v1.jobs.ListJobsRequest;
 import io.pivotal.scheduler.v1.jobs.ListJobsResponse;
 import io.pivotal.scheduler.v1.jobs.ScheduleJobRequest;
 import io.pivotal.scheduler.v1.jobs.ScheduleJobResponse;
+import io.spring.migrateschedule.service.AppRegistrationRepository;
 import io.spring.migrateschedule.service.CFMigrateSchedulerService;
 import io.spring.migrateschedule.service.ConvertScheduleInfo;
 import io.spring.migrateschedule.service.MigrateProperties;
@@ -74,7 +75,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.cloud.deployer.resource.maven.MavenProperties;
 import org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryConnectionProperties;
-import org.springframework.cloud.deployer.spi.scheduler.Scheduler;
+import org.springframework.cloud.deployer.spi.task.TaskLauncher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -92,7 +93,8 @@ public class CFGetSchedulesTests {
 	private MigrateProperties migrateProperties;
 	private TaskDefinitionRepository taskDefinitionRepository;
 	private SchedulerClient schedulerClient;
-	private Scheduler scheduler;
+	private AppRegistrationRepository appRegistrationRepository;
+	private TaskLauncher taskLauncher;
 
 	@BeforeEach
 		public void setup() {
@@ -102,11 +104,14 @@ public class CFGetSchedulesTests {
 		this.cloudFoundryConnectionProperties.setSpace(DEFAULT_SPACE);
 		this.migrateProperties = new MigrateProperties();
 		this.taskDefinitionRepository = Mockito.mock(TaskDefinitionRepository.class);
-		this.scheduler = Mockito.mock(Scheduler.class);
+		this.appRegistrationRepository = Mockito.mock(AppRegistrationRepository.class);
+		this.taskLauncher = Mockito.mock(TaskLauncher.class);
+
 		this.cfConvertSchedulerService = new CFMigrateSchedulerService(this.cloudFoundryOperations,
 				this.schedulerClient,
 				this.cloudFoundryConnectionProperties, this.migrateProperties,
-				this.taskDefinitionRepository, new MavenProperties()) ;
+				this.taskDefinitionRepository, new MavenProperties(),
+				this.appRegistrationRepository, this.taskLauncher) ;
 	}
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2020 the original author or authors.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,8 +25,6 @@ import java.util.List;
  * @author Glenn Renfro
  */
 public class MigrateProperties {
-	private String schedulerTaskLauncherUrl = "maven://org.springframework.cloud:spring-cloud-dataflow-scheduler-task-launcher:2.3.0.BUILD-SNAPSHOT";
-
 	/**
 	 * The token for the updated schedules.
 	 */
@@ -37,61 +35,47 @@ public class MigrateProperties {
 	 */
 	private String taskLauncherPrefix = "tasklauncher";
 
-	private String dataflowServerUri = "http://localhost:9393";
-
-	/**
-	 * The global Java Options required for the applications to be launched by the schedulerTaskLauncher.
-	 */
-	private String javaOptions;
-
-	/**
-	 * The global timeout to be assigned to applications to be launched by the schedulerTaskLauncher.
-	 */
-	private String healthCheckTimeout;
-
-	/**
-	 * The global api timeout to be assigned to applications to be launched by scheduleTaskLauncher.
-	 */
-	private Long apiTimeout;
-
-	/**
-	 * Timeout for status API operations in milliseconds to be assigned to applications to be launched by scheduleTaskLauncher
-	 */
-	private Long statusTimeout;
-
-	/**
-	 * If set, the global override the timeout allocated for staging an app launched by the schedulefTaskLauncher.
-	 */
-	private Long stagingTimeout;
-
-	/**
-	 * If set, the global override the timeout allocated for starting an app launched by scheduleTaskLauncher.
-	 */
-	private Long startupTimeout;
-
-	/**
-	 * If set, the global override for the maximum number of concurrently running tasks.
-	 */
-	private Integer maximumConcurrentTasks;
-
-	/**
-	 * The number of seconds to wait for a schedule to complete.
-	 * This excludes the time it takes to stage the application on Cloud Foundry.
-	 */
-	private int scheduleTimeoutInSeconds = 30;
-
 	/**
 	 * Comma delimited list of schedules to migrate.  If empty then all schedules will be migrated.
 	 */
 	private List<String> scheduleNamesToMigrate = new ArrayList<>();
 
-	public String getSchedulerTaskLauncherUrl() {
-		return schedulerTaskLauncherUrl;
-	}
 
-	public void setSchedulerTaskLauncherUrl(String schedulerTaskLauncherUrl) {
-		this.schedulerTaskLauncherUrl = schedulerTaskLauncherUrl;
-	}
+	/**
+	 * The registered application name for the composed task runner.
+	 * Update this if the dataflow server use has a different composed task runner app name than the default.
+	 */
+	private String composedTaskRunnerRegisteredAppName = "composed-task-runner";
+
+	/**
+	 * The user name of the database that the migrated task will use.
+	 */
+	private String dbUserName;
+
+	/**
+	 * The password of the database that the migrated task will use.
+	 */
+	private String dbPassword;
+
+	/**
+	 * The url to the database that the migrated task will use.
+	 */
+	private String dbUrl;
+
+	/**
+	 * The driver class name to use for the database that the migrated task will use.
+	 */
+	private String dbDriverClassName;
+
+	/**
+	 * The url of the Spring Cloud Data Flow Server that migrated composed task runners should execute task launch commands.
+	 */
+	private String dataflowUrl="http://localhost:9393";
+
+	/**
+	 * Establish the name of the service account for the schedule.
+	 */
+	private String taskServiceAccountName = "default";
 
 	public String getSchedulerToken() {
 		return schedulerToken;
@@ -109,83 +93,67 @@ public class MigrateProperties {
 		this.taskLauncherPrefix = taskLauncherPrefix;
 	}
 
-	public String getDataflowServerUri() {
-		return dataflowServerUri;
-	}
-
-	public void setDataflowServerUri(String dataflowServerUri) {
-		this.dataflowServerUri = dataflowServerUri;
-	}
-
-	public int getScheduleTimeoutInSeconds() {
-		return scheduleTimeoutInSeconds;
-	}
-
-	public void setScheduleTimeoutInSeconds(int scheduleTimeoutInSeconds) {
-		this.scheduleTimeoutInSeconds = scheduleTimeoutInSeconds;
-	}
-
-	public String getJavaOptions() {
-		return javaOptions;
-	}
-
-	public void setJavaOptions(String javaOptions) {
-		this.javaOptions = javaOptions;
-	}
-
-	public String getHealthCheckTimeout() {
-		return healthCheckTimeout;
-	}
-
-	public void setHealthCheckTimeout(String healthCheckTimeout) {
-		this.healthCheckTimeout = healthCheckTimeout;
-	}
-
-	public Long getApiTimeout() {
-		return apiTimeout;
-	}
-
-	public void setApiTimeout(Long apiTimeout) {
-		this.apiTimeout = apiTimeout;
-	}
-
-	public Long getStatusTimeout() {
-		return statusTimeout;
-	}
-
-	public void setStatusTimeout(Long statusTimeout) {
-		this.statusTimeout = statusTimeout;
-	}
-
-	public Long getStagingTimeout() {
-		return stagingTimeout;
-	}
-
-	public void setStagingTimeout(Long stagingTimeout) {
-		this.stagingTimeout = stagingTimeout;
-	}
-
-	public Long getStartupTimeout() {
-		return startupTimeout;
-	}
-
-	public void setStartupTimeout(Long startupTimeout) {
-		this.startupTimeout = startupTimeout;
-	}
-
-	public Integer getMaximumConcurrentTasks() {
-		return maximumConcurrentTasks;
-	}
-
-	public void setMaximumConcurrentTasks(Integer maximumConcurrentTasks) {
-		this.maximumConcurrentTasks = maximumConcurrentTasks;
-	}
-
 	public List<String> getScheduleNamesToMigrate() {
 		return scheduleNamesToMigrate;
 	}
 
 	public void setScheduleNamesToMigrate(List<String> scheduleNamesToMigrate) {
 		this.scheduleNamesToMigrate = scheduleNamesToMigrate;
+	}
+
+	public String getDbUserName() {
+		return dbUserName;
+	}
+
+	public void setDbUserName(String dbUserName) {
+		this.dbUserName = dbUserName;
+	}
+
+	public String getDbPassword() {
+		return dbPassword;
+	}
+
+	public void setDbPassword(String dbPassword) {
+		this.dbPassword = dbPassword;
+	}
+
+	public String getDbUrl() {
+		return dbUrl;
+	}
+
+	public void setDbUrl(String dbUrl) {
+		this.dbUrl = dbUrl;
+	}
+
+	public String getDbDriverClassName() {
+		return dbDriverClassName;
+	}
+
+	public void setDbDriverClassName(String dbDriverClassName) {
+		this.dbDriverClassName = dbDriverClassName;
+	}
+
+	public String getComposedTaskRunnerRegisteredAppName() {
+		return composedTaskRunnerRegisteredAppName;
+	}
+
+	public void setComposedTaskRunnerRegisteredAppName(String composedTaskRunnerRegisteredAppName) {
+		this.composedTaskRunnerRegisteredAppName = composedTaskRunnerRegisteredAppName;
+	}
+
+	public String getDataflowUrl() {
+		return dataflowUrl;
+	}
+
+	public void setDataflowUrl(String dataflowUrl) {
+		this.dataflowUrl = dataflowUrl;
+	}
+
+	public String getTaskServiceAccountName() {
+		return taskServiceAccountName;
+	}
+
+	public void setTaskServiceAccountName(String taskServiceAccountName) {
+		this.taskServiceAccountName = taskServiceAccountName;
 	}
 }

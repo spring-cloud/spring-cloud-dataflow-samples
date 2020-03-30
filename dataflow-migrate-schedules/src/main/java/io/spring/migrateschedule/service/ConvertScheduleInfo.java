@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2020 the original author or authors.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Map;
 import org.cloudfoundry.operations.applications.ApplicationHealthCheck;
 
 import org.springframework.cloud.deployer.spi.scheduler.ScheduleInfo;
+import org.springframework.core.io.Resource;
 
 /**
  * A child implementation of {@link ScheduleInfo} that adds additional attributes
@@ -49,8 +50,6 @@ public class ConvertScheduleInfo extends ScheduleInfo implements Comparable{
 
 	private String healthCheckEndPoint;
 
-	private Integer maximumConcurrentTasks = 20;
-
 	private boolean useSpringApplicationJson;
 
 	private List<String> services;
@@ -61,6 +60,12 @@ public class ConvertScheduleInfo extends ScheduleInfo implements Comparable{
 
 	private List<String> hosts;
 
+	private Resource taskResource;
+
+	private boolean isCTR;
+
+	private String ctrDSL;
+
 	public List<String> getCommandLineArgs() {
 		return commandLineArgs;
 	}
@@ -70,7 +75,7 @@ public class ConvertScheduleInfo extends ScheduleInfo implements Comparable{
 	}
 
 	public String getRegisteredAppName() {
-		return registeredAppName;
+		return this.registeredAppName;
 	}
 
 	public void setRegisteredAppName(String registeredAppName) {
@@ -94,7 +99,7 @@ public class ConvertScheduleInfo extends ScheduleInfo implements Comparable{
 	}
 
 	public Integer getDiskInMB() {
-		return diskInMB;
+		return this.diskInMB;
 	}
 
 	public void setDiskInMB(Integer diskInMB) {
@@ -102,7 +107,7 @@ public class ConvertScheduleInfo extends ScheduleInfo implements Comparable{
 	}
 
 	public Integer getMemoryInMB() {
-		return memoryInMB;
+		return this.memoryInMB;
 	}
 
 	public void setMemoryInMB(Integer memoryInMB) {
@@ -110,7 +115,7 @@ public class ConvertScheduleInfo extends ScheduleInfo implements Comparable{
 	}
 
 	public String getJavaBuildPack() {
-		return javaBuildPack;
+		return this.javaBuildPack;
 	}
 
 	public void setJavaBuildPack(String javaBuildPack) {
@@ -118,7 +123,7 @@ public class ConvertScheduleInfo extends ScheduleInfo implements Comparable{
 	}
 
 	public ApplicationHealthCheck getApplicationHealthCheck() {
-		return applicationHealthCheck;
+		return this.applicationHealthCheck;
 	}
 
 	public void setApplicationHealthCheck(ApplicationHealthCheck applicationHealthCheck) {
@@ -126,7 +131,7 @@ public class ConvertScheduleInfo extends ScheduleInfo implements Comparable{
 	}
 
 	public boolean isUseSpringApplicationJson() {
-		return useSpringApplicationJson;
+		return this.useSpringApplicationJson;
 	}
 
 	public void setUseSpringApplicationJson(boolean useSpringApplicationJson) {
@@ -134,23 +139,15 @@ public class ConvertScheduleInfo extends ScheduleInfo implements Comparable{
 	}
 
 	public String getHealthCheckEndPoint() {
-		return healthCheckEndPoint;
+		return this.healthCheckEndPoint;
 	}
 
 	public void setHealthCheckEndPoint(String healthCheckEndPoint) {
 		this.healthCheckEndPoint = healthCheckEndPoint;
 	}
 
-	public Integer getMaximumConcurrentTasks() {
-		return maximumConcurrentTasks;
-	}
-
-	public void setMaximumConcurrentTasks(Integer maximumConcurrentTasks) {
-		this.maximumConcurrentTasks = maximumConcurrentTasks;
-	}
-
 	public List<String> getServices() {
-		return services;
+		return this.services;
 	}
 
 	public void setServices(List<String> services) {
@@ -158,7 +155,7 @@ public class ConvertScheduleInfo extends ScheduleInfo implements Comparable{
 	}
 
 	public List<String> getDomains() {
-		return domains;
+		return this.domains;
 	}
 
 	public void setDomains(List<String> domains) {
@@ -166,7 +163,7 @@ public class ConvertScheduleInfo extends ScheduleInfo implements Comparable{
 	}
 
 	public List<String> getRoutes() {
-		return routes;
+		return this.routes;
 	}
 
 	public void setRoutes(List<String> routes) {
@@ -174,10 +171,34 @@ public class ConvertScheduleInfo extends ScheduleInfo implements Comparable{
 	}
 
 	public List<String> getHosts() {
-		return hosts;
+		return this.hosts;
 	}
 
 	public void setHosts(List<String> hosts) {
 		this.hosts = hosts;
+	}
+
+	public Resource getTaskResource() {
+		return this.taskResource;
+	}
+
+	public void setTaskResource(Resource taskResource) {
+		this.taskResource = taskResource;
+	}
+
+	public boolean isCTR() {
+		return this.isCTR;
+	}
+
+	public void setCTR(boolean CTR) {
+		isCTR = CTR;
+	}
+
+	public String getCtrDSL() {
+		return this.ctrDSL;
+	}
+
+	public void setCtrDSL(String ctrDSL) {
+		this.ctrDSL = ctrDSL;
 	}
 }

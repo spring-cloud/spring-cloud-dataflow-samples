@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2020 the original author or authors.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,14 +18,15 @@ package io.spring.migrateschedule.service;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import org.springframework.cloud.dataflow.core.AppRegistration;
+import org.springframework.cloud.dataflow.core.ApplicationType;
 import org.springframework.cloud.dataflow.core.TaskDefinition;
+import org.springframework.cloud.dataflow.core.dsl.TaskNode;
+import org.springframework.cloud.dataflow.core.dsl.TaskParser;
 import org.springframework.cloud.dataflow.registry.support.AppResourceCommon;
 import org.springframework.cloud.deployer.resource.maven.MavenProperties;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -40,24 +41,48 @@ import org.springframework.util.StringUtils;
  */
 public abstract class AbstractMigrateService implements MigrateScheduleService {
 
-	private final static String DATA_FLOW_URI_KEY = "spring.cloud.dataflow.client.serverUri";
+	public final static String COMMAND_ARGUMENT_PREFIX = "cmdarg.";
 
-	private final static String COMMAND_ARGUMENT_PREFIX = "cmdarg.";
+	public final static String APP_PREFIX = "app.";
 
-	protected final static String APP_PREFIX = "app.";
-
-	protected final static String DEPLOYER_PREFIX = "deployer.";
+	public final static String DEPLOYER_PREFIX = "deployer.";
 
 	protected MigrateProperties migrateProperties;
 
-	private TaskDefinitionRepository taskDefinitionRepository;
+	protected TaskDefinitionRepository taskDefinitionRepository;
 
-	private MavenProperties mavenProperties;
+	protected AppRegistrationRepository appRegistrationRepository;
 
-	public AbstractMigrateService(MigrateProperties migrateProperties, TaskDefinitionRepository taskDefinitionRepository, MavenProperties mavenProperties) {
+	protected MavenProperties mavenProperties;
+
+	protected final String appArgPrefix;
+
+	protected final String deployerArgPrefix;
+
+	protected final String schedulerArgAppPrefix;
+
+	protected final String commandArgPrefix;
+
+	protected final int appArgPrefixLength;
+
+	protected final int deployerArgPrefixLength;
+
+	protected final int commandArgPrefixLength;
+
+	public AbstractMigrateService(MigrateProperties migrateProperties,
+			TaskDefinitionRepository taskDefinitionRepository,
+			MavenProperties mavenProperties, AppRegistrationRepository appRegistrationRepository) {
 		this.migrateProperties = migrateProperties;
 		this.taskDefinitionRepository = taskDefinitionRepository;
 		this.mavenProperties = mavenProperties;
+		this.appRegistrationRepository = appRegistrationRepository;
+		this.schedulerArgAppPrefix = String.format("--%s.", this.migrateProperties.getTaskLauncherPrefix());
+		this.appArgPrefix = String.format("%s%s", this.schedulerArgAppPrefix, APP_PREFIX);
+		this.deployerArgPrefix = String.format("%s%s", this.schedulerArgAppPrefix, DEPLOYER_PREFIX);
+		this.appArgPrefixLength = this.appArgPrefix.length();
+		this.deployerArgPrefixLength = this.deployerArgPrefix.length();
+		this.commandArgPrefix = String.format("%s%s.", COMMAND_ARGUMENT_PREFIX, this.migrateProperties.getTaskLauncherPrefix());
+		this.commandArgPrefixLength = this.commandArgPrefix.length();
 	}
 
 	public TaskDefinition findTaskDefinitionByName(String taskDefinitionName) {
@@ -76,7 +101,7 @@ public abstract class AbstractMigrateService implements MigrateScheduleService {
 	 * @param input the scheduler properties
 	 * @return scheduler properties for the task
 	 */
-	protected static Map<String, String> extractAndQualifySchedulerProperties(Map<String, String> input) {
+	protected Map<String, String> extractAndQualifySchedulerProperties(Map<String, String> input) {
 		final String prefix = "spring.cloud.scheduler.";
 
 		Map<String, String> result = new TreeMap<>(input).entrySet().stream()
@@ -88,83 +113,75 @@ public abstract class AbstractMigrateService implements MigrateScheduleService {
 	}
 
 	/**
-	 * Retrieve the resource for the SchedulerTaskLauncher and verify the URI.
-	 * @return {@link Resource} for the SchedulerTaskLauncher.
+	 * Retrieve the resource for the Scheduled task
+	 * @return {@link Resource} for the scheduled task.
 	 */
-	protected Resource getTaskLauncherResource() {
-		final URI url;
+	protected Resource getTaskLauncherResource(String resource) {
 		try {
-			new URI(this.migrateProperties.getSchedulerTaskLauncherUrl()); //verify url
+			new URI(resource); //verify url
 		}
 		catch (URISyntaxException uriSyntaxException) {
 			throw new IllegalArgumentException(uriSyntaxException);
 		}
 		AppResourceCommon appResourceCommon = new AppResourceCommon(this.mavenProperties, new DefaultResourceLoader());
-		return appResourceCommon.getResource(this.migrateProperties.getSchedulerTaskLauncherUrl());
+		return appResourceCommon.getResource(resource);
 	}
 
-	/**
-	 * Add the appropriate tags to the command line args so that the SchedulerTaskLauncher can
-	 * extract them.
-	 * @param args the command line args to be tagged.
-	 * @return the tagged command line args.
-	 */
-	protected List<String> tagCommandLineArgs(List<String> args) {
-		List<String> taggedArgs = new ArrayList<>();
-
-		for(String arg : args) {
-			if(arg.contains("spring.cloud.task.name")) {
-				continue;
-			}
-			String updatedArg = arg;
-			if (!arg.startsWith(DATA_FLOW_URI_KEY) && !"--".concat(arg).startsWith(DATA_FLOW_URI_KEY)) {
-				updatedArg = COMMAND_ARGUMENT_PREFIX +
-						this.migrateProperties.getTaskLauncherPrefix() + "." + arg;
-			}
-			taggedArgs.add(updatedArg);
+	protected String extractAppKey(String arg, int appPrefixLength) {
+		int indexOfEqual = arg.indexOf("=");
+		arg = arg.substring(appPrefixLength, indexOfEqual);
+		int dotIndex = arg.indexOf(".");
+		String result = arg;
+		if (!arg.substring(0, dotIndex).equals("management")) {
+			result = arg.substring(dotIndex + 1);
 		}
-		return taggedArgs;
+		return result;
 	}
 
-	/**
-	 * Add the appropriate tags to the command line args so that the SchedulerTaskLauncher can
-	 * extract them.
-	 * @param appName the name of the application to be associated with the property
-	 * @param appProperties the properties to be tagged
-	 * @param prefix the prefix to mark the property as to be used by the SchedulerTaskLauncher.
-	 * @return the tagged command line args.
-	 */
-	protected Map<String, String> tagProperties(String appName, Map<String, String> appProperties, String prefix) {
-		Map<String, String> taggedAppProperties = new HashMap<>(appProperties.size());
+	protected String extractDeployerKey(String arg, int deployerPrefixLength) {
+		int indexOfEqual = arg.indexOf("=");
+		return arg.substring(deployerPrefixLength, indexOfEqual);
+	}
 
-		for(String key : appProperties.keySet()) {
-			if(key.contains("spring.cloud.task.name")) {
-				continue;
+	protected String extractValue(String arg) {
+		int indexOfEqual = arg.indexOf("=");
+		return arg.substring(indexOfEqual + 1);
+	}
+
+	protected ConvertScheduleInfo populateTaskDefinitionData(String appName, ConvertScheduleInfo scheduleInfo) {
+		TaskDefinition taskDefinition = this.taskDefinitionRepository.findByTaskName(appName);
+
+		if (taskDefinition != null) {
+			TaskParser taskParser = new TaskParser(appName, taskDefinition.getDslText(), false, false);
+			String registeredAppName = taskDefinition.getRegisteredAppName();
+			TaskNode taskNode = taskParser.parse();
+			if (taskNode.isComposed()) {
+				registeredAppName = this.migrateProperties.getComposedTaskRunnerRegisteredAppName();
+				scheduleInfo.setCtrDSL(taskNode.toExecutableDSL());
+				scheduleInfo.setCTR(true);
 			}
-			String updatedKey = key;
-			if (!key.startsWith(DATA_FLOW_URI_KEY)) {
-				if (StringUtils.hasText(appName)) {
-					updatedKey = this.migrateProperties.getTaskLauncherPrefix() + "." +
-							prefix + appName + "." + key;
-				}
-				else {
-					updatedKey = this.migrateProperties.getTaskLauncherPrefix() + "." +
-							prefix + key;
-				}
-			}
-			taggedAppProperties.put(updatedKey, appProperties.get(key));
+
+			AppRegistration appRegistration = this.appRegistrationRepository.findAppRegistrationByNameAndTypeAndDefaultVersionIsTrue(registeredAppName, ApplicationType.task);
+
+			scheduleInfo.setTaskResource(getTaskLauncherResource(appRegistration.getUri().toString()));
+			scheduleInfo.setTaskDefinitionName(appName);
 		}
-		return taggedAppProperties;
+		return scheduleInfo;
 	}
 
-	/**
-	 * Add the required SchedulerTaskLauncher properties.
-	 * @param properties the map of properties in which to add the SchedulerTaskLauncher properties.
-	 * @return updated properties.
-	 */
-	protected Map<String, String> addSchedulerAppProps(Map<String, String> properties) {
-		Map<String, String> appProperties = new HashMap<>(properties);
-		appProperties.put("spring.cloud.dataflow.client.serverUri", this.migrateProperties.getDataflowServerUri());
-		return appProperties;
+	protected ConvertScheduleInfo addDBInfoToScheduleInfo(ConvertScheduleInfo scheduleInfo) {
+		if(StringUtils.hasText(this.migrateProperties.getDbUrl())) {
+			scheduleInfo.getAppProperties().put("spring.datasource.url", this.migrateProperties.getDbUrl());
+		}
+		if(StringUtils.hasText(this.migrateProperties.getDbDriverClassName())) {
+			scheduleInfo.getAppProperties().put("spring.datasource.driverClassName", this.migrateProperties.getDbDriverClassName());
+		}
+		if(StringUtils.hasText(this.migrateProperties.getDbUserName())) {
+			scheduleInfo.getAppProperties().put("spring.datasource.username", this.migrateProperties.getDbUserName());
+		}
+		if(StringUtils.hasText(this.migrateProperties.getDbPassword())) {
+			scheduleInfo.getAppProperties().put("spring.datasource.password", this.migrateProperties.getDbPassword());
+		}
+		return scheduleInfo;
 	}
 }

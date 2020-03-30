@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2020 the original author or authors.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,24 +17,20 @@
 package io.spring.migrateschedule;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import io.spring.migrateschedule.service.ConvertScheduleInfo;
 import io.spring.migrateschedule.configuration.BatchConfiguration;
+import io.spring.migrateschedule.service.AppRegistrationRepository;
+import io.spring.migrateschedule.service.ConvertScheduleInfo;
 import io.spring.migrateschedule.service.MigrateScheduleService;
 import io.spring.migrateschedule.service.TaskDefinitionRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 
-import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInstance;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.batch.test.context.SpringBatchTest;
@@ -70,7 +66,7 @@ import static org.mockito.Mockito.when;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class BatchIntegrationTests {
 
-	public static final String DEFAULT_SCHEDULE_NAME = "defaultScheduleName";
+	public static final String DEFAULT_SCHEDULE_NAME = "defaultScheduleName-scdf-myapp";
 	public static final String DEFAULT_TASK_DEFINITION_NAME = "defaultTaskDefinitionName";
 	public static final String DEFAULT_APP_NAME = "defaultAppName";
 
@@ -85,6 +81,9 @@ public class BatchIntegrationTests {
 
 	@MockBean
 	private TaskDefinitionRepository taskDefinitionRepository;
+
+	@MockBean
+	private AppRegistrationRepository appRegistrationRepository;
 
 	@MockBean
 	private Scheduler scheduler;

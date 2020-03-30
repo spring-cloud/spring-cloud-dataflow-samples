@@ -16,22 +16,20 @@
 
 package io.spring.migrateschedule.service;
 
-import org.springframework.batch.core.step.skip.SkipLimitExceededException;
-import org.springframework.batch.core.step.skip.SkipPolicy;
+import java.util.List;
+
+import org.springframework.cloud.dataflow.core.AppRegistration;
+import org.springframework.cloud.dataflow.core.ApplicationType;
+import org.springframework.data.keyvalue.repository.KeyValueRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Establish that there is no max maximum skip count if {@link ScheduleProcessedException} is thrown.
- *
+ * Repository interface for retrieving instances of the the {@link AppRegistration} class.
  * @author Glenn Renfro
- *
  */
-public class SchedulerSkipPolicy implements SkipPolicy {
-	@Override
-	public boolean shouldSkip(Throwable t, int skipCount) throws SkipLimitExceededException {
-		boolean result = false;
-		if(t instanceof ScheduleProcessedException) {
-			result = true;
-		}
-		return result;
-	}
+@Transactional
+public interface AppRegistrationRepository extends KeyValueRepository<AppRegistration, Long> {
+
+	AppRegistration findAppRegistrationByNameAndTypeAndDefaultVersionIsTrue(String name, ApplicationType type);
+
 }

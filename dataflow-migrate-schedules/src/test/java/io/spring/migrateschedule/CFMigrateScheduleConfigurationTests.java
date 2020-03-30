@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2020 the original author or authors.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,12 +17,15 @@
 package io.spring.migrateschedule;
 
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 
 import io.pivotal.scheduler.SchedulerClient;
+import io.spring.migrateschedule.service.AppRegistrationRepository;
+import io.spring.migrateschedule.service.CFMigrateSchedulerService;
 import io.spring.migrateschedule.service.ConvertScheduleInfo;
 import io.spring.migrateschedule.service.MigrateProperties;
-import io.spring.migrateschedule.service.CFMigrateSchedulerService;
 import io.spring.migrateschedule.service.TaskDefinitionRepository;
 import org.cloudfoundry.operations.CloudFoundryOperations;
 import org.cloudfoundry.operations.applications.ApplicationDetail;
@@ -39,24 +42,27 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import reactor.core.publisher.Mono;
 
+import org.springframework.cloud.dataflow.core.AppRegistration;
 import org.springframework.cloud.dataflow.core.TaskDefinition;
 import org.springframework.cloud.deployer.resource.maven.MavenProperties;
 import org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryConnectionProperties;
 import org.springframework.cloud.deployer.spi.scheduler.ScheduleRequest;
 import org.springframework.cloud.deployer.spi.scheduler.Scheduler;
+import org.springframework.cloud.deployer.spi.task.TaskLauncher;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class CFMigrateScheduleConfigurationTests {
 
-	public static final String DEFAULT_SCHEDULE_NAME = "defaultScheduleName";
 	public static final String DEFAULT_TASK_DEFINITION_NAME = "defaultTaskDefinitionName";
+	public static final String DEFAULT_SCHEDULE_NAME = "defaultScheduleName-scdf-" + DEFAULT_TASK_DEFINITION_NAME;
 	public static final String DEFAULT_APP_NAME = "defaultAppName";
-	public static final String DEFAULT_CMD_ARG = "defaultCmd=WOW";
+	public static final String DEFAULT_CMD_ARG = "defaultCmd=MUCHWOW";
+	public static final String TASK_LAUNCHER_TASK_NAME_ARG = "--spring.cloud.scheduler.task.launcher.taskName="+ DEFAULT_TASK_DEFINITION_NAME;
 	public static final String DEFAULT_BUILD_PACK = "defaultBuildPack";
+	public static final String DEFAULT_DATA_FLOW_URI = "http://localhost:9393";
 
 	private CFMigrateSchedulerService cfConvertSchedulerService;
 	private CloudFoundryOperations cloudFoundryOperations;
@@ -65,6 +71,8 @@ public class CFMigrateScheduleConfigurationTests {
 	private TaskDefinitionRepository taskDefinitionRepository;
 	private SchedulerClient schedulerClient;
 	private Scheduler scheduler;
+	private AppRegistrationRepository appRegistrationRepository;
+	private TaskLauncher taskLauncher;
 
 	@BeforeEach
 		public void setup() {
@@ -74,10 +82,16 @@ public class CFMigrateScheduleConfigurationTests {
 		this.migrateProperties = new MigrateProperties();
 		this.taskDefinitionRepository = Mockito.mock(TaskDefinitionRepository.class);
 		this.scheduler = Mockito.mock(Scheduler.class);
+		this.appRegistrationRepository = Mockito.mock(AppRegistrationRepository.class);
+		this.taskLauncher = Mockito.mock(TaskLauncher.class);
+
+
 		this.cfConvertSchedulerService = new CFMigrateSchedulerService(this.cloudFoundryOperations,
 				this.schedulerClient,
 				this.cloudFoundryConnectionProperties, this.migrateProperties,
-				this.taskDefinitionRepository, new MavenProperties()) ;
+				this.taskDefinitionRepository, new MavenProperties(),
+				this.appRegistrationRepository,
+				this.taskLauncher) ;
 
 	}
 
@@ -85,15 +99,15 @@ public class CFMigrateScheduleConfigurationTests {
 	public void testEnrichment() {
 		ConvertScheduleInfo scheduleInfo = createFoundationConvertScheduleInfo();
 		assertThat(scheduleInfo.getAppProperties().keySet().size()).isEqualTo(5);
-		assertThat(scheduleInfo.getAppProperties().get("tasklauncher.app.defaultAppName.foo")).isEqualTo("bar");
-		assertThat(scheduleInfo.getAppProperties().get("spring.cloud.dataflow.client.serverUri")).isEqualTo("http://localhost:9393");
-		assertThat(scheduleInfo.getAppProperties().get("tasklauncher.deployer.defaultAppName.cloudfoundry.memory")).isEqualTo("1024m");
-		assertThat(scheduleInfo.getAppProperties().get("tasklauncher.deployer.defaultAppName.cloudfoundry.health-check")).isEqualTo("port");
-		assertThat(scheduleInfo.getAppProperties().get("tasklauncher.deployer.defaultAppName.cloudfoundry.disk")).isEqualTo("1024m");
+		assertThat(scheduleInfo.getAppProperties().get("foo")).isEqualTo("bar");
+		assertThat(scheduleInfo.getAppProperties().get("dataflow-server-uri")).isEqualTo(DEFAULT_DATA_FLOW_URI);
+		assertThat(scheduleInfo.getAppProperties().get("cloudfoundry.memory")).isEqualTo("1024m");
+		assertThat(scheduleInfo.getAppProperties().get("cloudfoundry.health-check")).isEqualTo("port");
+		assertThat(scheduleInfo.getAppProperties().get("cloudfoundry.disk")).isEqualTo("1024m");
 
 		assertThat(scheduleInfo.getCommandLineArgs().size()).isEqualTo(2);
-		assertThat(scheduleInfo.getCommandLineArgs().get(0)).isEqualTo("cmdarg.tasklauncher.defaultCmd=WOW");
-		assertThat(scheduleInfo.getCommandLineArgs().get(1)).isEqualTo("--spring.cloud.scheduler.task.launcher.taskName=defaultTaskDefinitionName");
+		assertThat(scheduleInfo.getCommandLineArgs().get(0)).isEqualTo(DEFAULT_CMD_ARG);
+		assertThat(scheduleInfo.getCommandLineArgs().get(1)).isEqualTo("--spring.application.name=defaultTaskDefinitionName");
 	}
 
 	@Test
@@ -103,18 +117,21 @@ public class CFMigrateScheduleConfigurationTests {
 		scheduleInfo.setTaskDefinitionName(DEFAULT_TASK_DEFINITION_NAME);
 		scheduleInfo.setScheduleProperties(new HashMap<>());
 		scheduleInfo.setRegisteredAppName(DEFAULT_APP_NAME);
+		scheduleInfo.getCommandLineArgs().add(TASK_LAUNCHER_TASK_NAME_ARG);
 		Mockito.when(cloudFoundryOperations.applications()).thenReturn(new NoPropertyApplication());
+		createMockAppRegistration();
 		TaskDefinition taskDefinition = TaskDefinition.TaskDefinitionBuilder
 				.from(new TaskDefinition("fooTask", "foo"))
 				.setTaskName(DEFAULT_TASK_DEFINITION_NAME)
 				.setRegisteredAppName(DEFAULT_APP_NAME)
+				.setDslText("timestamp")
 				.build();
 		Mockito.when(this.taskDefinitionRepository.findByTaskName(Mockito.any())).thenReturn(taskDefinition);
 		scheduleInfo = this.cfConvertSchedulerService.enrichScheduleMetadata(scheduleInfo);
 		assertThat(scheduleInfo.getAppProperties().keySet().size()).isEqualTo(1);
-		assertThat(scheduleInfo.getAppProperties().get("spring.cloud.dataflow.client.serverUri")).isEqualTo("http://localhost:9393");
+		assertThat(scheduleInfo.getAppProperties().get("dataflow-server-uri")).isEqualTo("http://localhost:9393");
 		assertThat(scheduleInfo.getCommandLineArgs().size()).isEqualTo(1);
-		assertThat(scheduleInfo.getCommandLineArgs().get(0)).isEqualTo("--spring.cloud.scheduler.task.launcher.taskName=defaultTaskDefinitionName");
+		assertThat(scheduleInfo.getCommandLineArgs().get(0)).isEqualTo("--spring.application.name=defaultTaskDefinitionName");
 	}
 
 	@Test
@@ -126,9 +143,9 @@ public class CFMigrateScheduleConfigurationTests {
 		scheduleInfo.setRegisteredAppName(DEFAULT_APP_NAME);
 		scheduleInfo.getCommandLineArgs().add(DEFAULT_CMD_ARG);
 		Mockito.when(cloudFoundryOperations.applications()).thenReturn(new SinglePropertyApplication());
-		assertThrows(IllegalStateException.class, () -> this.cfConvertSchedulerService.enrichScheduleMetadata(scheduleInfo));
+		scheduleInfo = this.cfConvertSchedulerService.enrichScheduleMetadata(scheduleInfo);
+		assertThat(scheduleInfo.getTaskResource()).isNull();
 	}
-
 
 	@Test
 	public void testMigrate() {
@@ -137,8 +154,8 @@ public class CFMigrateScheduleConfigurationTests {
 		final ArgumentCaptor<ScheduleRequest> scheduleRequestArgument = ArgumentCaptor.forClass(ScheduleRequest.class);
 		final ArgumentCaptor<String> scheduleNameArg = ArgumentCaptor.forClass(String.class);
 		verify(this.scheduler, times(1)).schedule(scheduleRequestArgument.capture());
-		verify(this.scheduler, times(1)).unschedule(scheduleNameArg.capture());
-		assertThat(scheduleRequestArgument.getValue().getScheduleName()).isEqualTo("defaultScheduleName-scdf-defaultTaskDefinitionName");
+		verify(this.taskLauncher, times(1)).destroy(scheduleNameArg.capture());
+		assertThat(scheduleRequestArgument.getValue().getScheduleName()).isEqualTo("defaultScheduleName");
 		assertThat(scheduleNameArg.getValue()).isEqualTo(DEFAULT_SCHEDULE_NAME);
 	}
 
@@ -149,13 +166,17 @@ public class CFMigrateScheduleConfigurationTests {
 		scheduleInfo.setScheduleProperties(new HashMap<>());
 		scheduleInfo.setRegisteredAppName(DEFAULT_APP_NAME);
 		scheduleInfo.getCommandLineArgs().add(DEFAULT_CMD_ARG);
+		scheduleInfo.getCommandLineArgs().add(TASK_LAUNCHER_TASK_NAME_ARG);
+
 		Mockito.when(cloudFoundryOperations.applications()).thenReturn(new SinglePropertyApplication());
 		TaskDefinition taskDefinition = TaskDefinition.TaskDefinitionBuilder
 				.from(new TaskDefinition("fooTask", "foo"))
 				.setTaskName(DEFAULT_TASK_DEFINITION_NAME)
 				.setRegisteredAppName(DEFAULT_APP_NAME)
+				.setDslText("timestamp")
 				.build();
 		Mockito.when(this.taskDefinitionRepository.findByTaskName(Mockito.any())).thenReturn(taskDefinition);
+		createMockAppRegistration();
 		return this.cfConvertSchedulerService.enrichScheduleMetadata(scheduleInfo);
 	}
 
@@ -216,5 +237,16 @@ public class CFMigrateScheduleConfigurationTests {
 		public Mono<ApplicationManifest> getApplicationManifest(GetApplicationManifestRequest getApplicationManifestRequest) {
 			return Mono.empty();
 		}
+	}
+
+	private void createMockAppRegistration() {
+		AppRegistration appRegistration = new AppRegistration();
+		try {
+			appRegistration.setUri(new URI("docker://fun:party"));
+		}
+		catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		Mockito.when(this.appRegistrationRepository.findAppRegistrationByNameAndTypeAndDefaultVersionIsTrue(Mockito.any(), Mockito.any())).thenReturn(appRegistration);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2020 the original author or authors.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,16 +18,15 @@ package io.spring.migrateschedule.configuration;
 
 import io.pivotal.reactor.scheduler.ReactorSchedulerClient;
 import io.pivotal.scheduler.SchedulerClient;
+import io.spring.migrateschedule.service.AppRegistrationRepository;
 import io.spring.migrateschedule.service.CFMigrateSchedulerService;
 import io.spring.migrateschedule.service.MigrateProperties;
-import io.spring.migrateschedule.service.MigrateScheduleService;
 import io.spring.migrateschedule.service.TaskDefinitionRepository;
 import org.cloudfoundry.operations.CloudFoundryOperations;
 import org.cloudfoundry.reactor.ConnectionContext;
 import org.cloudfoundry.reactor.TokenProvider;
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.deployer.resource.maven.MavenProperties;
@@ -47,6 +46,7 @@ import org.springframework.context.annotation.Profile;
 @EntityScan({
 		"org.springframework.cloud.dataflow.core"
 })
+@Profile("cloudfoundry")
 public class CFMigrateScheduleConfiguration {
 
 	@Bean
@@ -69,9 +69,12 @@ public class CFMigrateScheduleConfiguration {
 	public CFMigrateSchedulerService scheduleService(CloudFoundryOperations cloudFoundryOperations,
 			SchedulerClient schedulerClient,
 			CloudFoundryConnectionProperties properties, MigrateProperties migrateProperties,
-			TaskDefinitionRepository taskDefinitionRepository, MavenProperties mavenProperties) {
+			TaskDefinitionRepository taskDefinitionRepository, MavenProperties mavenProperties,
+			AppRegistrationRepository appRegistrationRepository,
+			TaskLauncher taskLauncher) {
 		return new CFMigrateSchedulerService(cloudFoundryOperations,
-				schedulerClient, properties, migrateProperties, taskDefinitionRepository, mavenProperties);
+				schedulerClient, properties, migrateProperties, taskDefinitionRepository,
+				mavenProperties, appRegistrationRepository, taskLauncher);
 	}
 
 	@Bean

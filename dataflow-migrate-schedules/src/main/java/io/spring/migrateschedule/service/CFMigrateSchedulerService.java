@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2020 the original author or authors.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import org.springframework.cloud.dataflow.core.TaskDefinition;
 import org.springframework.cloud.deployer.resource.maven.MavenProperties;
 import org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryConnectionProperties;
 import org.springframework.cloud.deployer.spi.core.AppDefinition;
@@ -49,6 +48,7 @@ import org.springframework.cloud.deployer.spi.scheduler.ScheduleRequest;
 import org.springframework.cloud.deployer.spi.scheduler.Scheduler;
 import org.springframework.cloud.deployer.spi.scheduler.SchedulerException;
 import org.springframework.cloud.deployer.spi.scheduler.SchedulerPropertyKeys;
+import org.springframework.cloud.deployer.spi.task.TaskLauncher;
 import org.springframework.util.StringUtils;
 
 /**
@@ -60,6 +60,8 @@ import org.springframework.util.StringUtils;
 public class CFMigrateSchedulerService extends AbstractMigrateService {
 
 	public static final String JAR_LAUNCHER = "org.springframework.boot.loader.JarLauncher";
+
+	public static final String TASK_NAME_ARGUMENT_KEY = "--spring.cloud.scheduler.task.launcher.taskName=";
 
 	private static final int JAR_LAUNCHER_LENGTH = JAR_LAUNCHER.length();
 
@@ -77,15 +79,20 @@ public class CFMigrateSchedulerService extends AbstractMigrateService {
 
 	private CloudFoundryConnectionProperties properties;
 
+	private TaskLauncher taskLauncher;
+
 
 	public CFMigrateSchedulerService(CloudFoundryOperations cloudFoundryOperations,
 			SchedulerClient schedulerClient,
 			CloudFoundryConnectionProperties properties, MigrateProperties migrateProperties,
-			TaskDefinitionRepository taskDefinitionRepository, MavenProperties mavenProperties) {
-		super(migrateProperties, taskDefinitionRepository, mavenProperties);
+			TaskDefinitionRepository taskDefinitionRepository,
+			MavenProperties mavenProperties, AppRegistrationRepository appRegistrationRepository,
+			TaskLauncher taskLauncher) {
+		super(migrateProperties, taskDefinitionRepository, mavenProperties, appRegistrationRepository);
 		this.cloudFoundryOperations = cloudFoundryOperations;
 		this.schedulerClient = schedulerClient;
 		this.properties = properties;
+		this.taskLauncher = taskLauncher;
 	}
 
 	@Override
@@ -93,9 +100,9 @@ public class CFMigrateSchedulerService extends AbstractMigrateService {
 		List<ConvertScheduleInfo> result = new ArrayList<>();
 		int pageCount = getJobPageCount();
 		for (int i = PCF_PAGE_START_NUM; i <= pageCount; i++) {
-			logger.info(String.format("Reading Schedules Page %s of %s ", i, pageCount ));
+			logger.info(String.format("Reading Schedules Page %s of %s ", i, pageCount));
 			List<ConvertScheduleInfo> scheduleInfoPage = getSchedules(i);
-			if(scheduleInfoPage == null) {
+			if (scheduleInfoPage == null) {
 				throw new SchedulerException(SCHEDULER_SERVICE_ERROR_MESSAGE);
 			}
 			result.addAll(scheduleInfoPage);
@@ -154,8 +161,8 @@ public class CFMigrateSchedulerService extends AbstractMigrateService {
 
 	private boolean isScheduleMigratable(String scheduleName) {
 		boolean result;
-		if(migrateProperties.getScheduleNamesToMigrate().size() > 0) {
-			result = migrateProperties.getScheduleNamesToMigrate().contains(scheduleName);
+		if (this.migrateProperties.getScheduleNamesToMigrate().size() > 0) {
+			result = this.migrateProperties.getScheduleNamesToMigrate().contains(scheduleName);
 		}
 		else {
 			result = true;
@@ -174,7 +181,7 @@ public class CFMigrateSchedulerService extends AbstractMigrateService {
 
 		logger.info(String.format("Retrieving ApplicationManifest for application %s for schedule %s", scheduleInfo.getTaskDefinitionName(), scheduleInfo.getScheduleName()));
 		ApplicationManifest applicationManifest = getApplicationManifest(scheduleInfo.getTaskDefinitionName());
-		if(applicationManifest != null) {
+		if (applicationManifest != null) {
 			addApplicationManifestPropsToConvertScheduleInfo(scheduleInfo, applicationManifest);
 		}
 		if (environment != null) {
@@ -183,52 +190,64 @@ public class CFMigrateSchedulerService extends AbstractMigrateService {
 			}
 		}
 		logger.info(String.format("Tagging command line args for application %s for schedule %s", scheduleInfo.getTaskDefinitionName(), scheduleInfo.getScheduleName()));
-		List<String> revisedCommandLineArgs = tagCommandLineArgs(scheduleInfo.getCommandLineArgs());
-		revisedCommandLineArgs.add("--spring.cloud.scheduler.task.launcher.taskName=" + scheduleInfo.getTaskDefinitionName());
-		scheduleInfo.setCommandLineArgs(revisedCommandLineArgs);
-		Map<String, String> appProperties = null;
+
+		String appName = getAppNameFromArgs(scheduleInfo);
+
+		Map<String, String> appProperties;
 		try {
 			logger.info(String.format("Extracting Spring App Properties for application %s for schedule %s", scheduleInfo.getTaskDefinitionName(), scheduleInfo.getScheduleName()));
 			appProperties = getSpringAppProperties(scheduleInfo.getScheduleProperties());
-			if(appProperties.size() > 0) {
+			if (appProperties.size() > 0) {
 				scheduleInfo.setUseSpringApplicationJson(true);
 			}
 		}
 		catch (Exception exception) {
 			throw new IllegalArgumentException("Unable to parse SPRING_APPLICATION_JSON from USER VARIABLES", exception);
 		}
-		logger.info(String.format("Retrieving Task Definition for application %s for schedule %s", scheduleInfo.getTaskDefinitionName(), scheduleInfo.getScheduleName()));
-		TaskDefinition taskDefinition = findTaskDefinitionByName(appProperties.get("spring.cloud.task.name"));
-		if (appProperties.size() > 0 && taskDefinition == null) {
-			throw new IllegalStateException(String.format("The schedule %s contains " +
-							"properties but the task definition %s does not exist and thus can't be migrated",
-					scheduleInfo.getScheduleName(), scheduleInfo.getTaskDefinitionName()));
+		populateTaskDefinitionData(appName, scheduleInfo);
+
+		appProperties = cleanseAppProperties(scheduleInfo, appProperties);
+		if (scheduleInfo.isCTR()) {
+			appProperties.put("graph", scheduleInfo.getCtrDSL());
 		}
+
+		logger.info(String.format("Retrieving Task Definition for application %s for schedule %s", scheduleInfo.getTaskDefinitionName(), scheduleInfo.getScheduleName()));
+
 		logger.info(String.format("Tagging app properties for application %s for schedule %s", scheduleInfo.getTaskDefinitionName(), scheduleInfo.getScheduleName()));
-		appProperties = tagProperties(taskDefinition.getRegisteredAppName(), appProperties, APP_PREFIX);
-		Map<String, String> deployerProperties = tagProperties(taskDefinition.getRegisteredAppName(),
-				getDeployerProperties(scheduleInfo), DEPLOYER_PREFIX);
-		appProperties = addSchedulerAppProps(appProperties);
+		Map<String, String> deployerProperties = getDeployerProperties(scheduleInfo);
+		appProperties.put("dataflow-server-uri", this.migrateProperties.getDataflowUrl());
 		appProperties.putAll(deployerProperties);
 		scheduleInfo.setAppProperties(appProperties);
+
+		scheduleInfo.setCommandLineArgs(cleanseCommandLineArgs(scheduleInfo, appName));
+		addDBInfoToScheduleInfo(scheduleInfo);
 		return scheduleInfo;
 	}
 
 	@Override
 	public void migrateSchedule(Scheduler scheduler, ConvertScheduleInfo scheduleInfo) {
-		String scheduleName = scheduleInfo.getScheduleName() + "-" + getSchedulePrefixDefinitionName(scheduleInfo.getTaskDefinitionName());
-		AppDefinition appDefinition = new AppDefinition(scheduleName, scheduleInfo.getAppProperties());
+		logger.info("Migrating " + scheduleInfo);
+		if (scheduleInfo.getTaskResource() == null) {
+			logger.info(String.format("The task definition name for schedule %s does not exist in Data Flow",
+					scheduleInfo.getScheduleName()));
+			return;
+		}
+		String scheduleName = scheduleInfo.getScheduleName().substring(0,
+				scheduleInfo.getScheduleName().indexOf(this.migrateProperties.getSchedulerToken()) - 1);
+		AppDefinition appDefinition = new AppDefinition(scheduleInfo.getTaskDefinitionName(), scheduleInfo.getAppProperties());
 		logger.info(String.format("Extracting schedule specific properties for schedule %s", scheduleInfo.getScheduleName()));
 		Map<String, String> schedulerProperties = extractAndQualifySchedulerProperties(scheduleInfo.getScheduleProperties());
-		ScheduleRequest scheduleRequest = new ScheduleRequest(appDefinition, schedulerProperties, new HashMap<>(), scheduleInfo.getCommandLineArgs(), scheduleName, getTaskLauncherResource());
+		ScheduleRequest scheduleRequest = new ScheduleRequest(appDefinition, schedulerProperties, new HashMap<>(), scheduleInfo.getCommandLineArgs(), scheduleName, scheduleInfo.getTaskResource());
 		logger.info(String.format("Staging ScheduleTaskLauncher and scheduling %s", scheduleInfo.getScheduleName()));
+
 		scheduler.schedule(scheduleRequest);
 		logger.info(String.format("Unscheduling original %s", scheduleInfo.getScheduleName()));
-		scheduler.unschedule(scheduleInfo.getScheduleName());
+		this.taskLauncher.destroy(scheduleInfo.getScheduleName());
 	}
 
 	/**
 	 * Retrieves the number of pages that can be returned when retrieving a list of jobs.
+	 *
 	 * @return an int containing the number of available pages.
 	 */
 	private int getJobPageCount() {
@@ -237,20 +256,17 @@ public class CFMigrateSchedulerService extends AbstractMigrateService {
 					.spaceId(requestSummary.getId())
 					.detailed(false).build());
 		}).block();
-		if(response == null) {
+		if (response == null) {
 			throw new SchedulerException(SCHEDULER_SERVICE_ERROR_MESSAGE);
 		}
 		return response.getPagination().getTotalPages();
 	}
 
 	private Map<String, String> getSpringAppProperties(Map<String, String> properties) throws Exception {
-		Map<String, String> result;
-		if(properties.containsKey("SPRING_APPLICATION_JSON")) {
+		Map<String, String> result = new HashMap<>();
+		if (properties.containsKey("SPRING_APPLICATION_JSON")) {
 			result = new ObjectMapper()
 					.readValue(properties.get("SPRING_APPLICATION_JSON"), Map.class);
-		}
-		else {
-			result = new HashMap<>();
 		}
 		return result;
 	}
@@ -307,11 +323,12 @@ public class CFMigrateSchedulerService extends AbstractMigrateService {
 				.filter(application -> appId.equals(application.getId()))
 				.singleOrEmpty();
 	}
+
 	private ApplicationManifest getApplicationManifest(String appName) {
-			return this.cloudFoundryOperations.applications()
-					.getApplicationManifest(GetApplicationManifestRequest
-							.builder().name(appName).build())
-					.block();
+		return this.cloudFoundryOperations.applications()
+				.getApplicationManifest(GetApplicationManifestRequest
+						.builder().name(appName).build())
+				.block();
 	}
 
 	private Map<String, String> getDeployerProperties(ConvertScheduleInfo scheduleInfo) {
@@ -320,10 +337,10 @@ public class CFMigrateSchedulerService extends AbstractMigrateService {
 			result.put(CLOUD_FOUNDRY_PREFIX + ".buildpack", scheduleInfo.getJavaBuildPack());
 		}
 		if (scheduleInfo.getMemoryInMB() != null) {
-			result.put(CLOUD_FOUNDRY_PREFIX +  ".memory", scheduleInfo.getMemoryInMB() + "m");
+			result.put(CLOUD_FOUNDRY_PREFIX + ".memory", scheduleInfo.getMemoryInMB() + "m");
 		}
 		if (scheduleInfo.getDiskInMB() != null) {
-			result.put(CLOUD_FOUNDRY_PREFIX +  ".disk", scheduleInfo.getDiskInMB() + "m");
+			result.put(CLOUD_FOUNDRY_PREFIX + ".disk", scheduleInfo.getDiskInMB() + "m");
 		}
 		if (scheduleInfo.getApplicationHealthCheck() != null) {
 			result.put(CLOUD_FOUNDRY_PREFIX + ".health-check", scheduleInfo.getApplicationHealthCheck().getValue());
@@ -344,45 +361,22 @@ public class CFMigrateSchedulerService extends AbstractMigrateService {
 			result.put(CLOUD_FOUNDRY_PREFIX + ".host", StringUtils.arrayToCommaDelimitedString(scheduleInfo.getHosts().toArray()));
 		}
 
-		// Global deployer properties;
-		if (this.migrateProperties.getHealthCheckTimeout() != null) {
-			result.put(CLOUD_FOUNDRY_PREFIX + ".health-check-timeout", this.migrateProperties.getHealthCheckTimeout());
-		}
-		if (this.migrateProperties.getJavaOptions() != null) {
-			result.put(CLOUD_FOUNDRY_PREFIX + ".javaOpts", this.migrateProperties.getJavaOptions());
-		}
-		if (this.migrateProperties.getApiTimeout() != null) {
-			result.put(CLOUD_FOUNDRY_PREFIX + ".api-timeout", String.valueOf(this.migrateProperties.getApiTimeout()));
-		}
-		if (this.migrateProperties.getStatusTimeout() != null) {
-			result.put(CLOUD_FOUNDRY_PREFIX + ".status-timeout", String.valueOf(this.migrateProperties.getStatusTimeout()));
-		}
-		if (this.migrateProperties.getStagingTimeout() != null) {
-			result.put(CLOUD_FOUNDRY_PREFIX + ".staging-timeout", String.valueOf(this.migrateProperties.getStagingTimeout()));
-		}
-		if (this.migrateProperties.getStartupTimeout() != null) {
-			result.put(CLOUD_FOUNDRY_PREFIX + ".startup-timeout", String.valueOf(this.migrateProperties.getStartupTimeout()));
-		}
-		if (this.migrateProperties.getMaximumConcurrentTasks() != null) {
-			result.put(CLOUD_FOUNDRY_PREFIX + ".maximum-concurrent-tasks", String.valueOf(this.migrateProperties.getMaximumConcurrentTasks()));
-		}
-
 		return result;
 	}
 
-	private ConvertScheduleInfo addApplicationManifestPropsToConvertScheduleInfo(ConvertScheduleInfo scheduleInfo, ApplicationManifest applicationManifest) {
+	private void addApplicationManifestPropsToConvertScheduleInfo(ConvertScheduleInfo scheduleInfo, ApplicationManifest applicationManifest) {
 		scheduleInfo.setDiskInMB(applicationManifest.getDisk());
 		scheduleInfo.setMemoryInMB(applicationManifest.getMemory());
 		scheduleInfo.setApplicationHealthCheck(applicationManifest.getHealthCheckType());
 		scheduleInfo.setJavaBuildPack(applicationManifest.getBuildpack());
 		scheduleInfo.setHealthCheckEndPoint(applicationManifest.getHealthCheckHttpEndpoint());
-		if(applicationManifest.getServices() != null && applicationManifest.getServices().size() > 0) {
+		if (applicationManifest.getServices() != null && applicationManifest.getServices().size() > 0) {
 			scheduleInfo.setServices(applicationManifest.getServices());
 		}
-		if(applicationManifest.getDomains() != null && applicationManifest.getDomains().size() > 0) {
+		if (applicationManifest.getDomains() != null && applicationManifest.getDomains().size() > 0) {
 			scheduleInfo.setDomains(applicationManifest.getDomains());
 		}
-		if(applicationManifest.getRoutes() != null && applicationManifest.getRoutes().size() > 0) {
+		if (applicationManifest.getRoutes() != null && applicationManifest.getRoutes().size() > 0) {
 			List<String> routes = new ArrayList<>();
 			for (Route route : applicationManifest.getRoutes()) {
 				routes.add(route.getRoute());
@@ -390,13 +384,101 @@ public class CFMigrateSchedulerService extends AbstractMigrateService {
 			scheduleInfo.setRoutes(routes);
 		}
 		if (applicationManifest.getHosts() != null && applicationManifest.getHosts().size() > 0) {
-			List<String> hosts = new ArrayList<>();
-			for (String host : applicationManifest.getHosts()) {
-				hosts.add(host);
-			}
+			List<String> hosts = new ArrayList<>(applicationManifest.getHosts());
 			scheduleInfo.setHosts(hosts);
 		}
+	}
 
-		return scheduleInfo;
+	private List<String> cleanseCommandLineArgs(ConvertScheduleInfo scheduleInfo, String appName) {
+		List<String> commandLineArgs = new ArrayList<>();
+
+		for (String arg : scheduleInfo.getCommandLineArgs()) {
+			String resultArg = (arg.startsWith("--")) ? "--" : "";
+			if (arg.startsWith(COMMAND_ARGUMENT_PREFIX)) {
+				commandLineArgs.add(resultArg + extractAppKey(arg, this.appArgPrefixLength) + "=" + extractValue(arg));
+			}
+			else if (arg.startsWith(this.deployerArgPrefix)) {
+				commandLineArgs.add(resultArg + extractDeployerKey(arg, this.appArgPrefixLength) + "=" + extractValue(arg));
+			}
+			else if (arg.startsWith(this.commandArgPrefix)) {
+				commandLineArgs.add("--" + arg.substring(this.commandArgPrefixLength));
+			}
+			else {
+				if (arg.startsWith("--spring.cloud.scheduler.task.launcher.taskName")) {
+					continue;
+				}
+				commandLineArgs.add(arg);
+			}
+		}
+		commandLineArgs.add("--spring.application.name=" + appName);
+		return commandLineArgs;
+	}
+
+	private String cleanseAppPropertyKey(String key) {
+		String prefix = String.format("%s.%s", this.migrateProperties.getTaskLauncherPrefix(), APP_PREFIX);
+		key = key.substring(prefix.length());
+		int dotIndex = key.indexOf(".");
+		String result = key;
+		if (!key.substring(0, dotIndex).equals("management")) {
+			result = key.substring(dotIndex + 1);
+		}
+		return result;
+	}
+
+	private Map<String, String> cleanseAppProperties(ConvertScheduleInfo scheduleInfo, Map<String, String> properties) {
+		Map<String, String> result = new HashMap<>();
+		String ctrProperties = "";
+		boolean isFirstCTREntry = true;
+		for (String key : properties.keySet()) {
+			if (scheduleInfo.isCTR()) {
+				String ctrPropertyCandidate = prepScheduleForCTR(scheduleInfo, key, properties.get(key));
+				if (ctrPropertyCandidate != null) {
+					if (isFirstCTREntry) {
+						isFirstCTREntry = false;
+						ctrProperties += ctrPropertyCandidate;
+					}
+					else {
+						ctrProperties = ctrProperties + "," + ctrPropertyCandidate;
+					}
+					continue;
+				}
+			}
+			if (key.startsWith(this.migrateProperties.getTaskLauncherPrefix())) {
+				String cleansedKey = cleanseAppPropertyKey(key);
+				result.put(cleansedKey, properties.get(key));
+			}
+			else {
+				result.put(key, properties.get(key));
+			}
+		}
+		if (!ctrProperties.isEmpty()) {
+			result.put("composed-task-properties", ctrProperties);
+		}
+		return result;
+	}
+
+	private String prepScheduleForCTR(ConvertScheduleInfo scheduleInfo, String key, String value) {
+		String ctrProperty = null;
+		String prefix = String.format("%s.%s%s.", this.migrateProperties.getTaskLauncherPrefix(), APP_PREFIX, scheduleInfo.getTaskDefinitionName());
+		if (key.startsWith(prefix)) {
+			String newKey = key.substring(prefix.length());
+			String appName = newKey.substring(0, newKey.indexOf("."));
+			ctrProperty = String.format("%s%s-%s.%s%s=%s", APP_PREFIX,
+					scheduleInfo.getTaskDefinitionName(), appName, APP_PREFIX,
+					newKey, value);
+		}
+		return ctrProperty;
+	}
+
+	private String getAppNameFromArgs(ConvertScheduleInfo scheduleInfo) {
+		String appName = null;
+		for (String command : scheduleInfo.getCommandLineArgs()) {
+			if (command.startsWith(TASK_NAME_ARGUMENT_KEY)) {
+				int appNameIndex = command.indexOf(TASK_NAME_ARGUMENT_KEY);
+				appName = command.substring(appNameIndex + TASK_NAME_ARGUMENT_KEY.length());
+				break;
+			}
+		}
+		return appName;
 	}
 }

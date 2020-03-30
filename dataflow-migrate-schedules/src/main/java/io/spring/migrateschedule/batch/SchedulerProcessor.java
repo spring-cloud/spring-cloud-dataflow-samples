@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2020 the original author or authors.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@ import org.springframework.cloud.deployer.spi.scheduler.ScheduleInfo;
 
 /**
  * Enriches the {@link ConvertScheduleInfo} with information obtained from the platform.
- * The new name for the schedule is established and the properties as well as commandline args
- * so that the SchedulerTaskLauncher can process the entries.
+ * The name for the schedule and the properties for the new schedule is
+ * extracted from the ScheduleTaskLauncher properties and command line args..
  *
  * @author Glenn Renfro
  */
@@ -48,7 +48,7 @@ public class SchedulerProcessor<T, C extends ScheduleInfo> implements ItemProces
 
 	@Override
 	public ConvertScheduleInfo process(ConvertScheduleInfo scheduleInfo){
-		if(scheduleInfo.getScheduleName().contains(migrateProperties.getSchedulerToken())) {
+		if(!scheduleInfo.getScheduleName().contains(migrateProperties.getSchedulerToken())) {
 			throw new ScheduleProcessedException(scheduleInfo.getScheduleName());
 		}
 		logger.info(String.format("Processing Schedule %s", scheduleInfo.getScheduleName()));

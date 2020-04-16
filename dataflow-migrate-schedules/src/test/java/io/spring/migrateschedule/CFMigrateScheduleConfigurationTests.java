@@ -59,7 +59,7 @@ public class CFMigrateScheduleConfigurationTests {
 	public static final String DEFAULT_TASK_DEFINITION_NAME = "defaultTaskDefinitionName";
 	public static final String DEFAULT_SCHEDULE_NAME = "defaultScheduleName-scdf-" + DEFAULT_TASK_DEFINITION_NAME;
 	public static final String DEFAULT_APP_NAME = "defaultAppName";
-	public static final String DEFAULT_CMD_ARG = "defaultCmd=WOW";
+	public static final String DEFAULT_CMD_ARG = "defaultCmd=MUCHWOW";
 	public static final String TASK_LAUNCHER_TASK_NAME_ARG = "--spring.cloud.scheduler.task.launcher.taskName="+ DEFAULT_TASK_DEFINITION_NAME;
 	public static final String DEFAULT_BUILD_PACK = "defaultBuildPack";
 	public static final String DEFAULT_DATA_FLOW_URI = "http://localhost:9393";
@@ -106,7 +106,7 @@ public class CFMigrateScheduleConfigurationTests {
 		assertThat(scheduleInfo.getAppProperties().get("cloudfoundry.disk")).isEqualTo("1024m");
 
 		assertThat(scheduleInfo.getCommandLineArgs().size()).isEqualTo(2);
-		assertThat(scheduleInfo.getCommandLineArgs().get(0)).isEqualTo("defaultCmd=WOW");
+		assertThat(scheduleInfo.getCommandLineArgs().get(0)).isEqualTo(DEFAULT_CMD_ARG);
 		assertThat(scheduleInfo.getCommandLineArgs().get(1)).isEqualTo("--spring.application.name=defaultTaskDefinitionName");
 	}
 

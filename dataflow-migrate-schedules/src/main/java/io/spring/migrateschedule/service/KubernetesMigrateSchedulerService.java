@@ -37,12 +37,12 @@ import org.springframework.cloud.deployer.spi.scheduler.Scheduler;
 
 
 /**
- * Services required to migrate schedules to the 2.3.0 format in Cloud Foundry
+ * Services required to migrate schedules to the 2.5.0 format in Kubernetes
  * and stage the SchedulerTaskLauncher.
  *
  * @author Glenn Renfro
  */
-public class KubernetesMigrateSchedulerService extends AbstractMigrateService { //implements MigrateScheduleService {
+public class KubernetesMigrateSchedulerService extends AbstractMigrateService {
 
 	private static final Logger logger = LoggerFactory.getLogger(KubernetesMigrateSchedulerService.class);
 

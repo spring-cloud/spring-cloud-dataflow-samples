@@ -34,7 +34,7 @@ In order to migrate the existing schedules, the Schedule Migrator requires the f
 
 === Prerequisites
 
-Spring Cloud Data Flow 2.3.2.RELEASE, 2.4.3.RELEASE, and 2.5.0.RELEASE must be installed and running prior to launching the migration app.
+Spring Cloud Data Flow 2.3+ must be installed and running prior to launching the migration app.
 
 === Launching your migration
 1) Create a manifest.yml file in a work directory.
@@ -111,14 +111,12 @@ droplet created for first migrated schedule will be used for all scheduled tasks
 
 === Prerequisites
 
-* Spring Cloud Data Flow 2.3.2.RELEASE, 2.4.3.RELEASE, and 2.5.0.RELEASE must be installed and running prior to launching the migration app.
+* Spring Cloud Data Flow 2.3.+ must be installed and running prior to launching the migration app.
 * Spring Cloud Data Flow must be using the `exec` entry point for scheduling apps.
 
 === Launching your migration
 1) Establish the following environment variables:
 ```
-export spring_profiles_active=kubernetes
-export spring_autoconfigure_exclude=org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryDeployerAutoConfiguration
 export spring_datasource_url=<The Spring Cloud Data Flow database URL to be used by the migration tool>
 export spring_datasource_username=<The Spring Cloud Data Flow database username to be used by the migration tool>
 export spring_datasource_password=<The Spring Cloud Data Flow database password to be used by the migration tool>
@@ -130,21 +128,34 @@ export dbUserName=<The Spring Cloud Data Flow database user name to be used by t
 export dbPassword=<The Spring Cloud Data Flow database password to be used by the migrated tasks>
 export dataflowUrl=<The URL to the current Spring Cloud Data Flow Server>
 ```
-2) From the command line use the cf cli to log into your org and space for which you will migrate your schedules
-```
-Configure environment to access the cluster where the schedules are located.
-```
 
-3) To start the migration:
+NOTE: There are two sets of datasource properties.  This is because the `spring_datasource_*`
+properties are used by the migration tool , while `db*` properties are used to
+set the database connection information that is required by the migrated tasks.
+The database connection URL used by the migration tool can be different than the
+one used by the tasks.
+
+2) Configure environment to access the cluster where the schedules are located.
+
+NOTE: In some cases if `KUBECONFIG` has a list of kubeconfig files the application may not select the proper kubeconfig file.
+In these cases set the `KUBECONFIG` so that it will use the proper  config file in the `$HOME/.kube/` directory.
+
+3) Be sure to establish a port forward to the database that Spring Cloud Data Flow is using,
+thus allowing the migration tool to gather information about task definitions.
+For example if using mysql: `kubectl port-forward <mysql pod name> 3306:3306`
+
+4) To start the migration:
 From the `dataflow-migrate-schedules` directory launch the `runKubernetesMigration.sh` using the commands below:
 ```
 chmod +x scripts/runKubernetesMigration.sh
 ./scripts/runKubernetesMigration.sh
 ```
+
 === Picking which schedules to migrate
-Use the `scheduleNamesToMigrate` property to specify a comma delimited list of
-the schedules you wish to migrate.  If you don't specify this property
-all schedules will be migrated.  For example:
+By default the `runKubernetesMigration.sh` will migrate all schedules.
+However if a specific set of schedules need to be migrated, then use the
+`scheduleNamesToMigrate` property to specify a comma delimited list of
+the schedules you wish to migrate.    For example:
 ```
 ./scripts/runKubernetesMigration.sh --scheduleNamesToMigrate=schedulename-scdf-taskdefname,anotherschedulename-scdf-taskdefname
 ```
@@ -159,11 +170,13 @@ To enable this feature use the `runMigration.sh` script as follows.
 == Configuring the Schedule Migration
 The following properties configure how the scheduler migrator will migrate the schedules.
 
-* schedulerToken - The SchedulerTaskLauncher token used by the schedules to be migrated. Default: `scdf-`
+* schedulerToken - The token (default `scdf-`) is used by SchedulerTaskLauncher as a delimiter
+to separate the schedule name of each schedule into 2 components: `base schedule name`
+and `task name`.  This value will be used by the migration tool identify schedules to be migrated.
 * taskLauncherPrefix - The prefix used by the SchedulerTaskLauncher to mark the properties for the launched apps. Default: `tasklauncher`
 * scheduleNamesToMigrate - Comma delimited list of schedules to migrate.  If empty then all schedules will be migrated.
 * composedTaskRunnerRegisteredAppName - The registered application name for the composed task runner.  Default: `composed-task-runner`
-* dataflowUrl - The url of the Spring Cloud Data Flow Server that migrated composed task runners should execute task launch commands. Default: `http://localhost:9393`
+* dataflowUrl - The url of the Spring Cloud Data Flow Server that migrated composed task runners should execute task launch commands.
 
 === Database Configuration for Kubernetes Migration
 * dbUserName - The user name of the database that contains the task definitions for schedules to be migrated.

@@ -57,7 +57,7 @@ applications:
     spring_cloud_deployer_cloudfoundry_skipSslValidation: <true/false>
     spring_cloud_deployer_cloudfoundry_services: <your SCDF database service,your scheduler service>
     spring_cloud_scheduler_cloudfoundry_schedulerUrl: <URL to scheduler service>
-    spring_profiles_active: cf
+    spring_profiles_active: cloudfoundry
     dataflowServerUri: <Your SCDF version 2.3+ server URI>
     spring_cloud_task_closecontextEnabled: true
     remoteRepositories_repo1_url: https://repo.spring.io/libs-snapshot

@@ -127,6 +127,7 @@ public class KubernetesMigrateScheduleConfigurationTests {
 		ConvertScheduleInfo scheduleInfo = createFoundationConvertScheduleInfo();
 		assertThat(scheduleInfo.getAppProperties().keySet().size()).isEqualTo(6);
 		assertThat(scheduleInfo.getAppProperties().get("foo")).isEqualTo("bar");
+		assertThat(scheduleInfo.getDeployerProperties().get("que")).isEqualTo("qix");
 
 		validateDBProperties(scheduleInfo);
 		assertThat(scheduleInfo.getAppProperties().get("spring.cloud.task.name")).isEqualTo(DEFAULT_TASK_DEFINITION_NAME);
@@ -205,6 +206,7 @@ public class KubernetesMigrateScheduleConfigurationTests {
 				.build();
 		Mockito.when(this.taskDefinitionRepository.findByTaskName(Mockito.any())).thenReturn(taskDefinition);
 		scheduleInfo.getAppProperties().put("foo", "bar");
+		scheduleInfo.getDeployerProperties().put("que", "qix");
 		return this.k8MigrateSchedulerService.enrichScheduleMetadata(scheduleInfo);
 	}
 

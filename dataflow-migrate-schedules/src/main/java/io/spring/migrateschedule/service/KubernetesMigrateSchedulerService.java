@@ -116,7 +116,7 @@ public class KubernetesMigrateSchedulerService extends AbstractMigrateService {
 						extractValue(arg));
 			}
 			else if (arg.startsWith(this.deployerArgPrefix)) {
-				scheduleInfo.getAppProperties().put(
+				scheduleInfo.getDeployerProperties().put(
 						extractDeployerKey(arg, this.deployerArgPrefixLength),
 						extractValue(arg));
 			}
@@ -170,7 +170,7 @@ public class KubernetesMigrateSchedulerService extends AbstractMigrateService {
 		AppDefinition appDefinition = new AppDefinition(appName, scheduleInfo.getAppProperties());
 		logger.info(String.format("Extracting schedule specific properties for schedule %s", scheduleInfo.getScheduleName()));
 		Map<String, String> schedulerProperties = extractAndQualifySchedulerProperties(scheduleInfo.getScheduleProperties());
-		ScheduleRequest scheduleRequest = new ScheduleRequest(appDefinition, schedulerProperties, new HashMap<>(), scheduleInfo.getCommandLineArgs(), scheduleName, scheduleInfo.getTaskResource());
+		ScheduleRequest scheduleRequest = new ScheduleRequest(appDefinition, schedulerProperties, scheduleInfo.getDeployerProperties(), scheduleInfo.getCommandLineArgs(), scheduleName, scheduleInfo.getTaskResource());
 		logger.info(String.format("Staging Schedule %s", scheduleName));
 		scheduler.schedule(scheduleRequest);
 		logger.info(String.format("Unscheduling original %s", scheduleInfo.getScheduleName()));

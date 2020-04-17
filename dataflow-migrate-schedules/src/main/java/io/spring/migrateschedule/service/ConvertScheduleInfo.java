@@ -40,6 +40,8 @@ public class ConvertScheduleInfo extends ScheduleInfo implements Comparable{
 
 	private Map<String, String> appProperties = new HashMap<>();
 
+	private Map<String, String> deployerProperties = new HashMap();
+
 	private Integer diskInMB;
 
 	private Integer memoryInMB;
@@ -200,5 +202,13 @@ public class ConvertScheduleInfo extends ScheduleInfo implements Comparable{
 
 	public void setCtrDSL(String ctrDSL) {
 		this.ctrDSL = ctrDSL;
+	}
+
+	public Map<String, String> getDeployerProperties() {
+		return deployerProperties;
+	}
+
+	public void setDeployerProperties(Map<String, String> deployerProperties) {
+		this.deployerProperties = deployerProperties;
 	}
 }

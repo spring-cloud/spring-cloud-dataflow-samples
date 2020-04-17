@@ -127,9 +127,13 @@ public abstract class AbstractMigrateService implements MigrateScheduleService {
 		return appResourceCommon.getResource(resource);
 	}
 
-	protected String extractAppKey(String arg, int appPrefixLength) {
+	protected String extractDeployerKey(String arg, int deployerPrefixLength) {
+		return "spring.cloud.deployer." + extractAppKey(arg, deployerPrefixLength);
+	}
+
+	protected String extractAppKey(String arg, int prefixLength) {
 		int indexOfEqual = arg.indexOf("=");
-		arg = arg.substring(appPrefixLength, indexOfEqual);
+		arg = arg.substring(prefixLength, indexOfEqual);
 		int dotIndex = arg.indexOf(".");
 		String result = arg;
 		if (!arg.substring(0, dotIndex).equals("management")) {
@@ -138,10 +142,6 @@ public abstract class AbstractMigrateService implements MigrateScheduleService {
 		return result;
 	}
 
-	protected String extractDeployerKey(String arg, int deployerPrefixLength) {
-		int indexOfEqual = arg.indexOf("=");
-		return arg.substring(deployerPrefixLength, indexOfEqual);
-	}
 
 	protected String extractValue(String arg) {
 		int indexOfEqual = arg.indexOf("=");

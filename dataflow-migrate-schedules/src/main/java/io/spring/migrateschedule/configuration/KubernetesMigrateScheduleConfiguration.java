@@ -25,10 +25,11 @@ import io.spring.migrateschedule.service.TaskDefinitionRepository;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cloud.deployer.spi.kubernetes.KubernetesClientFactory;
 import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerProperties;
-import org.springframework.cloud.deployer.spi.scheduler.kubernetes.KubernetesScheduler;
-import org.springframework.cloud.deployer.spi.scheduler.kubernetes.KubernetesSchedulerProperties;
+import org.springframework.cloud.deployer.spi.kubernetes.KubernetesScheduler;
+import org.springframework.cloud.deployer.spi.kubernetes.KubernetesSchedulerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
 /**
@@ -43,6 +44,7 @@ public class KubernetesMigrateScheduleConfiguration {
 
 
 	@Bean
+	@Primary
 	public KubernetesSchedulerProperties kubernetesSchedulerProperties() {
 		return new KubernetesSchedulerProperties();
 	}

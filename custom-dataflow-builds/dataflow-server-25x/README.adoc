@@ -11,10 +11,10 @@ should see executable jars to differ only with added mysql driver.
 $ ./test/build-and-compare
 
 Diff gradle build
-95a96
-> BOOT-INF/lib/mysql-connector-java-8.0.16.jar
+113a114
+> BOOT-INF/lib/mysql-connector-java-8.0.20.jar
 Diff maven build
-95a96
-> BOOT-INF/lib/mysql-connector-java-8.0.16.jar
+113a114
+> BOOT-INF/lib/mysql-connector-java-8.0.20.jar
 ```
 

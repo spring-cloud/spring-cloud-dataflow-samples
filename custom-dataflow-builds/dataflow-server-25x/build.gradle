@@ -46,5 +46,6 @@ dependencyManagement {
 
 dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-dataflow-server'
+	runtime 'mysql:mysql-connector-java'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

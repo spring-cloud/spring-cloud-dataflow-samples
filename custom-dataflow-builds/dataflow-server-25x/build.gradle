@@ -1,0 +1,50 @@
+plugins {
+	id 'org.springframework.boot' version '2.2.7.RELEASE'
+	id 'java'
+}
+
+ext {
+	springCloudVersion = 'Hoxton.SR3'
+	springCloudDataflowVersion = '2.5.1.RELEASE'
+	springSecurityOauth2Version = '2.3.7.RELEASE'
+	kubernetesClientVersion = '4.1.0'
+	nimbusJoseJwtVersion = '8.17'
+	commonsIoVersion = '2.4'
+	okLoggingInterceptorVersion = '3.14.8'
+	okHttpVersion = '3.14.8'
+	okIoVersion = '1.17.2'
+	wagonProviderVersion = '3.0.0'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+	maven { url "https://repo.springsource.org/release" }
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+		mavenBom "org.springframework.cloud:spring-cloud-dataflow-dependencies:${springCloudDataflowVersion}"
+	}
+	dependencies {
+		dependency "org.springframework.security.oauth:spring-security-oauth2:${springSecurityOauth2Version}"
+		dependency "io.fabric8:kubernetes-client:${kubernetesClientVersion}"
+		dependency "com.nimbusds:nimbus-jose-jwt:${nimbusJoseJwtVersion}"
+		dependency "commons-io:commons-io:${commonsIoVersion}"
+		dependency "com.squareup.okhttp3:logging-interceptor:${okLoggingInterceptorVersion}"
+		dependency "com.squareup.okhttp3:okhttp:${okHttpVersion}"
+		dependency "com.squareup.okhttp3:okio:${okIoVersion}"
+		dependency "org.apache.maven.wagon:wagon-provider-api:${wagonProviderVersion}"
+	}
+}
+
+dependencies {
+	implementation 'org.springframework.cloud:spring-cloud-starter-dataflow-server'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

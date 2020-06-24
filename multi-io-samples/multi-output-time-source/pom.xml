@@ -10,10 +10,10 @@
 		<relativePath></relativePath>
 	</parent>
 	<groupId>org.springframework.cloud.stream.app</groupId>
-	<artifactId>log-sink-rabbit</artifactId>
+	<artifactId>multi-output-time-source</artifactId>
 	<version>3.0.0-SNAPSHOT</version>
-	<name>log-sink-rabbit</name>
-	<description>Spring Cloud Stream Log Sink Rabbit Binder Application
+	<name>multi-output-time-source</name>
+	<description>Spring Cloud Stream Time Source Rabbit Binder Application
 	</description>
 
 	<distributionManagement>
@@ -66,8 +66,13 @@
 		<!-- (begin) additional dependencies -->
 		<dependency>
           <groupId>org.springframework.cloud.fn</groupId>
-          <artifactId>log-consumer</artifactId>
+          <artifactId>time-supplier</artifactId>
           <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+		<dependency>
+          <groupId>org.springframework.cloud.stream.app</groupId>
+          <artifactId>stream-applications-composite-function-support</artifactId>
+          <version>3.0.0-SNAPSHOT</version>
         </dependency>
 		<dependency>
           <groupId>org.springframework.cloud.stream.app</groupId>
@@ -243,7 +248,8 @@
 						<names>
 						</names>
 						<sourceTypes>
-							<filter>org.springframework.cloud.fn.consumer.log.LogConsumerProperties</filter>
+							<filter>org.springframework.cloud.fn.supplier.time.TimeSupplierProperties</filter>
+							<filter>org.springframework.cloud.stream.config.DefaultPollerProperties</filter>
 						</sourceTypes>
 					</metadataFilter>
 				</configuration>

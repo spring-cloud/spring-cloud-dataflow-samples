@@ -89,7 +89,7 @@ public class BillingConfiguration {
 	}
 
 	@Bean
-	public ItemWriter<Bill> jdbcBillWriter(DataSource dataSource) {
+	public JdbcBatchItemWriter<Bill> jdbcBillWriter(DataSource dataSource) {
 		JdbcBatchItemWriter<Bill> writer = new JdbcBatchItemWriterBuilder<Bill>()
 						.beanMapped()
 				.dataSource(dataSource)

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.2.1.RELEASE</version>
+		<version>2.3.1.RELEASE</version> <!-- RS RC7 -->
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example.task</groupId>
@@ -16,9 +16,8 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<spring-cloud.version>Hoxton.RC1</spring-cloud.version>
-		<spring-cloud-task.version>2.2.0.RC1</spring-cloud-task.version>
-		<prometheus-rsocket-spring.version>0.9.0</prometheus-rsocket-spring.version>
+		<spring-cloud.version>Hoxton.SR6</spring-cloud.version>
+		<prometheus-rsocket-spring.version>0.11.0</prometheus-rsocket-spring.version>
 	</properties>
 
 	<dependencies>
@@ -52,22 +51,6 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-task</artifactId>
-			<version>${spring-cloud-task.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-task-core</artifactId>
-			<version>${spring-cloud-task.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-task-batch</artifactId>
-			<version>${spring-cloud-task.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-task-stream</artifactId>
-			<version>${spring-cloud-task.version}</version>
 		</dependency>
 
 		<dependency>
@@ -117,12 +100,19 @@
 				<scope>import</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-task-dependencies</artifactId>
-				<version>${spring-cloud-task.version}</version>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-bom</artifactId>
+				<version>1.5.2</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+<!--			<dependency>-->
+<!--				<groupId>org.springframework.cloud</groupId>-->
+<!--				<artifactId>spring-cloud-task-dependencies</artifactId>-->
+<!--				<version>${spring-cloud-task.version}</version>-->
+<!--				<type>pom</type>-->
+<!--				<scope>import</scope>-->
+<!--			</dependency>-->
 		</dependencies>
 	</dependencyManagement>
 
@@ -135,7 +125,7 @@
 			<plugin>
 				<groupId>io.fabric8</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.31.0</version>
+				<version>0.33.0</version>
 				<configuration>
 					<images>
 						<image>

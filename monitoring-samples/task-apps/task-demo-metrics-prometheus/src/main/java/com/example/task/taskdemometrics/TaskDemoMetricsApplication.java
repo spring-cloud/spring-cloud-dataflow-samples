@@ -48,9 +48,13 @@ public class TaskDemoMetricsApplication {
 	public Step step1() {
 		return this.stepBuilderFactory.get("step1")
 				.<Integer, Integer>chunk(10)
-				.reader(new ListItemReader<>(IntStream.rangeClosed(0, this.random.nextInt(10000))
+				.reader(new ListItemReader<>(IntStream.rangeClosed(0, this.random.nextInt(100))
 						.boxed().collect(Collectors.toList())))
-				.writer(list -> list.forEach(System.out::println)).build();
+				.writer(list -> list.forEach(e -> {
+					if ((e % 100) == 0) {
+						System.out.println(e);
+					}
+				})).build();
 	}
 
 	@Bean

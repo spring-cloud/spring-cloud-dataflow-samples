@@ -6,12 +6,11 @@
 	<version>1.0.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
-		<module>http-ingest</module>
+		<module>http-click-ingest</module>
 		<module>http-region-ingest</module>
 		<module>uppercase-processor</module>
 		<module>kstreams-join-user-clicks-and-region</module>
 		<module>kstreams-log-user-clicks-per-region</module>
-		<module>kstreams-word-count</module>
 	</modules>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

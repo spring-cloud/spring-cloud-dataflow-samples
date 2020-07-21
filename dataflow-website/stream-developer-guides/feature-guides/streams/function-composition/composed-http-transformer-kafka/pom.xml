@@ -53,7 +53,7 @@
   <dependencies>
     <dependency>
       <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-stream-kafka</artifactId>
+      <artifactId>spring-cloud-stream-binder-kafka</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.cloud.stream.app</groupId>
@@ -66,6 +66,11 @@
     </dependency>
   </dependencies>
   <repositories>
+    <repository>
+      <id>maven-central</id>
+      <name>Maven Central</name>
+      <url>https://repo.maven.apache.org/maven2</url>
+    </repository>
     <repository>
       <snapshots>
         <enabled>true</enabled>

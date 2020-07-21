@@ -64,7 +64,4 @@
 			</pluginRepositories>
 		</profile>
 	</profiles>
-	<activeProfiles>
-		<activeProfile>spring</activeProfile>
-	</activeProfiles>
 </project>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.3.1.RELEASE</version>
+  </parent>
+
+  <groupId>org.springframework.cloud.dataflow.samples</groupId>
+  <artifactId>uppercase-processor</artifactId>
+  <version>1.0.0.BUILD-SNAPSHOT</version>
+  <name>uppercase-processor</name>
+  <description>Uppercase processor application</description>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- (begin) managed dependencies -->
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-stream-dependencies</artifactId>
+        <version>Horsham.SR6</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-function-dependencies</artifactId>
+        <version>3.0.8.RELEASE</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>Hoxton.BUILD-SNAPSHOT</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- (end) managed dependencies -->
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <!-- This dependency adds Spring Cloud Stream Binder for RabbitMQ -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
+
+    </dependency>
+    <!-- This dependency adds out-of-the-box HTTP app starter for extension -->
+      <dependency>
+        <groupId>org.springframework.cloud.fn</groupId>
+        <artifactId>payload-converter-function</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+      </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -1,0 +1,16 @@
+http.mapped-request-headers: username
+spring.cloud.stream.kafka.bindings.clicks.producer:
+  messageKeyExpression: headers['username']
+spring.cloud.stream.bindings.clicks.producer:
+  useNativeEncoding: true
+spring.cloud.stream.kafka.binder.configuration.key:
+  serializer: org.apache.kafka.common.serialization.StringSerializer
+spring.cloud.stream.kafka.binder.configuration.value:
+  serializer: org.apache.kafka.common.serialization.LongSerializer
+
+spring.cloud.stream.function.definition: httpSupplier|byteArrayToLong;httpSupplier;
+spring.cloud.stream.function.bindings.httpSupplier|byteArrayToLong-out-0: clicks
+
+spring.main.web-application-type: reactive
+spring.cloud.streamapp.security.enabled: false
+spring.cloud.streamapp.security.csrf-enabled: false

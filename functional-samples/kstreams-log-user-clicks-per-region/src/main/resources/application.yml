@@ -1,0 +1,10 @@
+spring.cloud.stream.bindings.input:
+  consumer:
+    useNativeEncoding: true
+spring.cloud.stream.kafka.binder.configuration.key:
+  deserializer: org.apache.kafka.common.serialization.StringDeserializer
+spring.cloud.stream.kafka.binder.configuration.value:
+  deserializer: org.apache.kafka.common.serialization.LongDeserializer
+
+spring.cloud.function.definition: logConsumer
+spring.cloud.stream.function.bindings.logConsumer-in-0: input

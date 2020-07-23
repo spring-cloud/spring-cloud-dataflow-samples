@@ -9,10 +9,9 @@
   </parent>
 
   <groupId>org.springframework.cloud.dataflow.samples</groupId>
-  <artifactId>http-click-ingest</artifactId>
-  <version>1.0.2.BUILD-SNAPSHOT</version>
-  <name>http-ingest</name>
-  <description>Http click ingest application</description>
+  <artifactId>transform-user-clicks-per-region</artifactId>
+  <version>1.0.1.BUILD-SNAPSHOT</version>
+  <name>transform-user-clicks-per-region</name>
 
   <dependencyManagement>
     <dependencies>
@@ -43,23 +42,18 @@
   </dependencyManagement>
 
   <dependencies>
+    <dependency>
+      <groupId>org.springframework.cloud.fn</groupId>
+      <artifactId>payload-converter-function</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
     <!-- This dependency adds Spring Cloud Stream Binder for Apache Kafka -->
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-stream-binder-kafka</artifactId>
+    </dependency>
 
-    </dependency>
-    <!-- This dependency adds out-of-the-box HTTP app starter for extension -->
-    <dependency>
-      <groupId>org.springframework.cloud.fn</groupId>
-      <artifactId>http-supplier</artifactId>
-      <version>1.0.0-M2</version>
-    </dependency>
-      <dependency>
-        <groupId>org.springframework.cloud.fn</groupId>
-        <artifactId>payload-converter-function</artifactId>
-        <version>1.0.0-M2</version>
-      </dependency>
+    <!-- This dependency exposes web endpoints for status health check etc.,  -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
@@ -119,4 +113,5 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
 </project>

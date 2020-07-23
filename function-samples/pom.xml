@@ -11,6 +11,7 @@
 		<module>uppercase-processor</module>
 		<module>kstreams-join-user-clicks-and-region</module>
 		<module>kstreams-log-user-clicks-per-region</module>
+		<module>transform-user-clicks-per-region</module>
 	</modules>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

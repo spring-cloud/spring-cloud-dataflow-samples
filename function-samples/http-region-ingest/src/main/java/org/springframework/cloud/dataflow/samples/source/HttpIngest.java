@@ -31,26 +31,6 @@ import org.springframework.messaging.support.MessageBuilder;
 public class HttpIngest {
 
 	@Bean
-	public Function<Message<?>, Message<?>> byteArrayToLong() {
-		return message -> {
-			if (message.getPayload() instanceof byte[]) {
-				MessageHeaders headers = message.getHeaders();
-				String contentType = headers.containsKey("contentType") ?
-						headers.get("contentType").toString() :
-						"application/json";
-				if (contentType.contains("text") || contentType.contains("json") || contentType
-						.contains("x-spring-tuple")) {
-					message = MessageBuilder
-							.withPayload(Long.valueOf(new String((byte[]) ((byte[]) message.getPayload()))))
-							.copyHeaders(message.getHeaders()).build();
-				}
-			}
-
-			return message;
-		};
-	}
-
-	@Bean
 	public Function<Message<?>, Message<?>> byteArrayToString() {
 		return message -> {
 			if (message.getPayload() instanceof byte[]) {

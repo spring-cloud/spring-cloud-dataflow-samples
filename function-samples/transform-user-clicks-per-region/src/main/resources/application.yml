@@ -1,0 +1,11 @@
+spring.cloud.stream.bindings.input:
+  consumer:
+    useNativeEncoding: true
+spring.cloud.stream.kafka.binder.configuration.key:
+  deserializer: org.apache.kafka.common.serialization.StringDeserializer
+spring.cloud.stream.kafka.binder.configuration.value:
+  deserializer: org.apache.kafka.common.serialization.LongDeserializer
+
+spring.cloud.function.definition: transform
+spring.cloud.stream.function.bindings.transform-in-0: input
+spring.cloud.stream.function.bindings.transform-out-0: output

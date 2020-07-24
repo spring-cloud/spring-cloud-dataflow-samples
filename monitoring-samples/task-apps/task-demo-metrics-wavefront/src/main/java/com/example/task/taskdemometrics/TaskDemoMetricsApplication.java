@@ -48,7 +48,7 @@ public class TaskDemoMetricsApplication {
 	public Step step1() {
 		return this.stepBuilderFactory.get("step1")
 				.<Integer, Integer>chunk(10)
-				.reader(new ListItemReader<>(IntStream.rangeClosed(0, this.random.nextInt(10000))
+				.reader(new ListItemReader<>(IntStream.rangeClosed(0, this.random.nextInt(10 * 1000))
 						.boxed().collect(Collectors.toList())))
 				.writer(list -> list.forEach(e -> {
 					if ((e % 100) == 0) {
@@ -61,7 +61,7 @@ public class TaskDemoMetricsApplication {
 	public Step step2() {
 		return this.stepBuilderFactory.get("step2")
 				.tasklet((contribution, context) -> {
-					Thread.sleep(this.random.nextInt(10000));
+					Thread.sleep(3 * 60 * 1000 + this.random.nextInt(10000));
 					return RepeatStatus.FINISHED;
 				}).build();
 	}
@@ -71,7 +71,7 @@ public class TaskDemoMetricsApplication {
 		return jobBuilderFactory.get("job2")
 				.start(stepBuilderFactory.get("job2step1")
 						.tasklet((contribution, chunkContext) -> {
-							Thread.sleep(this.random.nextInt(10000));
+							Thread.sleep(2 * 60 * 1000 + this.random.nextInt(10000));
 							return RepeatStatus.FINISHED;
 						})
 						.build())

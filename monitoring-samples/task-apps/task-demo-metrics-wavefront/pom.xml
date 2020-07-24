@@ -8,6 +8,7 @@
 		<version>2.3.1.RELEASE</version> 
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+
 	<groupId>com.example.task</groupId>
 	<artifactId>task-demo-metrics-wavefront</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -68,6 +69,15 @@
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-wavefront</artifactId>
+		</dependency>
+
+		<!-- Override the WF SDK dependency coming with micrometer to resolve
+		 the https://github.com/wavefrontHQ/wavefront-sdk-java/pull/152 makes it
+		 to Micrometer (likely 1.5.3) and Boot-->
+		<dependency>
+			<groupId>com.wavefront</groupId>
+			<artifactId>wavefront-sdk-java</artifactId>
+			<version>2.6.0</version>
 		</dependency>
 	</dependencies>
 

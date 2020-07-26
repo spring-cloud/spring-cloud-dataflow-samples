@@ -28,7 +28,7 @@ import org.springframework.messaging.support.MessageBuilder;
 
 @SpringBootApplication
 @Import({ org.springframework.cloud.fn.supplier.http.HttpSupplierConfiguration.class })
-public class HttpIngest {
+public class HttpRegionIngest {
 
 	@Bean
 	public Function<Message<?>, Message<?>> byteArrayToString() {
@@ -41,7 +41,7 @@ public class HttpIngest {
 				if (contentType.contains("text") || contentType.contains("json") || contentType
 						.contains("x-spring-tuple")) {
 					message = MessageBuilder
-							.withPayload(new String((byte[]) ((byte[]) message.getPayload())))
+							.withPayload(new String((byte[]) (message.getPayload())))
 							.copyHeaders(message.getHeaders()).build();
 				}
 			}
@@ -51,6 +51,6 @@ public class HttpIngest {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(HttpIngest.class, args);
+		SpringApplication.run(HttpRegionIngest.class, args);
 	}
 }

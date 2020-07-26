@@ -22,35 +22,35 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.integration.support.MutableMessage;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.support.MessageBuilder;
 
 @SpringBootApplication
 @Import({ org.springframework.cloud.fn.supplier.http.HttpSupplierConfiguration.class })
-public class HttpIngest {
+public class HttpClickIngest {
 
 	@Bean
-	public Function<Message<?>, Message<?>> byteArrayToLong() {
+	public Function<Message<?>, Message<UserClicks>> toUserClicks() {
 		return message -> {
-			if (message.getPayload() instanceof byte[]) {
-				MessageHeaders headers = message.getHeaders();
-				String contentType = headers.containsKey("contentType") ?
-						headers.get("contentType").toString() :
-						"application/json";
-				if (contentType.contains("text") || contentType.contains("json") || contentType
-						.contains("x-spring-tuple")) {
-					message = MessageBuilder
-							.withPayload(Long.valueOf(new String((byte[]) ((byte[]) message.getPayload()))))
-							.copyHeaders(message.getHeaders()).build();
-				}
-			}
-
-			return message;
+			return new MutableMessage<>(new UserClicks(
+					(String) message.getHeaders().get("kafka_receivedMessageKey"),
+					Long.valueOf(new String((byte[])message.getPayload()))));
 		};
 	}
 
+	public class UserClicks {
+
+		private String username;
+
+		private Long clicks;
+
+		public UserClicks(String username, Long clicks) {
+			this.username = username;
+			this.clicks = clicks;
+		}
+	}
+
 	public static void main(String[] args) {
-		SpringApplication.run(HttpIngest.class, args);
+		SpringApplication.run(HttpClickIngest.class, args);
 	}
 }

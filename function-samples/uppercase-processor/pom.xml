@@ -18,6 +18,13 @@
     <dependencies>
       <!-- (begin) managed dependencies -->
       <dependency>
+        <groupId>org.springframework.cloud.fn</groupId>
+        <artifactId>function-dependencies</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-stream-dependencies</artifactId>
         <version>Horsham.SR6</version>
@@ -34,7 +41,7 @@
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dependencies</artifactId>
-        <version>Hoxton.SR1</version>
+        <version>Hoxton.SR6</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -43,21 +50,72 @@
   </dependencyManagement>
 
   <dependencies>
-    <!-- This dependency adds Spring Cloud Stream Binder for RabbitMQ -->
+    <!-- (begin) additional dependencies -->
     <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
-
+      <groupId>org.springframework.cloud.stream.app</groupId>
+      <artifactId>stream-applications-security-common</artifactId>
+      <version>3.0.0-SNAPSHOT</version>
     </dependency>
-    <!-- This dependency adds out-of-the-box HTTP app starter for extension -->
-      <dependency>
-        <groupId>org.springframework.cloud.fn</groupId>
-        <artifactId>payload-converter-function</artifactId>
-        <version>1.0.0-M2</version>
-      </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud.stream.app</groupId>
+      <artifactId>stream-applications-micrometer-common</artifactId>
+      <version>3.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-influx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-wavefront</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer.prometheus</groupId>
+      <artifactId>prometheus-rsocket-spring</artifactId>
+      <version>0.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-datadog</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.pivotal.cfenv</groupId>
+      <artifactId>java-cfenv-boot</artifactId>
+      <version>2.1.2.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <!-- (end) additional dependencies -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -67,6 +125,24 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
+      <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <version>2.0.0</version>
+        <configuration>
+          <from>
+            <image>springcloud/openjdk</image>
+          </from>
+          <to>
+            <image>springcloudstream/${project.artifactId}</image>
+            <tags>
+              <tag>1.0.0-SNAPSHOT</tag>
+            </tags>
+          </to>
+        </configuration>
+      </plugin>
+
+
     </plugins>
   </build>
 

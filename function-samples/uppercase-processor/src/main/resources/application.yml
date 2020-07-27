@@ -1,3 +1,4 @@
+management.endpoints.web.exposure.include: health,info,bindings
 spring.cloud.stream.function.definition: toUpperCase
 spring.cloud.stream.function.bindings.toUpperCase-in-0: input
 spring.cloud.stream.function.bindings.toUpperCase-out-0: output

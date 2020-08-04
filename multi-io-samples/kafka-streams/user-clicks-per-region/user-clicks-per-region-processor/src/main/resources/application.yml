@@ -20,3 +20,5 @@ spring.cloud.stream.kafka.streams.bindings.clicksPerRegion.producer:
 spring.cloud.stream.kafka.streams.binder:
   configuration:
     commit.interval.ms: 1000
+
+management.endpoints.web.exposure.include: health,info,bindings

@@ -6,3 +6,5 @@ spring.cloud.stream.bindings.input.consumer.useNativeDecoding: true
 spring.cloud.stream.kafka.bindings.input.consumer.configuration:
   key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
   value.deserializer: org.apache.kafka.common.serialization.LongDeserializer
+
+management.endpoints.web.exposure.include: health,info,bindings

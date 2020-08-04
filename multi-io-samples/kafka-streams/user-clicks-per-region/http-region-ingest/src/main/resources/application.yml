@@ -13,6 +13,8 @@ spring.cloud.stream.kafka.bindings.user-regions.producer:
 spring.main.web-application-type: reactive
 spring.cloud.streamapp.security.enabled: false
 spring.cloud.streamapp.security.csrf-enabled: false
+
+management.endpoints.web.exposure.include: health,info,bindings
 #spring.cloud.stream.kafka.binder.configuration.key:
 #  serializer: org.apache.kafka.common.serialization.StringSerializer
 #spring.cloud.stream.kafka.binder.configuration.value:

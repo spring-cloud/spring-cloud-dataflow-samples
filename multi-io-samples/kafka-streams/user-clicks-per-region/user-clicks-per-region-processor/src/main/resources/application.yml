@@ -1,4 +1,4 @@
-spring.cloud.function.defintion: processUserClickStream
+spring.cloud.function.definition: processUserClickStream
 spring.cloud.stream.function.bindings.processUserClickStream-in-0: userClicks
 spring.cloud.stream.function.bindings.processUserClickStream-in-1: userRegions
 spring.cloud.stream.function.bindings.processUserClickStream-out-0: clicksPerRegion

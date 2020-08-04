@@ -1,0 +1,1 @@
+= Sample application that showcases multi IO stream

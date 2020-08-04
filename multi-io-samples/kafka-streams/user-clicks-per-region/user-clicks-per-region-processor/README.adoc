@@ -1,0 +1,15 @@
+# Kafka Streams application that joins user click counts and regions
+
+This application has two inputs (user clicks and user regions) and one output (user clicks per region).
+Since the Kafka Streams processor has multiple inputs (one for user click events and another one for user regions events), this application needs to be deployed as `app` type and you need to explicitly configure the bindings to the appropriate Kafka topics and other related configurations.
+
+
+To build this application:
+
+./mvnw clean package
+
+Register this KStream application as `app` type:
+
+```
+dataflow:> app register --name join-user-clicks-and-regions --type app --uri file://<local parent directory of this git repo>/spring-cloud-dataflow-samples/kafka-samples/kstreams-join-user-clicks-and-region/target/kstreams-join-user-clicks-and-region-1.0.0.BUILD-SNAPSHOT.jar
+```

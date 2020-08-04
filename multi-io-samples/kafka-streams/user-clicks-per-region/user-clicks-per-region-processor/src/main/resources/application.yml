@@ -1,0 +1,22 @@
+spring.cloud.function.defintion: processUserClickStream
+spring.cloud.stream.function.bindings.processUserClickStream-in-0: userClicks
+spring.cloud.stream.function.bindings.processUserClickStream-in-1: userRegions
+spring.cloud.stream.function.bindings.processUserClickStream-out-0: clicksPerRegion
+
+spring.cloud.stream.bindings.userClicks.consumer.useNativeDecoding: true
+spring.cloud.stream.bindings.userRegions.consumer.useNativeDecoding: true
+spring.cloud.stream.bindings.clicksPerRegion.producer.useNativeEncoding: true
+
+spring.cloud.stream.kafka.streams.bindings.userClicks.consumer:
+  keySerde: org.apache.kafka.common.serialization.Serdes$StringSerde
+  valueSerde: org.apache.kafka.common.serialization.Serdes$LongSerde
+spring.cloud.stream.kafka.streams.bindings.userRegions.consumer:
+  keySerde: org.apache.kafka.common.serialization.Serdes$StringSerde
+  valueSerde: org.apache.kafka.common.serialization.Serdes$StringSerde
+spring.cloud.stream.kafka.streams.bindings.clicksPerRegion.producer:
+  keySerde: org.apache.kafka.common.serialization.Serdes$StringSerde
+  valueSerde: org.apache.kafka.common.serialization.Serdes$LongSerde
+
+spring.cloud.stream.kafka.streams.binder:
+  configuration:
+    commit.interval.ms: 1000

@@ -159,10 +159,59 @@
             <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
             <format>Docker</format>
             <labels>
+              <org.springframework.cloud.dataflow.spring-configuration-metadata.json>
+                ${org.springframework.cloud.dataflow.spring.configuration.metadata.json}
+              </org.springframework.cloud.dataflow.spring-configuration-metadata.json>
               <configuration-properties.outbound-ports>user-clicks</configuration-properties.outbound-ports>
             </labels>
           </container>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>read-project-properties</goal>
+            </goals>
+            <configuration>
+              <files>
+                <file>
+                  ${project.build.outputDirectory}/META-INF/spring-configuration-metadata-encoded.properties
+                </file>
+              </files>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-app-starter-metadata-maven-plugin</artifactId>
+        <version>2.0.1.M1</version>
+        <configuration>
+          <storeFilteredMetadata>true</storeFilteredMetadata>
+          <metadataFilter>
+            <names>
+              <filter>server.port</filter>
+            </names>
+            <sourceTypes>
+              <filter>org.springframework.cloud.fn.supplier.http.HttpSupplierProperties</filter>
+              <filter>org.springframework.cloud.fn.supplier.http.HttpSupplierProperties$Cors</filter>
+            </sourceTypes>
+          </metadataFilter>
+        </configuration>
+        <executions>
+          <execution>
+            <id>aggregate-metadata</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>aggregate-metadata</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

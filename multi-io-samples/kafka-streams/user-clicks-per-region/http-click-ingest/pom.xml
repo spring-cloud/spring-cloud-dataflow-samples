@@ -199,7 +199,6 @@
             </names>
             <sourceTypes>
               <filter>org.springframework.cloud.fn.supplier.http.HttpSupplierProperties</filter>
-              <filter>org.springframework.cloud.fn.supplier.http.HttpSupplierProperties$Cors</filter>
             </sourceTypes>
           </metadataFilter>
         </configuration>

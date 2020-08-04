@@ -145,7 +145,7 @@
             <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
             <format>Docker</format>
             <labels>
-              <configuration-properties.outbound-ports>input</configuration-properties.outbound-ports>
+              <configuration-properties.inbound-ports>input</configuration-properties.inbound-ports>
             </labels>
           </container>
         </configuration>

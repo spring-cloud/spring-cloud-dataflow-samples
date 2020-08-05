@@ -61,7 +61,7 @@ public class TaskDemoMetricsApplication {
 	public Step step2() {
 		return this.stepBuilderFactory.get("step2")
 				.tasklet((contribution, context) -> {
-					Thread.sleep(this.random.nextInt(10000));
+					Thread.sleep(2 * 60 * 1000 + this.random.nextInt(10000));
 					return RepeatStatus.FINISHED;
 				}).build();
 	}

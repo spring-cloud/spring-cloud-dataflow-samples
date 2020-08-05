@@ -1,0 +1,53 @@
+version: '3'
+
+# Extends the default docker-compose.yml with Prometheus monitoring configuration
+# Usage: docker-compose -f ./docker-compose-prometheus.yml up
+services:
+
+  mysql:
+    image: mysql:5.7.25
+    container_name: test-mysql
+    environment:
+      MYSQL_DATABASE: dataflow
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: rootpw
+    expose:
+      - 3306
+    ports:
+      - "3306:3306"
+
+  dataflow-server:
+    image: springcloud/spring-cloud-dataflow-server:2.6.0
+    container_name: dataflow-server
+    ports:
+      - "9393:9393"
+    environment:
+      - SPRING_CLOUD_DATAFLOW_FEATURES_STREAMS_ENABLED=false
+      - SPRING_CLOUD_DATAFLOW_FEATURES_SCHEDULES_ENABLED=false
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/dataflow
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpw
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.mariadb.jdbc.Driver
+    entrypoint: "./wait-for-it.sh mysql:3306 -- java -jar /maven/spring-cloud-dataflow-server.jar"
+
+  prometheus-rsocket-proxy:
+    image: micrometermetrics/prometheus-rsocket-proxy:1.0.0
+    container_name: prometheus-rsocket-proxy
+    expose:
+      - '9096'
+      - '7001'
+      - '8086'
+    ports:
+      - '9096:9096'
+      - '7001:7001'
+      - '8086:8086'
+    environment:
+      - server.port=9096
+      - micrometer.prometheus-proxy.websocket-port=8086
+      - micrometer.prometheus-proxy.tcp-port=7001
+
+  prometheus:
+    image: springcloud/spring-cloud-dataflow-prometheus-local:2.6.0
+    container_name: prometheus
+    ports:
+      - '9090:9090'

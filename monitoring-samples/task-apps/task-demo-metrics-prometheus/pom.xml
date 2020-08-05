@@ -2,40 +2,49 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
+	<!--
+	    spring-boot-starter-parent:2.1.13.RELEASE
+	    prometheus-rsocket-spring.version:0.9.0
+		rsocket-transport-netty:1.0.0-RC5
+
+		spring-boot-starter-parent:2.3.2.RELEASE
+		prometheus-rsocket-spring.version:0.9.0
+		rsocket-transport-netty:1.0.0-RC5
+
+	-->
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.1.RELEASE</version> <!-- RS RC7 -->
+		<version>2.3.2.RELEASE</version>
+<!--		<version>2.1.13.RELEASE</version>-->
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example.task</groupId>
 	<artifactId>task-demo-metrics-prometheus</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<name>task-demo-metrics-prometheus</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
 		<java.version>1.8</java.version>
-		<spring-cloud.version>Hoxton.SR6</spring-cloud.version>
-		<prometheus-rsocket-spring.version>0.11.0</prometheus-rsocket-spring.version>
+		<prometheus-rsocket-spring.version>1.0.0</prometheus-rsocket-spring.version>
+<!--		<prometheus-rsocket-spring.version>0.9.0</prometheus-rsocket-spring.version>-->
+		<spring-cloud-task-dependencies.version>2.3.0.BUILD-SNAPSHOT</spring-cloud-task-dependencies.version>
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-		</dependency>
-
-		<!-- jdbc dependencies for the task repository -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jdbc</artifactId>
-		</dependency>
+		<!-- Enable Spring Batch and Spring Cloud Task -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-batch</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-task</artifactId>
+		</dependency>
 
+		<!-- Data Source Configurations -->
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
@@ -47,18 +56,6 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Enable Spring Cloud Task (and Batch) support -->
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-task</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-configuration-processor</artifactId>
-			<optional>true</optional>
-		</dependency>
-
 		<!-- Enable Prometheus metrics collection (via Prometheus RSocket Proxy) -->
 		<!-- Internally it imports the org.springframework.boot:spring-boot-actuator-autoconfigure dependency -->
 		<dependency>
@@ -66,27 +63,23 @@
 			<artifactId>prometheus-rsocket-spring</artifactId>
 			<version>${prometheus-rsocket-spring.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
 		<dependency>
 			<groupId>io.micrometer.prometheus</groupId>
 			<artifactId>prometheus-rsocket-client</artifactId>
 			<version>${prometheus-rsocket-spring.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.junit.vintage</groupId>
-					<artifactId>junit-vintage-engine</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>junit</groupId>
-					<artifactId>junit</artifactId>
-				</exclusion>
-			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>io.rsocket</groupId>
+			<artifactId>rsocket-transport-netty</artifactId>
+			<version>1.0.1</version>
+<!--			<version>1.0.0-RC5</version>-->
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -94,25 +87,11 @@
 		<dependencies>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
+				<artifactId>spring-cloud-task-dependencies</artifactId>
+				<version>${spring-cloud-task-dependencies.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<dependency>
-				<groupId>io.micrometer</groupId>
-				<artifactId>micrometer-bom</artifactId>
-				<version>1.5.2</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-<!--			<dependency>-->
-<!--				<groupId>org.springframework.cloud</groupId>-->
-<!--				<artifactId>spring-cloud-task-dependencies</artifactId>-->
-<!--				<version>${spring-cloud-task.version}</version>-->
-<!--				<type>pom</type>-->
-<!--				<scope>import</scope>-->
-<!--			</dependency>-->
 		</dependencies>
 	</dependencyManagement>
 

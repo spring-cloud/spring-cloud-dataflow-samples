@@ -8,6 +8,7 @@
 	<modules>
 		<module>http-click-ingest</module>
 		<module>http-region-ingest</module>
+		<module>http-clicks-and-region-ingest</module>
 		<module>user-clicks-per-region-processor</module>
 		<module>log-user-clicks-per-region</module>
 	</modules>

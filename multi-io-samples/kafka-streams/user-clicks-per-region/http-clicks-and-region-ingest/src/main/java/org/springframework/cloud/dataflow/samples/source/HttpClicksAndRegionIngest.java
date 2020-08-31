@@ -16,6 +16,7 @@
 
 package org.springframework.cloud.dataflow.samples.source;
 
+import java.util.Collections;
 import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.integration.dsl.IntegrationFlows;
+import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.integration.expression.ValueExpression;
 import org.springframework.integration.http.support.DefaultHttpHeaderMapper;
 import org.springframework.integration.mapping.HeaderMapper;
@@ -43,13 +45,15 @@ public class HttpClicksAndRegionIngest {
 
 	@Bean
 	public Publisher<Message<byte[]>> clicksAndRegionsFlow() {
-		return IntegrationFlows.from(
+		Publisher<Message<byte[]>> publisher =  IntegrationFlows.from(
 				WebFlux.inboundChannelAdapter("/clicks", "/regions")
 						.requestPayloadType(byte[].class)
 						.statusCodeExpression(new ValueExpression<>(HttpStatus.ACCEPTED))
 						.mappedRequestHeaders("username")
 						.autoStartup(false))
+				.channel(MessageChannels.flux())
 				.toReactivePublisher();
+		return publisher;
 	}
 
 	@Bean
@@ -80,11 +84,11 @@ public class HttpClicksAndRegionIngest {
 	}
 
 	public Message<Long> toUserClicks(Message<byte[]> message) {
-		return new MutableMessage<>(Long.valueOf(new String(message.getPayload())), message.getHeaders());
+		return new MutableMessage<>(Long.valueOf(new String(message.getPayload())), Collections.singletonMap("username", message.getHeaders().get("username")));
 	}
 
 	public Message<String> toUserRegion(Message<byte[]> message) {
-		return new MutableMessage<>(new String(message.getPayload()), message.getHeaders());
+		return new MutableMessage<>(new String(message.getPayload()), Collections.singletonMap("username", message.getHeaders().get("username")));
 	}
 
 	public static void main(String[] args) {

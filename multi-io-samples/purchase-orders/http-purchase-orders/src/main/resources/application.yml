@@ -1,0 +1,29 @@
+#spring.cloud.stream.bindings.debit.producer:
+#  useNativeEncoding: true
+#
+#spring.cloud.stream.kafka.bindings.user-clicks.producer:
+#  messageKeyExpression: headers['username']
+#  configuration.key.serializer: org.apache.kafka.common.serialization.StringSerializer
+#  configuration.value.serializer: org.apache.kafka.common.serialization.LongSerializer
+#
+#spring.cloud.stream.bindings.user-regions.producer:
+#  useNativeEncoding: true
+#spring.cloud.stream.kafka.bindings.user-regions.producer:
+#  messageKeyExpression: headers['username']
+#  configuration.key.serializer: org.apache.kafka.common.serialization.StringSerializer
+#  configuration.value.serializer: org.apache.kafka.common.serialization.StringSerializer
+
+spring.cloud.stream.function.definition: debitTransactions;creditTransactions;cashTransactions
+spring.cloud.stream.function.bindings.debitTransactions-out-0: debit
+spring.cloud.stream.function.bindings.creditTransactions-out-0: credit
+spring.cloud.stream.function.bindings.cashTransactions-out-0: cash
+
+spring.cloud.stream.bindings.debit.destination: debit1
+spring.cloud.stream.bindings.credit.destination: credit1
+spring.cloud.stream.bindings.cash.destination: cash1
+
+spring.main.web-application-type: reactive
+spring.cloud.streamapp.security.enabled: false
+spring.cloud.streamapp.security.csrf-enabled: false
+
+management.endpoints.web.exposure.include: health,info,bindings

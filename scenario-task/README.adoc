@@ -1,0 +1,153 @@
+# Introduction
+
+Allows user to test various success and failures scenarios when task-batch apps are launched by Spring Cloud Data Flow.
+
+## Build the project
+
+### Maven Build
+```
+./mvnw clean install
+```
+
+### Docker Build
+
+```
+./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=spring/scenario-task:latest
+```
+
+## Launching the app
+
+### Command Line
+```
+java -jar scenario-task-0.0.1-SNAPSHOT.jar
+```
+
+### Docker
+```
+docker run spring/scenario-task:latest
+```
+
+
+### Properties
+
+* *jobName* - The name associated with the batch job.  The default is "scenario-job".
+* *stepName* - The name associated with the single step for the job.  The default is "scenario-step".
+* *failBatch* - If true, the batch will throw a {@link ExpectedException}.  Defaults to false.
+* *failTask* - If true, the task will throw a {@link ExpectedException}.  Defaults to false.
+* *launchBatchJob* - If true, the task will launch a sample batch job.  Defaults to true.
+* *pauseInSeconds* - How long the batch job should pause in the step.  Defaults to 0.
+* *includeRunidIncrementer* - If true a runIdIncrementer will be applied to the batch job.  Defaults to false.
+
+## Scenarios
+
+### Default Scenario
+By default the scenario-task application will launch a Spring  Cloud Task and launch a Batch job.
+The job's name will be `scenario-job`.   This job will succeed and the task will also succeed.
+Subsequent launches will have the batch job produce no results and the task will succeed.
+
+NOTE: When testing multiple launches of the scenario-task app with `launchBatchJob` enabled (the default)
+be sure to give each test scenario a new job name by setting the `jobName` property to a unique value. Unless you are restarting a failed job.
+
+### Fail Job But A Successful Task
+To have the job fail and the task succeed set the `failBatch` property to `false`.
+With the `failBatch` property set to `false` the job's step will throw an `ExpectedException` for the first execution of this job instance.
+However, if you rerun the application using the same identifiable job parameters the second job execution will succeed.
+This gives you the ability test fail and success scenarios of a batch job.
+For example we will setup our environment to connect to a database and then launch our scenario-task with the settings to fail the batch for the jobName `testSamp1`.
+```
+export spring_datasource_url=jdbc:<your db>
+export spring_datasource_username=<your username>
+export spring_datasource_password=<your password>
+export spring_datasource_driverClassName=<your driver>
+java -jar scenario-task-0.0.1-SNAPSHOT.jar --io.spring.failBatch=true --io.spring.jobName=testSamp1
+```
+Now looking at our results we see that the `ExpectedException` has been thrown as expected, the Job has failed, but, the task has succeeded.
+So now let's let's launch our scenario-task again with the same settings.
+```
+java -jar scenario-task-0.0.1-SNAPSHOT.jar --io.spring.failBatch=true --io.spring.jobName=testSamp1
+```
+Now looking at our results we see that job succeeded and the task succeeded.
+This is because our scenario-task saw that for this job instance the first run
+failed and thus it will assume you want it to succeed this time and it will not
+throw the `ExpectedException` again.   Thus, the job is successful.
+
+### Fail Job And Have Task Fail Because Of The Job Failure
+
+To have the task fail because the job failed, set the `failBatch` property to `false` and the `spring.cloud.task.batch.fail-on-job-failure` to `true`.
+With the `failBatch` property set to `false` the job's step will throw an `ExpectedException` for the first execution of this job instance.
+However if you rerun the application using the same identifiable job parameters the second job execution will succeed.
+This gives you the ability test fail and success scenarios of  a batch job.
+For example we will setup our environment to connect to a database and then launch our scenario-task with the settings to fail the batch for the jobName `testSamp2`.
+```
+export spring_datasource_url=jdbc:<your db>
+export spring_datasource_username=<your username>
+export spring_datasource_password=<your password>
+export spring_datasource_driverClassName=<your driver>
+java -jar scenario-task-0.0.1-SNAPSHOT.jar --io.spring.failBatch=true --io.spring.jobName=testSamp2 --spring.cloud.task.batch.fail-on-job-failure=true
+```
+Now looking at our results we see that the `ExpectedException` has been thrown as expected, the Job has failed, and the task has failed.
+So now let's let's launch our scenario-task again with the same settings.
+```
+java -jar scenario-task-0.0.1-SNAPSHOT.jar --io.spring.failBatch=true --io.spring.jobName=testSamp2 --spring.cloud.task.batch.fail-on-job-failure=true
+```
+Now looking at our results we see that job succeeded and the task succeeded.
+This is because our scenario-task saw that for this job instance the first run
+failed and thus it will assume you want it to succeed this time and it will not
+throw the `ExpectedException` again.   Thus, the job is successful.
+
+### Successful Task Launch With No Job
+For this scenario we want launch the task that terminates successfully (exit code of 0) and have no associated batch job run.   Also, we want to set the name of our task-execution.
+```
+java -jar scenario-task-0.0.1-SNAPSHOT.jar  --io.spring.launchBatchJob=false --spring.application.name=testTask1
+```
+We can see that the task launched and completed successfully with no associated batch job.
+
+### Fail Task Launch With No Job
+For this scenario we want launch the task that terminates unsuccessfully (exit code of 1) and have no associated batch job run.   Also, we want to set the name of our task-execution.
+```
+java -jar scenario-task-0.0.1-SNAPSHOT.jar  --io.spring.launchBatchJob=false --spring.application.name=testTask1 --io.spring.failTask=true
+```
+We can see that the task launched and failed because a `ExpectedException` was thrown.  Also, the task execution had no associated batch job.
+
+### Composed Task Runner Examples
+For this scenario we will register the scenario-task application with Spring Cloud Data Flow and launch it within a composed task.
+This will test the fail and restart capabilities of an composed task.
+
+#### Register The Scenario Task Application
+Using The Spring Cloud Data Flow shell enter the following command:
+```
+app register --name scenario --type task --uri maven://io.spring:scenario-task:0.0.1-SNAPSHOT
+```
+
+#### Create Composed Task Definition
+Using The Spring Cloud Data Flow shell enter the following command:
+```
+task create mycomposedtask --definition "1: timestamp && scenario && 2: timestamp"
+```
+
+#### Launch Composed Task Definition
+For this step we want the `scenario` task to fail so that the composed task execution will fail.
+This gives us the opportunity to show how to restart a failed batch job using Spring Cloud Data Flow.
+Using The Spring Cloud Data Flow shell enter the following command:
+```
+task create mycomposedtask --definition "1: timestamp && scenario && 2: timestamp"
+```
+
+Once the task execution is complete check the status of the job executions by execution the job by executing the following command:
+```
+job execution list
+```
+You should see 2 jobs, one is the `mycomposedtask` job that executions the composed task and the other is the scenario-task job named `scenariojobtest` as shown below:
+```
+╔═══╤═══════╤═══════════════╤════════════════════════════╤═════╤══════════════════╗
+║ID │Task ID│   Job Name    │         Start Time         │Step │Definition Status ║
+╠═══╪═══════╪═══════════════╪════════════════════════════╪═════╪══════════════════╣
+║117│302    │scenariojobtest│Tue Nov 24 11:58:45 EST 2020│1    │Created           ║
+║116│300    │mycomposedtask │Tue Nov 24 11:58:37 EST 2020│2    │Created           ║
+╚═══╧═══════╧═══════════════╧════════════════════════════╧═════╧══════════════════╝
+```
+To restart the composed task execute the `job execution restart --id <id of the mycomposed task>` as shown in the example below:
+```
+job execution restart --id 116
+```
+This will restart the job and the composed task will relaunch the `scenario` task and then upon its successful completion it will run the 2nd timestamp task app.

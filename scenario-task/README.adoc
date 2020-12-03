@@ -130,7 +130,7 @@ For this step we want the `scenario` task to fail so that the composed task exec
 This gives us the opportunity to show how to restart a failed batch job using Spring Cloud Data Flow.
 Using The Spring Cloud Data Flow shell enter the following command:
 ```
-task create mycomposedtask --definition "1: timestamp && scenario && 2: timestamp"
+task launch --name mycomposedtask --properties "app.mycomposedtask.scenario.io.spring.failBatch=true,app.mycomposedtask.scenario.spring.cloud.task.batch.failOnJobFailure=true"
 ```
 
 Once the task execution is complete check the status of the job executions by execution the job by executing the following command:

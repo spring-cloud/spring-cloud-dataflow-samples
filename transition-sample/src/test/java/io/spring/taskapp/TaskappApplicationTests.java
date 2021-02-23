@@ -16,25 +16,24 @@
 
 package io.spring.taskapp;
 
-import org.junit.Rule;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.test.system.OutputCaptureRule;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ExtendWith(OutputCaptureExtension.class)
 public class TaskappApplicationTests {
 
-	@Rule
-	public OutputCaptureRule outputCapture = new OutputCaptureRule();
-
 	@Test
-	public void contextLoads() {
+	public void contextLoads(CapturedOutput output) {
 		String[] args = {"--taskapp.exitMessage=FOO"};
 		SpringApplication.run(TaskappApplication.class, args);
-
-		String output = this.outputCapture.toString();
+		
 		assertThat(output).contains(" exitMessage='FOO', errorMessage='null'");
 	}
 

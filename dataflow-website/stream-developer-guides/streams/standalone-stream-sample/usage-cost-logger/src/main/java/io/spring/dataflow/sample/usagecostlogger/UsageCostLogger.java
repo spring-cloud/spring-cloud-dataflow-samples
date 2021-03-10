@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class UsageCostLogger {
 
-	private static final Logger logger = LoggerFactory.getLogger(UsageCostLoggerApplication.class);
+	private static final Logger logger = LoggerFactory.getLogger(UsageCostLogger.class);
 
 	@Bean
 	public Consumer<UsageCostDetail> process() {

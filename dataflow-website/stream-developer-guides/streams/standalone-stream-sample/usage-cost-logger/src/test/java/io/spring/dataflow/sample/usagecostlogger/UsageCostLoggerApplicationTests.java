@@ -19,6 +19,8 @@ import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.converter.CompositeMessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
 
+import static org.hamcrest.Matchers.containsString;
+
 @ExtendWith(OutputCaptureExtension.class)
 public class UsageCostLoggerApplicationTests {
 
@@ -49,7 +51,7 @@ public class UsageCostLoggerApplicationTests {
 
 			source.send(message);
 
-			Awaitility.await().until(output::getOut, value -> value.contains("{\"userId\": \"user1\", \"callCost\": \"3.0\", \"dataCost\": \"5.0\" }"));
+			Awaitility.await().until(output::getOut, value -> containsString("{\"userId\": \"user1\", \"callCost\": \"3.0\", \"dataCost\": \"5.0\" }").matches(value));
 		}
 	}
 }

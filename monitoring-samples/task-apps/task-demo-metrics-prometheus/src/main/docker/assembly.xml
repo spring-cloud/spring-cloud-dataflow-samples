@@ -6,7 +6,7 @@
     <dependencySets>
         <dependencySet>
             <includes>
-                <include>com.example.task:task-demo-metrics-prometheus</include>
+                <include>io.spring.task:task-demo-metrics-prometheus</include>
             </includes>
             <outputDirectory>.</outputDirectory>
             <outputFileNameMapping>task-demo-metrics-prometheus.jar</outputFileNameMapping>

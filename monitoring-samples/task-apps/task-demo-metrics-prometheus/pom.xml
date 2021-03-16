@@ -104,7 +104,11 @@
 						<image>
 							<name>springcloud/${project.artifactId}</name>
 							<build>
-								<from>springcloud/openjdk</from>
+								<tags>
+									<tag>latest</tag>
+									<tag>${project.version}</tag>
+								</tags>
+								<from>springcloud/baseimage:1.0.0</from>
 								<volumes>
 									<volume>/tmp</volume>
 								</volumes>

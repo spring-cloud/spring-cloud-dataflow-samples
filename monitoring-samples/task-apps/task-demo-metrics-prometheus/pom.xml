@@ -19,7 +19,7 @@
 		<version>2.4.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example.task</groupId>
+	<groupId>io.spring.task</groupId>
 	<artifactId>task-demo-metrics-prometheus</artifactId>
 	<version>0.0.4-SNAPSHOT</version>
 	<name>task-demo-metrics-prometheus</name>
@@ -75,13 +75,6 @@
 			<artifactId>prometheus-rsocket-client</artifactId>
 			<version>${prometheus-rsocket-spring.version}</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>io.rsocket</groupId>-->
-<!--			<artifactId>rsocket-transport-netty</artifactId>-->
-<!--			<version>1.0.2</version>-->
-<!--&lt;!&ndash;			<version>1.0.0-RC5</version>&ndash;&gt;-->
-<!--			<scope>test</scope>-->
-<!--		</dependency>-->
 	</dependencies>
 
 	<dependencyManagement>

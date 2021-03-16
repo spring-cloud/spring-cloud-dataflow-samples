@@ -1,4 +1,4 @@
-package com.example.task.taskdemometrics;
+package io.spring.task.taskdemometrics;
 
 import java.util.Random;
 import java.util.stream.Collectors;

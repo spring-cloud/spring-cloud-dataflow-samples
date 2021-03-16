@@ -6,84 +6,55 @@ The `task-demo-metrics-prometheus` project creates a sample Spring Cloud Task (a
 ## Create custom Spring Cloud Task
 If you use the provided `task-demo-metrics-prometheus` source code you can skip this section. 
 
-Otherwise follow the instructions below to build your own `monitorable` Task from scratch.  
+Otherwise, follow the instructions below to build your own `monitorable` Task from scratch.  
 
-Bootstrap by follow the [Task development instructions](https://docs.spring.io/spring-cloud-task/docs/2.0.0.RELEASE/reference/htmlsingle/#getting-started-developing-first-task) and then: 
+Follow the [Task development instructions](https://docs.spring.io/spring-cloud-task/docs/2.3.0/reference/#getting-started-developing-first-task) and then: 
 
-* Set the parent POM version of Boot to 2.2.1.RELEASE or latest
+* Set the parent POM version of Boot to 2.4.3 or latest
 
 ```xml
 <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.2.1.RELEASE</version>
-    <relativePath/>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-parent</artifactId>
+	<version>2.4.3</version>
+	<relativePath/>
 </parent>
 ``` 
-* Make sure that `spring-cloud-dependencies` version `Hoxton.RC1` or newer are imported: 
+* Make sure that `spring-cloud-task-dependencies` version `2.3.0` or newer are imported: 
 
 ```xml
-<dependencyManagement>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-dependencies</artifactId>
-            <version>Hoxton.RC1</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
+	<dependencyManagement>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-task-dependencies</artifactId>
+			<version>2.3.0</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency>
+	</dependencies>
 </dependencyManagement>
 ```
 
-* Add dependencies to enable the `Spring Cloud Task` (and optionally `Spring Task Batch`) functionality and to configure the jdbc dependencies for the task repository.
-Use version `2.2.0.RC1` or newer! 
+* Enable Spring Batch and Spring Cloud Task 
 
 ```xml
 <dependencies>
     <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-starter-task</artifactId>
-        <version>2.2.0.RC1</version>
     </dependency>
-    <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-task-core</artifactId>
-        <version>2.2.0.RC1</version>
-    </dependency>
-    
-    <!-- Required when Spring Batch is used -->
-    <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-task-batch</artifactId>
-        <version>2.2.0.RC1</version>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-task-stream</artifactId>
-        <version>2.2.0.RC1</version>
-    </dependency>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-batch</artifactId>
+	</dependency>
 </dependencies>
 
-<dependencyManagement>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-task-dependencies</artifactId>
-            <version>2.2.0.RC1</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-    </dependencies>
-</dependencyManagement>
 ``` 
 
 * Add dependencies to configure the jdbc dependencies for the task repository: 
 
 ```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-jdbc</artifactId>
-</dependency>
 <dependency>
     <groupId>org.mariadb.jdbc</groupId>
     <artifactId>mariadb-java-client</artifactId>
@@ -97,18 +68,114 @@ To enable Prometheus metrics collection add:
 
 ```xml
 <dependency>
-    <groupId>io.micrometer.prometheus</groupId>
-    <artifactId>prometheus-rsocket-spring</artifactId>
-    <version>0.9.0</version>
+	<groupId>io.micrometer</groupId>
+	<artifactId>micrometer-registry-prometheus</artifactId>
+</dependency>
+<dependency>
+	<groupId>io.micrometer.prometheus</groupId>
+	<artifactId>prometheus-rsocket-spring</artifactId>
+	<version>1.3.0</version>
 </dependency>
 <dependency>
     <groupId>io.micrometer.prometheus</groupId>
     <artifactId>prometheus-rsocket-client</artifactId>
-    <version>0.9.0</version>
+    <version>1.3.0</version>
 </dependency>
 ```
-Note that the version must be `0.9.0` or newer.
  
+* Configure the Application metadata generation
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-configuration-processor</artifactId>
+    <optional>true</optional>
+</dependency>
+```
+
+```xml
+<plugin>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-dataflow-apps-metadata-plugin</artifactId>
+    <version>1.0.2</version>
+    <configuration>
+        <storeFilteredMetadata>true</storeFilteredMetadata>
+        <metadataFilter>
+            <names>
+            </names>
+            <sourceTypes>
+                <filter>io.spring.task.taskdemometrics.TaskDemoMetricsProperties</filter>
+            </sourceTypes>
+        </metadataFilter>
+    </configuration>
+    <executions>
+        <execution>
+            <id>aggregate-metadata</id>
+            <phase>compile</phase>
+            <goals>
+                <goal>aggregate-metadata</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+<plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>properties-maven-plugin</artifactId>
+    <version>1.0.0</version>
+    <executions>
+        <execution>
+            <phase>process-classes</phase>
+            <goals>
+                <goal>read-project-properties</goal>
+            </goals>
+            <configuration>
+                <files>
+                    <file>${project.build.outputDirectory}/META-INF/spring-configuration-metadata-encoded.properties</file>
+                </files>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+<plugin>
+    <groupId>io.fabric8</groupId>
+    <artifactId>docker-maven-plugin</artifactId>
+    <version>0.33.0</version>
+    <configuration>
+        <images>
+            <image>
+                <name>springcloudtask/${project.artifactId}</name>
+                <build>
+                    <tags>
+                        <tag>latest</tag>
+                        <tag>${project.version}</tag>
+                    </tags>
+                    <from>springcloud/baseimage:1.0.0</from>
+                    <volumes>
+                        <volume>/tmp</volume>
+                    </volumes>
+                    <labels>
+                        <org.springframework.cloud.dataflow.spring-configuration-metadata.json>
+                            ${org.springframework.cloud.dataflow.spring.configuration.metadata.json}
+                        </org.springframework.cloud.dataflow.spring-configuration-metadata.json>
+                    </labels>
+                    <entryPoint>
+                        <exec>
+                            <arg>java</arg>
+                            <arg>-jar</arg>
+                            <arg>/maven/task-demo-metrics-prometheus.jar</arg>
+                        </exec>
+                    </entryPoint>
+                    <assembly>
+                        <descriptor>assembly.xml</descriptor>
+                    </assembly>
+                </build>
+            </image>
+        </images>
+    </configuration>
+</plugin>
+
+```
+
 ## Build
 
 Run 
@@ -116,7 +183,7 @@ Run
 ./mvnw clean install
 ```
 
-Will produce `task-demo-metrics-prometheus-0.0.1-SNAPSHOT.jar` task application under the `target` folder.
+Will produce `task-demo-metrics-prometheus-0.0.4-SNAPSHOT.jar` task application under the `target` folder.
 
 ## Spring Cloud Data FLow server
 
@@ -129,5 +196,4 @@ Build and publish docker image
 ```
 ./mvnw clean install docker:build
 ./mvnw docker:push
-
 ```

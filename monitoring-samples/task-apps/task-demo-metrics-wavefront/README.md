@@ -96,8 +96,25 @@ Follow the [Task Monitoring](https://dataflow.spring.io/docs/feature-guides/batc
 
 Build and publish docker image
 
+## Fabric8 - Maven plugin
 ```
 ./mvnw clean install docker:build
 ./mvnw docker:push
 
+```
+
+## Jib - Maven plugin
+```
+./mvnw clean install jib:build
+```
+or for test purposes build a local image:
+```
+./mvnw clean install jib:dockerBuild
+```
+
+## Dockerfile
+
+```
+./mvnw clean install
+docker build -t springcloud/task-demo-metrics-wavefront:dockerfile .
 ```

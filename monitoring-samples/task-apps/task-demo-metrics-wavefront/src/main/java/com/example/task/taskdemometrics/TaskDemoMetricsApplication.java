@@ -17,6 +17,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.task.configuration.EnableTask;
 import org.springframework.context.annotation.Bean;
+import org.springframework.util.StringUtils;
 
 @SpringBootApplication
 @EnableTask
@@ -32,6 +33,7 @@ public class TaskDemoMetricsApplication {
 	private Random random = new Random();
 
 	public static void main(String[] args) {
+		System.out.println("ARGS: " + StringUtils.arrayToCommaDelimitedString(args));
 		SpringApplication.run(TaskDemoMetricsApplication.class, args);
 	}
 

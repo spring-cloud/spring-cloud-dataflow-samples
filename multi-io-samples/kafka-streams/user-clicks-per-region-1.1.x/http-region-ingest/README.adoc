@@ -1,0 +1,20 @@
+# HTTP Ingest Source
+
+This source application is an extension of out-of-the-box HTTP source application.
+
+The `http-ingest` has a function bean definition that looks like:
+
+```
+@Bean
+public Function<String, Long> sendAsUserClicks() {
+  return value -> Long.parseLong(value);
+}
+
+```
+
+When this function bean is enabled, the incoming `String` value is converted to `Long` value.
+When sending user clicks count as `Long` we can enable this function for the `http-ingest` while the same application can be used for sending the user region `String` value.
+
+To build this application:
+
+./mvnw clean package

@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.4.5</version>
+    <version>2.3.11.RELEASE</version>
   </parent>
 
   <groupId>org.springframework.cloud.dataflow.samples</groupId>
@@ -15,9 +15,7 @@
   <description>Http clicks and region ingest application</description>
 
   <properties>
-    <wavefront-sdk-java.version>2.6.0</wavefront-sdk-java.version>
     <java-cfenv.version>2.1.2.RELEASE</java-cfenv.version>
-    <prometheus-rsocket-spring.version>1.2.1</prometheus-rsocket-spring.version>
   </properties>
 
   <dependencyManagement>
@@ -115,32 +113,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.micrometer</groupId>
-      <artifactId>micrometer-registry-wavefront</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.micrometer</groupId>
-      <artifactId>micrometer-registry-influx</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.micrometer</groupId>
-      <artifactId>micrometer-registry-datadog</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.micrometer</groupId>
-      <artifactId>micrometer-registry-prometheus</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.micrometer.prometheus</groupId>
-      <artifactId>prometheus-rsocket-spring</artifactId>
-      <version>${prometheus-rsocket-spring.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.wavefront</groupId>
-      <artifactId>wavefront-sdk-java</artifactId>
-      <version>${wavefront-sdk-java.version}</version>
     </dependency>
     <dependency>
       <groupId>io.pivotal.cfenv</groupId>

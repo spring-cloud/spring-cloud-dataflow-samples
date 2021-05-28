@@ -1,7 +1,7 @@
 spring.cloud.stream.function.definition: httpSupplier|toUserClicks
 spring.cloud.stream.function.bindings.httpSupplier|toUserClicks-out-0: user-clicks
 
-http.mapped-request-headers: username
+http.mapped-request-headers: '*'
 
 spring.cloud.stream.bindings.user-clicks.producer:
   useNativeEncoding: true

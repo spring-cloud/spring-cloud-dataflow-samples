@@ -1,7 +1,7 @@
 spring.cloud.stream.function.definition: httpSupplier|byteArrayTextToString
 spring.cloud.stream.function.bindings.httpSupplier|byteArrayTextToString-out-0: user-regions
 
-http.mapped-request-headers: username
+http.mapped-request-headers: '*'
 
 spring.cloud.stream.bindings.user-regions.producer:
   useNativeEncoding: true

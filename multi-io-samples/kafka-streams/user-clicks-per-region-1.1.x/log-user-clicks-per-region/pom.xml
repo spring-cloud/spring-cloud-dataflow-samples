@@ -13,6 +13,12 @@
   <version>1.1.0-SNAPSHOT</version>
   <name>log-user-clicks-per-region</name>
 
+  <properties>
+    <wavefront-sdk-java.version>2.6.0</wavefront-sdk-java.version>
+    <java-cfenv.version>2.1.2.RELEASE</java-cfenv.version>
+    <prometheus-rsocket-spring.version>1.2.1</prometheus-rsocket-spring.version>
+  </properties>
+
   <dependencyManagement>
     <dependencies>
       <!-- (begin) managed dependencies -->
@@ -47,7 +53,16 @@
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-stream-binder-kafka</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.springframework.cloud.fn</groupId>
+      <artifactId>spel-function</artifactId>
+      <version>1.0.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud.stream.app</groupId>
+      <artifactId>stream-applications-composite-function-support</artifactId>
+      <version>3.0.5</version>
+    </dependency>
     <dependency>
       <groupId>org.springframework.cloud.stream.app</groupId>
       <artifactId>stream-applications-composite-function-support</artifactId>
@@ -64,8 +79,13 @@
       <version>3.0.5</version>
     </dependency>
     <dependency>
-      <groupId>io.micrometer</groupId>
-      <artifactId>micrometer-registry-wavefront</artifactId>
+      <groupId>org.springframework.cloud.stream.app</groupId>
+      <artifactId>stream-applications-postprocessor-common</artifactId>
+      <version>3.0.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-stream-binder-kafka</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -73,11 +93,7 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
+      <artifactId>spring-boot-starter-security</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -85,12 +101,42 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-security</artifactId>
+      <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
-    <!-- (end) additional dependencies -->
     <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-stream-binder-kafka</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-wavefront</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-influx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-datadog</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer.prometheus</groupId>
+      <artifactId>prometheus-rsocket-spring</artifactId>
+      <version>${prometheus-rsocket-spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.wavefront</groupId>
+      <artifactId>wavefront-sdk-java</artifactId>
+      <version>${wavefront-sdk-java.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.pivotal.cfenv</groupId>
+      <artifactId>java-cfenv-boot</artifactId>
+      <version>${java-cfenv.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

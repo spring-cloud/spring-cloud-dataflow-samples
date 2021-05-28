@@ -10,7 +10,7 @@
 
   <groupId>org.springframework.cloud.dataflow.samples</groupId>
   <artifactId>http-region-ingest</artifactId>
-  <version>1.1.0-SNAPSHOT</version>
+  <version>1.1.1-SNAPSHOT</version>
   <name>http-region-ingest</name>
   <description>Http region ingest application</description>
 

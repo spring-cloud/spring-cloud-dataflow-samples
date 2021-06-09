@@ -9,9 +9,10 @@
   </parent>
 
   <groupId>org.springframework.cloud.dataflow.samples</groupId>
-  <artifactId>log-user-clicks-per-region</artifactId>
+  <artifactId>http-click-ingest</artifactId>
   <version>1.2.0-SNAPSHOT</version>
-  <name>log-user-clicks-per-region</name>
+  <name>http-click-ingest</name>
+  <description>Http click ingest application</description>
 
   <properties>
     <java-cfenv.version>2.1.2.RELEASE</java-cfenv.version>
@@ -20,6 +21,13 @@
   <dependencyManagement>
     <dependencies>
       <!-- (begin) managed dependencies -->
+      <dependency>
+        <groupId>org.springframework.cloud.fn</groupId>
+        <artifactId>function-dependencies</artifactId>
+        <version>1.0.3</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-stream-dependencies</artifactId>
@@ -45,21 +53,16 @@
     </dependencies>
   </dependencyManagement>
 
+
   <dependencies>
-    <!-- This dependency adds Spring Cloud Stream Binder for Apache Kafka -->
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-stream-binder-kafka</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.springframework.cloud.fn</groupId>
-      <artifactId>spel-function</artifactId>
-      <version>1.0.3</version>
+      <artifactId>payload-converter-function</artifactId>
     </dependency>
+    <!-- (begin) additional dependencies -->
     <dependency>
-      <groupId>org.springframework.cloud.stream.app</groupId>
-      <artifactId>stream-applications-composite-function-support</artifactId>
-      <version>3.0.5</version>
+      <groupId>org.springframework.cloud.fn</groupId>
+      <artifactId>http-supplier</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.cloud.stream.app</groupId>
@@ -73,12 +76,21 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.cloud.stream.app</groupId>
+      <artifactId>stream-applications-micrometer-common</artifactId>
+      <version>3.0.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud.stream.app</groupId>
       <artifactId>stream-applications-postprocessor-common</artifactId>
       <version>3.0.5</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-stream-binder-kafka</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud.fn</groupId>
+      <artifactId>spel-function</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -129,22 +141,59 @@
           <to>
             <image>springcloudstream/multi-io-sample-${project.artifactId}</image>
             <tags>
-              <tag>1.1.0-SNAPSHOT</tag>
+              <tag>1.2.0-SNAPSHOT</tag>
             </tags>
           </to>
           <container>
             <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
             <format>Docker</format>
             <labels>
-              <configuration-properties.inbound-ports>input</configuration-properties.inbound-ports>
+              <org.springframework.cloud.dataflow.spring-configuration-metadata.json>
+                ${org.springframework.cloud.dataflow.spring.configuration.metadata.json}
+              </org.springframework.cloud.dataflow.spring-configuration-metadata.json>
+              <configuration-properties.outbound-ports>${configuration-properties.outbound-ports}</configuration-properties.outbound-ports>
             </labels>
           </container>
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>read-project-properties</goal>
+            </goals>
+            <configuration>
+              <files>
+                <file>
+                  ${project.build.outputDirectory}/META-INF/spring-configuration-metadata-encoded.properties
+                </file>
+                <file>
+                  ${project.build.outputDirectory}/META-INF/dataflow-configuration-port-mapping.properties
+                </file>
+              </files>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dataflow-apps-metadata-plugin</artifactId>
         <version>1.0.3</version>
+        <configuration>
+          <storeFilteredMetadata>true</storeFilteredMetadata>
+          <metadataFilter>
+            <names>
+              <filter>server.port</filter>
+            </names>
+            <sourceTypes>
+              <filter>org.springframework.cloud.fn.supplier.http.HttpSupplierProperties</filter>
+            </sourceTypes>
+          </metadataFilter>
+        </configuration>
         <executions>
           <execution>
             <id>aggregate-metadata</id>
@@ -185,7 +234,7 @@
       <name>Spring Releases</name>
       <url>https://repo.spring.io/release</url>
       <snapshots>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>
@@ -212,5 +261,4 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
-
 </project>

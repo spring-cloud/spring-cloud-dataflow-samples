@@ -9,10 +9,10 @@
   </parent>
 
   <groupId>org.springframework.cloud.dataflow.samples</groupId>
-  <artifactId>http-region-ingest</artifactId>
+  <artifactId>http-clicks-and-region-ingest</artifactId>
   <version>1.2.0-SNAPSHOT</version>
-  <name>http-region-ingest</name>
-  <description>Http region ingest application</description>
+  <name>http-clicks-and-region-ingest</name>
+  <description>Http clicks and region ingest application</description>
 
   <properties>
     <java-cfenv.version>2.1.2.RELEASE</java-cfenv.version>
@@ -21,6 +21,13 @@
   <dependencyManagement>
     <dependencies>
       <!-- (begin) managed dependencies -->
+      <dependency>
+        <groupId>org.springframework.cloud.fn</groupId>
+        <artifactId>function-dependencies</artifactId>
+        <version>1.0.3</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-stream-dependencies</artifactId>
@@ -46,27 +53,12 @@
     </dependencies>
   </dependencyManagement>
 
-  <dependencies>
-    <!-- This dependency adds Spring Cloud Stream Binder for Apache Kafka -->
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-stream-binder-kafka</artifactId>
 
-    </dependency>
-    <!-- This dependency adds out-of-the-box HTTP app starter for extension -->
+  <dependencies>
+    <!-- (begin) additional dependencies -->
     <dependency>
       <groupId>org.springframework.cloud.fn</groupId>
       <artifactId>http-supplier</artifactId>
-      <version>1.0.3</version>
-    </dependency>
-      <dependency>
-        <groupId>org.springframework.cloud.fn</groupId>
-        <artifactId>payload-converter-function</artifactId>
-        <version>1.0.3</version>
-      </dependency>
-    <dependency>
-      <groupId>org.springframework.cloud.fn</groupId>
-      <artifactId>spel-function</artifactId>
       <version>1.0.3</version>
     </dependency>
     <dependency>
@@ -97,6 +89,10 @@
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-stream-binder-kafka</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud.fn</groupId>
+      <artifactId>spel-function</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -147,16 +143,13 @@
           <to>
             <image>springcloudstream/multi-io-sample-${project.artifactId}</image>
             <tags>
-              <tag>1.0.0-SNAPSHOT</tag>
+              <tag>1.2.0-SNAPSHOT</tag>
             </tags>
           </to>
           <container>
             <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
             <format>Docker</format>
             <labels>
-              <org.springframework.cloud.dataflow.spring-configuration-metadata.json>
-                ${org.springframework.cloud.dataflow.spring.configuration.metadata.json}
-              </org.springframework.cloud.dataflow.spring-configuration-metadata.json>
               <configuration-properties.outbound-ports>${configuration-properties.outbound-ports}</configuration-properties.outbound-ports>
             </labels>
           </container>
@@ -175,9 +168,6 @@
             <configuration>
               <files>
                 <file>
-                  ${project.build.outputDirectory}/META-INF/spring-configuration-metadata-encoded.properties
-                </file>
-                <file>
                   ${project.build.outputDirectory}/META-INF/dataflow-configuration-port-mapping.properties
                 </file>
               </files>
@@ -189,17 +179,6 @@
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dataflow-apps-metadata-plugin</artifactId>
         <version>1.0.3</version>
-        <configuration>
-          <storeFilteredMetadata>true</storeFilteredMetadata>
-          <metadataFilter>
-            <names>
-              <filter>server.port</filter>
-            </names>
-            <sourceTypes>
-              <filter>org.springframework.cloud.fn.supplier.http.HttpSupplierProperties</filter>
-            </sourceTypes>
-          </metadataFilter>
-        </configuration>
         <executions>
           <execution>
             <id>aggregate-metadata</id>

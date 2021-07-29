@@ -119,6 +119,9 @@ dataflow:>stream list
 +
 . Go to `Grafana Dashboard` accessible at `http://localhost:3000`, login as `admin`:`admin`.
 Import the https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow-samples/master/src/main/asciidoc/monitoring/grafana-twitter-scdf-analytics.json[grafana-twitter-scdf-analytics.json] dashboard.
+
+TIP: you can import it directly using the following https://grafana.com/grafana/dashboards/14800[dashboard code]: `14800`.
+
 You will see a dashboard similar to this:
 
 image::twitter_analytics.png[Twitter Analytics Visualization, scaledwidth="50%"]

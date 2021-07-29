@@ -17,23 +17,19 @@ image::scdf-twitter-analytics-animated.gif[Twitter Analytics Animation, scaledwi
 On Linux/Mac, installation instructions would look like this:
 +
 ```
-$ wget https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow/v2.3.0.M1/spring-cloud-dataflow-server/docker-compose-prometheus.yml
-$ wget https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow/v2.3.0.M1/spring-cloud-dataflow-server/docker-compose.yml
+$ wget https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow/v2.8.1/src/docker-compose/docker-compose-prometheus.yml
+$ wget https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow/v2.8.1/src/docker-compose/docker-compose.yml
 
-$ export DATAFLOW_VERSION=2.3.0.M1
-$ export SKIPPER_VERSION=2.1.2.RELEASE
-$ export STREAM_APPS_URI=https://dataflow.spring.io/Einstein-BUILD-SNAPSHOT-stream-applications-kafka-maven
+$ export STREAM_APPS_URI=https://dataflow.spring.io/kafka-maven-einstein
 
 $ docker-compose -f ./docker-compose.yml -f ./docker-compose-prometheus.yml up
 ```
-+
-NOTE: The Data Flow server should be `2.3.0.M1` or newer and make sure the Stream applications (e.g. `STREAM_APPS_URI`) use version `Einstein.SR4` or newer.
-+
+
 * A running link:https://dataflow.spring.io/docs/installation/local/docker/#shell[Data Flow Shell]
 +
 ```
-$ wget https://repo.spring.io/release/org/springframework/cloud/spring-cloud-dataflow-shell/2.2.1.RELEASE/spring-cloud-dataflow-shell-2.2.1.RELEASE.jar
-$ java -jar spring-cloud-dataflow-shell-2.2.1.RELEASE.jar
+$ wget https://repo.spring.io/release/org/springframework/cloud/spring-cloud-dataflow-shell/2.8.1/spring-cloud-dataflow-shell-2.8.1.jar
+$ java -jar spring-cloud-dataflow-shell-2.8.1.jar
 
 Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
 dataflow:>

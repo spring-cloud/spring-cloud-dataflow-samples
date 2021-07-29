@@ -12,7 +12,7 @@ image::scdf-twitter-analytics-animated.gif[Twitter Analytics Animation, scaledwi
 
 ==== Prerequisites
 
-* A running link:https://dataflow.spring.io/docs/installation/local/docker/[Local Data Flow Server] with enabled link:https://dataflow.spring.io/docs/installation/local/docker-customize/#monitoring-with-prometheus-and-grafana[Prometheus and Grafana] monitoring.
+* A running link:https://dataflow.spring.io/docs/installation/local/docker/[Local Data Flow Server] with enabled link:https://dataflow.spring.io/docs/installation/local/docker-customize/#prometheus--grafana[Prometheus and Grafana] monitoring.
 +
 On Linux/Mac, installation instructions would look like this:
 +

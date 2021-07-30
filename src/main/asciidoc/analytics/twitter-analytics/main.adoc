@@ -24,7 +24,11 @@ $ export STREAM_APPS_URI=https://dataflow.spring.io/kafka-maven-einstein
 
 $ docker-compose -f ./docker-compose.yml -f ./docker-compose-prometheus.yml up
 ```
-
++
+NOTE: Tish sample requires the https://dataflow.spring.io/docs/applications/pre-packaged2x/[2.x pre-build applications (e.g. Einstein apps)]!
+Depending on your installation platform (local, k8s or CF) and binder (RabbitMQ or Kafka) you can set the `STREAM_APPS_URI` environment variable to one of the following options:
+(1) Kafka: `https://dataflow.spring.io/kafka-docker-einstein`, `https://dataflow.spring.io/kafka-maven-einstein`, (2) RabbitMQ: `https://dataflow.spring.io/rabbitmq-docker-einstein`, `https://dataflow.spring.io/rabbitmq-maven-einstein`.
++
 * A running link:https://dataflow.spring.io/docs/installation/local/docker/#shell[Data Flow Shell]
 +
 ```

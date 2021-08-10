@@ -3,10 +3,10 @@ Step 1: Register the applications:
 Go to App Registry and bulk import the following:
 
 ```
-source.clicks-ingest=docker://springcloudstream/multi-io-sample-http-click-ingest:1.0.0-SNAPSHOT
-source.regions-ingest=docker://springcloudstream/multi-io-sample-http-region-ingest:1.0.0-SNAPSHOT
-processor.clicks-per-region=docker://springcloudstream/multi-io-sample-user-clicks-per-region-processor:1.0.0-SNAPSHOT
-sink.clicks-per-region-logger=docker://springcloudstream/multi-io-sample-log-user-clicks-per-region:1.0.0-SNAPSHOT
+source.clicks-ingest=maven://org.springframework.cloud.dataflow.samples:http-click-ingest:1.2.0-SNAPSHOT
+source.regions-ingest=maven://org.springframework.cloud.dataflow.samples:http-region-ingest:1.2.0-SNAPSHOT
+processor.clicks-per-region=maven://org.springframework.cloud.dataflow.samples:user-clicks-per-region-processor:1.2.0-SNAPSHOT
+sink.clicks-per-region-logger=maven://org.springframework.cloud.dataflow.samples:log-user-clicks-per-region:1.2.0-SNAPSHOT
 
 ```
 

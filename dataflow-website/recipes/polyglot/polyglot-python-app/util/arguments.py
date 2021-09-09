@@ -14,7 +14,7 @@ def get_cmd_arg(name):
       value of the requested argument.
     """
     d = defaultdict(list)
-    for k, v in ((k.lstrip('-'), v) for k, v in (a.split('=') for a in sys.argv[1:])):
+    for k, v in ((k.lstrip('-'), v) for k, v in (a.split('=', 1) for a in sys.argv[1:])):
         d[k].append(v)
 
     if bool(d[name]):

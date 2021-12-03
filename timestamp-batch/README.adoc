@@ -1,0 +1,25 @@
+= Spring Batch Job Task
+
+This is a Spring Cloud Task application that executes two simple Spring Batch Jobs.
+
+== Requirements:
+
+* Java 8 or Above
+
+== Classes:
+
+* BatchJobApplication - the Spring Boot Main Application
+
+=== Build Docker Container
+
+[source,shell,indent=2]
+----
+./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=springcloud/timestamp-batch-task:1.0.0
+----
+
+== Run:
+
+[source,shell,indent=2]
+----
+java -jar target/timestamp-batch-task-1.0.0.jar
+----

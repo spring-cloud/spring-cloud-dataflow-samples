@@ -10,11 +10,18 @@ This is a Spring Cloud Task application that executes two simple Spring Batch Jo
 
 * BatchJobApplication - the Spring Boot Main Application
 
+== Build:
+
+[source,shell,indent=2]
+----
+./mvnw clean package
+----
+
 === Build Docker Container
 
 [source,shell,indent=2]
 ----
-./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=springcloud/timestamp-batch-task:1.0.0
+./mvnw clean package jib:build
 ----
 
 == Run:

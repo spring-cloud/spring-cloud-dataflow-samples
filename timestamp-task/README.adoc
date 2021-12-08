@@ -14,14 +14,14 @@ This is a Spring Cloud Task application that logs a timestamp.
 
 [source,shell,indent=2]
 ----
-mvn clean package
+./mvnw clean package
 ----
 
 === Build Docker Container
 
 [source,shell,indent=2]
 ----
-./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=springcloud/timestamp-task:1.0.0
+./mvnw clean package jib:build
 ----
 
 == Run:

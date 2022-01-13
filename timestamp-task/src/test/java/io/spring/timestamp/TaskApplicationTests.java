@@ -43,7 +43,7 @@ public class TaskApplicationTests {
 		final String CREATE_TASK_MESSAGE = "Creating: TaskExecution{executionId=";
 		final String UPDATE_TASK_MESSAGE = "Updating: TaskExecution with executionId=";
 		final String EXIT_CODE_MESSAGE = "with the following {exitCode=0";
-		String[] args = {"--format=yyyy" + TEST_DATE_DOTS};
+		String[] args = {"--timestamp.format=yyyy" + TEST_DATE_DOTS};
 
 		SpringApplication.run(TaskApplication.class, args);
 

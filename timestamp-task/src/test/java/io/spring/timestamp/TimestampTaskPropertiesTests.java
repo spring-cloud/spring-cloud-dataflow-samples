@@ -35,7 +35,7 @@ public class TimestampTaskPropertiesTests {
 	@Test
 	public void testEmptyFormat() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		TestPropertyValues testPropertyValues = TestPropertyValues.of("format:");
+		TestPropertyValues testPropertyValues = TestPropertyValues.of("timestamp.format:");
 		testPropertyValues.applyTo(context);
 		context.register(Conf.class);
 		context.refresh();

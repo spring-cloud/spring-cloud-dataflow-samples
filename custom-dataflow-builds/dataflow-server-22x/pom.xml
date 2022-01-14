@@ -18,7 +18,7 @@
 		<java.version>1.8</java.version>
 		<spring-cloud.version>Greenwich.SR2</spring-cloud.version>
 		<spring-cloud-dataflow.version>2.2.0.RELEASE</spring-cloud-dataflow.version>
-		<spring-security-oauth2.version>2.3.4.RELEASE</spring-security-oauth2.version>
+		<spring-security-oauth2.version>2.3.6.RELEASE</spring-security-oauth2.version>
 		<mariadb.version>2.4.1</mariadb.version>
 		<spring-security-oauth2-autoconfigure.version>2.1.6.RELEASE</spring-security-oauth2-autoconfigure.version>
 		<kubernetes-client.version>4.1.0</kubernetes-client.version>

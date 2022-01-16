@@ -41,7 +41,9 @@ jobs:
         working-directory: multi-io-samples/purchase-orders/http-purchase-orders
 
       - name: Docker push Multi IO sample - purchase-orders
-        run: docker image push projects.registry.vmware.com/scdf/multi-io-sample-http-purchase-orders:1.0.0-SNAPSHOT
+        run: |
+            docker images ls
+            docker push projects.registry.vmware.com/scdf/multi-io-sample-http-purchase-orders:1.0.0-SNAPSHOT
         working-directory: multi-io-samples/purchase-orders/http-purchase-orders
         
       - name: Configure JFrog Cli
@@ -61,7 +63,6 @@ jobs:
           
           echo JFROG_CLI_BUILD_NAME=spring-cloud-dataflow-samples >> $GITHUB_ENV
           echo JFROG_CLI_BUILD_NUMBER=$GITHUB_RUN_NUMBER >> $GITHUB_ENV
-
 
       - name: Build kafka-samples
         run: ./mvnw -B package

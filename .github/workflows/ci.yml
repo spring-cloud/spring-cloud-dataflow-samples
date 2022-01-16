@@ -59,7 +59,10 @@ jobs:
 
       - name: Publish kafka-samples
         run: |
-          jfrog rt mvn --build-name=scdf-samples/kafka-samples -B clean install -DskipTests
+          jfrog rt mvn \
+            --build-name=scdf-samples/kafka-samples \
+            --build-number=$GITHUB_RUN_NUMBER \
+            -B clean install -DskipTests
           jfrog rt build-publish
         working-directory: kafka-samples
 

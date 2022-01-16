@@ -40,8 +40,6 @@ jobs:
           jfrog config add onobc-spring \
             --artifactory-url=https://repo.spring.io/artifactory \
             --access-token=${{ github.event.inputs.accessToken }} 
-            
-          jfrog config show onobc-spring
           
           jfrog rt mvnc \
             --server-id-resolve=repo.spring.io \
@@ -61,9 +59,8 @@ jobs:
 
       - name: Publish kafka-samples
         run: |
-          echo "Log level: ${{ github.event.inputs.logLevel }}"
-          jfrog rt mvn --build-name=kafka-samples -B clean install -DskipTests --access-token=${{ github.event.inputs.accessToken }}
-          jfrog rt build-publish --access-token=${{ github.event.inputs.accessToken }}
+          jfrog rt mvn --build-name=scdf-samples/kafka-samples -B clean install -DskipTests
+          jfrog rt build-publish
         working-directory: kafka-samples
 
       - name: Build multio-samples/ticktock

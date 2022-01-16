@@ -26,7 +26,7 @@ jobs:
       - name: Build kafka-samples
         run: ./mvnw -B package
         working-directory: kafka-samples
-      - name: Build multio-samples/ticktock
+      - name: Build multi-io-samples/ticktock
         run: ./mvnw -B package
         working-directory: multio-samples/ticktock
 

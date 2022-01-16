@@ -31,6 +31,16 @@ jobs:
 #      env:
 #        JF_ARTIFACTORY_SPRING: ${{ secrets.jfArtifactorySpring }}
 
+      - name: Build multi-io-samples/purchase-orders/http-purchase-orders
+        run: ./mvnw clean install jib:dockerBuild
+        working-directory: multi-io-samples/purchase-orders/http-purchase-orders
+        
+      - name: Docker login projects.registry.vmware.com
+        run: docker login projects.registry.vmware.com -u '${{ secrets.dockerUser }}' -p '${{ secrets.dockerPass }}'
+        
+      - name: Docker push Multi IO sample - purchase-orders
+        run: docker push projects.registry.vmware.com/scdf/multi-io-sample-http-purchase-orders:1.0.0-SNAPSHOT
+
       - name: Configure JFrog Cli
         run: |
           

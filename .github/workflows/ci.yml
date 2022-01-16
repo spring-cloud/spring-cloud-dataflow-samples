@@ -32,8 +32,8 @@ jobs:
       - uses: jfrog/setup-jfrog-cli@v1
         with:
           version: 1.46.4
-        env:
-          JF_ARTIFACTORY_SPRING: 'foo'
+#         env:
+#           JF_ARTIFACTORY_SPRING: 'foo'
       - name: Configure JFrog Cli
         run: |
           jfrog rt mvnc \

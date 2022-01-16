@@ -2,15 +2,11 @@ name: CI
 
 on:
   workflow_dispatch:
-#     inputs:
-#       accessToken:
-#         description: 'JFrog AT'
-#         required: true
   push:
-#    branches:
-#      - 'main'
-#    paths:
-#      - 'scenario-task'
+    #    branches:
+    #      - 'main'
+    #    paths:
+    #      - 'scenario-task'
     paths-ignore:
       - '.github/**'
 
@@ -32,11 +28,12 @@ jobs:
       - uses: jfrog/setup-jfrog-cli@v1
         with:
           version: 1.46.4
-#         env:
-#           JF_ARTIFACTORY_SPRING: 'foo'
+#      env:
+#        JF_ARTIFACTORY_SPRING: ${{ secrets.jfArtifactorySpring }}
+
       - name: Configure JFrog Cli
         run: |
-        
+          
           jfrog config add onobc.spring.io \
             --artifactory-url=https://repo.spring.io/artifactory \
             --access-token=${{ secrets.JAT }} 
@@ -48,27 +45,32 @@ jobs:
             --repo-resolve-snapshots=libs-snapshot \
             --repo-deploy-releases=release \
             --repo-deploy-snapshots=snapshot
-            
-          echo JFROG_CLI_BUILD_NUMBER=$GITHUB_RUN_NUMBER >> $GITHUB_ENV
           
-          jfrog rt ping 
+          echo JFROG_CLI_BUILD_NAME=spring-cloud-dataflow-samples >> $GITHUB_ENV
+          echo JFROG_CLI_BUILD_NUMBER=$GITHUB_RUN_NUMBER >> $GITHUB_ENV
+
 
       - name: Build kafka-samples
         run: ./mvnw -B package
         working-directory: kafka-samples
 
+
       - name: Publish kafka-samples
         run: |
-          jfrog rt mvn \
-            --build-name=scdf-samples/kafka-samples \
-            --build-number=$GITHUB_RUN_NUMBER \
-            -B clean install -DskipTests
-          jfrog rt build-publish
+          jfrog rt ping
+#          jfrog rt mvn \
+#            --build-name=scdf-samples/kafka-samples \
+#            --build-number=$GITHUB_RUN_NUMBER \
+#            -B clean install -DskipTests
+#          jfrog rt build-publish
         working-directory: kafka-samples
+
 
       - name: Build multio-samples/ticktock
         run: ./mvnw -B package
         working-directory: multio-samples/ticktock
+
+
 
 #  publish:
 #    needs: [build]

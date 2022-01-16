@@ -37,10 +37,12 @@ jobs:
       - name: Configure JFrog Cli
         run: |
         
-          jfrog config show spring \
+          jfrog config add onobc-spring \
             --artifactory-url=https://repo.spring.io/artifactory \
-            --access-token=${{ github.event.inputs.accessToken }} \
+            --access-token=${{ github.event.inputs.accessToken }} 
             
+          jfrog config show onobc-spring
+          
           jfrog rt mvnc \
             --server-id-resolve=repo.spring.io \
             --server-id-deploy=repo.spring.io \

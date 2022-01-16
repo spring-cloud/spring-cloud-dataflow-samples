@@ -33,7 +33,7 @@ jobs:
         with:
           version: 1.46.4
         env:
-          JF_ARTIFACTORY_SPRING: ${{ secrets.jfArtifactorySpring }}
+          JF_ARTIFACTORY_SPRING: ${{ github.event.inputs.accessToken }}
       - name: Configure JFrog Cli
         run: |
           jfrog rt mvnc \

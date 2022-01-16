@@ -27,7 +27,7 @@ jobs:
         run: ./mvnw -B package
         working-directory: kafka-samples
       - name: Build multi-io-samples/ticktock
-        run: ./mvnw -B package
+        run: ./mvnw -B -Dmaven.javadoc.skip=true package
         working-directory: multi-io-samples/ticktock
 
 #  publish:

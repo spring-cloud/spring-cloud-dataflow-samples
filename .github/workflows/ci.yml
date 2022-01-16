@@ -67,7 +67,7 @@ jobs:
 
 
       - name: Build multi-io-samples/ticktock
-        run: ./mvnw -B package
+        run: ./mvnw -Dmaven.javadoc.skip=true clean install jib:dockerBuild -pl multi-output-time-rabbit,multi-input-log-rabbit,multi-output-time-kafka,multi-input-log-kafka
         working-directory: multi-io-samples/ticktock
 
 

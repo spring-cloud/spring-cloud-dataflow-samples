@@ -28,7 +28,7 @@ jobs:
         working-directory: kafka-samples
       - name: Build multi-io-samples/ticktock
         run: ./mvnw -B package
-        working-directory: multio-samples/ticktock
+        working-directory: multi-io-samples/ticktock
 
 #  publish:
 #    needs: [build]

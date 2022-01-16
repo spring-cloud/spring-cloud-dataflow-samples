@@ -2,10 +2,10 @@ name: CI
 
 on:
   workflow_dispatch:
-    inputs:
-      accessToken:
-        description: 'JFrog AT'
-        required: true
+#     inputs:
+#       accessToken:
+#         description: 'JFrog AT'
+#         required: true
   push:
 #    branches:
 #      - 'main'
@@ -37,13 +37,13 @@ jobs:
       - name: Configure JFrog Cli
         run: |
         
-          jfrog config add spring \
+          jfrog config add onobc.spring.io \
             --artifactory-url=https://repo.spring.io/artifactory \
             --access-token=${{ secrets.JAT }} 
           
           jfrog rt mvnc \
-            --server-id-resolve=repo.spring.io \
-            --server-id-deploy=repo.spring.io \
+            --server-id-resolve=onobc.spring.io \
+            --server-id-deploy=onobc.spring.io \
             --repo-resolve-releases=libs-milestone \
             --repo-resolve-snapshots=libs-snapshot \
             --repo-deploy-releases=release \

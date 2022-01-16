@@ -36,6 +36,11 @@ jobs:
 #           JF_ARTIFACTORY_SPRING: 'foo'
       - name: Configure JFrog Cli
         run: |
+        
+          jfrog rt c \
+            --url=https://repo.spring.io/artifactory \
+            --access-token=${{ github.event.inputs.accessToken }}
+
           jfrog rt mvnc \
             --server-id-resolve=repo.spring.io \
             --server-id-deploy=repo.spring.io \

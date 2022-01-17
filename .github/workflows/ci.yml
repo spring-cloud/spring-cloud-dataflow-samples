@@ -36,6 +36,7 @@ jobs:
       - name: Build multi-io-samples/purchase-orders/http-purchase-orders
         run: |
           ./mvnw clean install jib:dockerBuild
+          docker images ls
           docker login projects.registry.vmware.com -u '${{ secrets.dockerUser }}' -p '${{ secrets.dockerPass }}'
           docker images ls
           docker push projects.registry.vmware.com/scdf/multi-io-sample-http-purchase-orders:1.0.0-SNAPSHOT

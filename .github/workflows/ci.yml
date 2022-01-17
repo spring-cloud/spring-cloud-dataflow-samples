@@ -7,88 +7,66 @@ on:
       - '.github/**'
 
 jobs:
-  build:
+  user-clicks-per-region:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-    name: CI Build
+    name: CI Build (user-clicks-per-region-1.2.x)
     steps:
       - uses: actions/checkout@v2
+
       - uses: jvalkeal/setup-maven@v1
         with:
           maven-version: 3.8.4
+
       - uses: actions/setup-java@v2
         with:
           distribution: adopt
           java-version: 8
           cache: maven
+
       - uses: jfrog/setup-jfrog-cli@v1
         with:
           version: 1.46.4
-#      env:
-#        JF_ARTIFACTORY_SPRING: ${{ secrets.jfArtifactorySpring }}
+        env:
+          JF_ARTIFACTORY_SPRING: ${{ secrets.JF_ARTIFACTORY_SPRING }}
 
       - name: Configure JFrog Cli
         run: |
-          
-          jfrog config add onobc.spring.io \
-            --artifactory-url=https://repo.spring.io/artifactory \
-            --access-token=${{ secrets.JAT }} 
-          
           jfrog rt mvnc \
-            --server-id-resolve=onobc.spring.io \
-            --server-id-deploy=onobc.spring.io \
-            --repo-resolve-releases=libs-milestone \
-            --repo-resolve-snapshots=libs-snapshot \
-            --repo-deploy-releases=release \
-            --repo-deploy-snapshots=snapshot
-          
+          --server-id-resolve=repo.spring.io \
+          --server-id-deploy=repo.spring.io \
+          --repo-resolve-releases=libs-milestone \
+          --repo-resolve-snapshots=libs-snapshot \
+          --repo-deploy-releases=release \
+          --repo-deploy-snapshots=snapshot
           echo JFROG_CLI_BUILD_NAME=spring-cloud-dataflow-samples >> $GITHUB_ENV
           echo JFROG_CLI_BUILD_NUMBER=$GITHUB_RUN_NUMBER >> $GITHUB_ENV
 
-
-      - name: Build kafka-samples
-        run: ./mvnw -B package
-        working-directory: kafka-samples
-
-
-      - name: Publish kafka-samples
-        run: |
-          jfrog rt ping
-#          jfrog rt mvn \
-#            --build-name=scdf-samples/kafka-samples \
-#            --build-number=$GITHUB_RUN_NUMBER \
-#            -B clean install -DskipTests
-#          jfrog rt build-publish
-        working-directory: kafka-samples
-
-      - name: Build multi-io-samples/ticktock
-        run: ./mvnw -Dmaven.javadoc.skip=true clean install jib:dockerBuild -pl multi-output-time-rabbit,multi-input-log-rabbit,multi-output-time-kafka,multi-input-log-kafka
-        working-directory: multi-io-samples/ticktock
-
-      - name: Build multi-io-samples/purchase-orders/http-purchase-orders
-        run: ./mvnw clean install jib:dockerBuild
-        working-directory: multi-io-samples/purchase-orders/http-purchase-orders
-
-      - name: Login to Docker Hub
+      - name: Login dockerhub
         uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-          
-#       - name: Docker login Harbor
-#         run: docker login projects.registry.vmware.com -u '${{ secrets.dockerUser }}' -p '${{ secrets.dockerPass }}'
-#         working-directory: multi-io-samples/purchase-orders/http-purchase-orders
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Docker push multi-io-samples/purchase-orders/http-purchase-orders
+      - name: Build
+        run: ./mvnw clean install jib:dockerBuild -pl http-click-ingest,http-region-ingest,user-clicks-per-region-processor,log-user-clicks-per-region,http-clicks-and-region-ingest
+        working-directory: multi-io-samples/kafka-streams/user-clicks-per-region-1.2.x
+
+      - name: Publish to Artifactory
         run: |
-          docker tag springcloudstream/multi-io-sample-http-purchase-orders onobc/multi-io-sample-http-purchase-orders:1.0.0-SNAPSHOT
-          docker push onobc/multi-io-sample-http-purchase-orders:1.0.0-SNAPSHOT
-        working-directory: multi-io-samples/purchase-orders/http-purchase-orders
+          jfrog rt mvn clean install -U -B -DskipTests
+          jfrog rt build-publish
+        working-directory: multi-io-samples/kafka-streams/user-clicks-per-region-1.2.x
 
-#  publish:
-#    needs: [build]
-#    name: Call Publish Snapshot
-#    uses: spring-cloud/spring-cloud-dataflow-samples/.github/workflows/ci-publish.yml@main
-#    secrets:
-#      jfArtifactorySpring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
+      - name: Push images to Docker
+        env:
+          TAG2: ${{ inputs.version }}
+        shell: bash
+        run: |
+          docker push springcloudstream/multi-io-sample-http-click-ingest:1.2.0-SNAPSHOT
+          docker push springcloudstream/multi-io-sample-http-region-ingest:1.2.0-SNAPSHOT
+          docker push springcloudstream/multi-io-sample-http-clicks-and-region-ingest:1.2.0-SNAPSHOT
+          docker push springcloudstream/multi-io-sample-user-clicks-per-region-processor:1.2.0-SNAPSHOT
+          docker push springcloudstream/multi-io-sample-log-user-clicks-per-region:1.2.0-SNAPSHOT
+        working-directory: multi-io-samples/kafka-streams/user-clicks-per-region-1.2.x

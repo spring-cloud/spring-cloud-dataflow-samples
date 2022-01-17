@@ -35,11 +35,18 @@ jobs:
 
       - name: Build multi-io-samples/purchase-orders/http-purchase-orders
         run: |
+          echo '**** 1'
+          docker images
           ./mvnw clean install jib:dockerBuild
-          docker images ls
+          echo '**** 2'
+          docker images
           docker login projects.registry.vmware.com -u '${{ secrets.dockerUser }}' -p '${{ secrets.dockerPass }}'
-          docker images ls
+          echo '**** 3'
+          docker images
           docker push projects.registry.vmware.com/scdf/multi-io-sample-http-purchase-orders:1.0.0-SNAPSHOT
+          echo '**** 4'
+          docker images
+          
         working-directory: multi-io-samples/purchase-orders/http-purchase-orders
 
 #       - name: Docker login projects.registry.vmware.com

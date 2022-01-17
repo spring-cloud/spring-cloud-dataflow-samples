@@ -3,10 +3,6 @@ name: CI
 on:
   workflow_dispatch:
   push:
-    #    branches:
-    #      - 'main'
-    #    paths:
-    #      - 'scenario-task'
     paths-ignore:
       - '.github/**'
 
@@ -32,33 +28,6 @@ jobs:
 #      env:
 #        JF_ARTIFACTORY_SPRING: ${{ secrets.jfArtifactorySpring }}
 
-
-      - name: Build multi-io-samples/purchase-orders/http-purchase-orders
-        run: |
-          echo '**** 1'
-          docker images
-          ./mvnw clean install jib:dockerBuild
-          echo '**** 2'
-          docker images
-          docker login projects.registry.vmware.com -u '${{ secrets.dockerUser }}' -p '${{ secrets.dockerPass }}'
-          echo '**** 3'
-          docker images
-          docker push projects.registry.vmware.com/scdf/multi-io-sample-http-purchase-orders:1.0.0-SNAPSHOT
-          echo '**** 4'
-          docker images
-          
-        working-directory: multi-io-samples/purchase-orders/http-purchase-orders
-
-#       - name: Docker login projects.registry.vmware.com
-#         run: docker login projects.registry.vmware.com -u '${{ secrets.dockerUser }}' -p '${{ secrets.dockerPass }}'
-#         working-directory: multi-io-samples/purchase-orders/http-purchase-orders
-
-#       - name: Docker push Multi IO sample - purchase-orders
-#         run: |
-#             docker images ls
-#             docker push projects.registry.vmware.com/scdf/multi-io-sample-http-purchase-orders:1.0.0-SNAPSHOT
-#         working-directory: multi-io-samples/purchase-orders/http-purchase-orders
-        
       - name: Configure JFrog Cli
         run: |
           
@@ -77,6 +46,7 @@ jobs:
           echo JFROG_CLI_BUILD_NAME=spring-cloud-dataflow-samples >> $GITHUB_ENV
           echo JFROG_CLI_BUILD_NUMBER=$GITHUB_RUN_NUMBER >> $GITHUB_ENV
 
+
       - name: Build kafka-samples
         run: ./mvnw -B package
         working-directory: kafka-samples
@@ -92,12 +62,23 @@ jobs:
 #          jfrog rt build-publish
         working-directory: kafka-samples
 
-
       - name: Build multi-io-samples/ticktock
         run: ./mvnw -Dmaven.javadoc.skip=true clean install jib:dockerBuild -pl multi-output-time-rabbit,multi-input-log-rabbit,multi-output-time-kafka,multi-input-log-kafka
         working-directory: multi-io-samples/ticktock
 
+      - name: Build multi-io-samples/purchase-orders/http-purchase-orders
+        run: ./mvnw clean install jib:dockerBuild
+        working-directory: multi-io-samples/purchase-orders/http-purchase-orders
 
+      - name: Docker login Harbor
+        run: docker login projects.registry.vmware.com -u '${{ secrets.dockerUser }}' -p '${{ secrets.dockerPass }}'
+        working-directory: multi-io-samples/purchase-orders/http-purchase-orders
+
+      - name: Docker push Multi IO sample - purchase-orders
+        run: |
+          docker tag springcloudstream/multi-io-sample-http-purchase-orders projects.registry.vmware.com/scdf/multi-io-sample-http-purchase-orders:1.0.0-SNAPSHOT
+          docker image push projects.registry.vmware.com/scdf/multi-io-sample-http-purchase-orders:1.0.0-SNAPSHOT
+        working-directory: multi-io-samples/purchase-orders/http-purchase-orders
 
 #  publish:
 #    needs: [build]

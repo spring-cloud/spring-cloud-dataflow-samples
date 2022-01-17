@@ -39,12 +39,11 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
           
       - name: Push to Docker Hub
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          push: true
-          tags: springcloudstream/multi-io-sample-http-purchase-orders
-          #tags: ${{ secrets.dockerHubUsername }}/scdf-samples/simplewhale:latest
+        run: |
+          docker tag springcloudstream/multi-io-sample-http-purchase-orders onobc/scdf-samples/multi-io-sample-http-purchase-orders:1.0.0-SNAPSHOT
+          docker push onobc/scdf-samples/multi-io-sample-http-purchase-orders:1.0.0-SNAPSHOT
+        working-directory: multi-io-samples/purchase-orders/http-purchase-orders
+
           
           
       - name: Configure JFrog Cli

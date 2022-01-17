@@ -28,6 +28,33 @@ jobs:
 #      env:
 #        JF_ARTIFACTORY_SPRING: ${{ secrets.jfArtifactorySpring }}
 
+      - name: Build multi-io-samples/purchase-orders/http-purchase-orders
+        run: ./mvnw clean install jib:dockerBuild
+        working-directory: multi-io-samples/purchase-orders/http-purchase-orders
+        
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@3.0.4
+        with:
+          name: springcloudstream/multi-io-sample-http-purchase-orders
+          #onobc/scdf-samples/springcloudstream/multi-io-sample-http-purchase-orders
+          username: ${{ secrets.docker.hub.username }}
+          password: ${{ secrets.docker.hub.password }}
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.docker.hub.username }}
+          password: ${{ secrets.docker.hub.password }}
+          
+      - name: Push to Docker Hub
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: springcloudstream/multi-io-sample-http-purchase-orders
+          #tags: ${{ secrets.dockerHubUsername }}/scdf-samples/simplewhale:latest
+          
+          
       - name: Configure JFrog Cli
         run: |
           

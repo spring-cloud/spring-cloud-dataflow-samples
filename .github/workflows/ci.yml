@@ -33,7 +33,7 @@ jobs:
         working-directory: multi-io-samples/purchase-orders/http-purchase-orders
         
       - name: Publish to Registry
-        uses: elgohr/Publish-Docker-Github-Action@3.0.4
+        uses: elgohr/Publish-Docker-Github-Action@3.04
         with:
           name: springcloudstream/multi-io-sample-http-purchase-orders
           #onobc/scdf-samples/springcloudstream/multi-io-sample-http-purchase-orders

@@ -1,0 +1,103 @@
+name: 'Build Sample App'
+description: 'Builds and publishes a sample app'
+inputs:
+  app-dir:
+    description: 'relative path to the app directory'
+    required: true
+  mvn-build-commands:
+    description: 'commands passed to \"mvnw" to build the app'
+    required: true
+  artifactory-publish:
+    description: 'whether or not to publish to artifactory'
+    type: boolean
+    required: false
+    default: true
+  jf-artifactory-spring:
+    description: 'encoded JFrog server id configuration'
+    required: false
+  jf-mvn-build-commands:
+    description: 'commands passed to \"jfrog rt mvn\" to publish the app'
+    required: false
+    default: 'clean install -DskipTests'
+  docker-push:
+    description: 'whether or not to push docker image to docker hub'
+    type: boolean
+    required: false
+    default: true
+  dockerhub-username:
+    description: 'dockerhub username'
+    required: false
+  dockerhub-password:
+    description: 'dockerhub password'
+    required: false
+  dockerhub-images:
+    description: 'csv of docker images to push'
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v2
+    - name: Setup Maven
+      uses: jvalkeal/setup-maven@v1
+      with:
+        maven-version: 3.8.4
+    - name: Setup Java
+      uses: actions/setup-java@v2
+      with:
+        distribution: adopt
+        java-version: 8
+        cache: maven
+
+    - name: Maven build
+      run: ./mvnw ${{ inputs.mvn-build-commands }}
+      working-directory: ${{ inputs.app-dir }}
+
+    - name: Setup JFrog CLI
+      if: ${{ inputs.artifactory-publish == 'true' }}
+      uses: jfrog/setup-jfrog-cli@v1
+      with:
+        version: 1.46.4
+      env:
+        JF_ARTIFACTORY_SPRING: ${{ inputs.jf-artifactory-spring }}
+        
+    - name: Configure JFrog Cli
+      if: ${{ inputs.artifactory-publish == 'true' }}
+      run: |
+        jfrog rt mvnc \
+        --server-id-resolve=repo.spring.io \
+        --server-id-deploy=repo.spring.io \
+        --repo-resolve-releases=libs-milestone \
+        --repo-resolve-snapshots=libs-snapshot \
+        --repo-deploy-releases=release \
+        --repo-deploy-snapshots=snapshot
+        echo JFROG_CLI_BUILD_NAME=spring-cloud-dataflow-samples >> $GITHUB_ENV
+        echo JFROG_CLI_BUILD_NUMBER=$GITHUB_RUN_NUMBER >> $GITHUB_ENV
+      working-directory: ${{ inputs.app-dir }}
+
+    - name: Publish to Artifactory
+      if: ${{ inputs.artifactory-publish == 'true' }}
+      run: |
+        jfrog rt mvn ${{ inputs.jf-mvn-build-commands }}
+        jfrog rt build-publish
+      working-directory: ${{ inputs.app-dir }}
+
+    - name: Login Dockerhub
+      if: ${{ inputs.docker-push == 'true' }}
+      uses: docker/login-action@v1
+      with:
+        username: ${{ inputs.dockerhub-username }}
+        password: ${{ inputs.dockerhub-password }}
+
+    - name: Push images to Dockerhub
+      if: ${{ inputs.docker-push == 'true' }}
+      env:
+        DOCKER_IMAGES: ${{ inputs.docker-images }}
+      shell: bash
+      run: |
+        IFS=","
+        for image in $DOCKER_IMAGES
+        do
+        echo "**** $image"
+        docker push $image
+        done
+      working-directory: ${{ inputs.app-dir }}

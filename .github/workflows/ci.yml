@@ -8,22 +8,22 @@ on:
 
 jobs:
     sample-app-user-clicks-per-region:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-    name: Buid sample app (user-clicks-per-region-1.2.x)
-    steps:
-      - name: Buid sample app
-        id: build-sample-app
-        uses: ./.github/actions/build-sample-app
-        with:
-          app-dir: 'multi-io-samples/kafka-streams/user-clicks-per-region-1.2.x'
-          mvn-build-commands: 'clean install jib:dockerBuild -pl http-click-ingest,http-region-ingest,user-clicks-per-region-processor,log-user-clicks-per-region,http-clicks-and-region-ingest'
-          artifactory-publish: true
-          jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
-          jf-mvn-build-commands: 'clean install -DskipTests'
-          docker-push: true
-          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
-          dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
-          docker-images: 'springcloudstream/multi-io-sample-http-region-ingest:1.2.0-SNAPSHOT,springcloudstream/multi-io-sample-http-clicks-and-region-ingest:1.2.0-SNAPSHOT,springcloudstream/multi-io-sample-user-clicks-per-region-processor:1.2.0-SNAPSHOT,springcloudstream/multi-io-sample-log-user-clicks-per-region:1.2.0-SNAPSHOT'
+      runs-on: ubuntu-latest
+      strategy:
+        fail-fast: false
+      name: Buid sample app (user-clicks-per-region-1.2.x)
+      steps:
+        - name: Buid sample app
+          id: build-sample-app
+          uses: ./.github/actions/build-sample-app
+          with:
+            app-dir: 'multi-io-samples/kafka-streams/user-clicks-per-region-1.2.x'
+            mvn-build-commands: 'clean install jib:dockerBuild -pl http-click-ingest,http-region-ingest,user-clicks-per-region-processor,log-user-clicks-per-region,http-clicks-and-region-ingest'
+            artifactory-publish: true
+            jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
+            jf-mvn-build-commands: 'clean install -DskipTests'
+            docker-push: true
+            dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+            dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
+            docker-images: 'springcloudstream/multi-io-sample-http-region-ingest:1.2.0-SNAPSHOT,springcloudstream/multi-io-sample-http-clicks-and-region-ingest:1.2.0-SNAPSHOT,springcloudstream/multi-io-sample-user-clicks-per-region-processor:1.2.0-SNAPSHOT,springcloudstream/multi-io-sample-log-user-clicks-per-region:1.2.0-SNAPSHOT'
 

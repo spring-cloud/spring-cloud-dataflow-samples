@@ -5,18 +5,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    name: CI PR Build
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-java@v2
-        with:
-          distribution: adopt
-          java-version: 8
-          cache: maven
-      - name: Build kafka-samples
-        run: ./mvnw -B package
-        working-directory: kafka-samples
-      - name: Build multio-samples/ticktock
-        run: ./mvnw -B package
-        working-directory: multio-samples/ticktock
+    name: Call Build Workflow
+    uses: spring-cloud/spring-cloud-dataflow-samples/.github/workflows/ci.yml@main
+    with:
+      maven-build-only: true
+    secrets:
+      JF_ARTIFACTORY_SPRING: ${{ secrets.JF_ARTIFACTORY_SPRING }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}

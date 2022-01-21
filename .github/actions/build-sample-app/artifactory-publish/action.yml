@@ -1,0 +1,45 @@
+name: 'Sample App Publish'
+description: 'Publishes a sample app to Artifactory'
+inputs:
+  app-dir:
+    description: 'relative path to the app directory'
+    required: true
+  jf-artifactory-spring:
+    description: 'encoded JFrog server id configuration'
+    required: true
+  jf-mvn-build-commands:
+    description: 'commands passed to \"jfrog rt mvn\" to publish the app'
+    required: false
+    default: '-B clean install -DskipTests'
+runs:
+  using: "composite"
+  steps:
+
+    - name: Setup JFrog CLI
+      uses: jfrog/setup-jfrog-cli@v1
+      with:
+        version: 1.46.4
+      env:
+        JF_ARTIFACTORY_SPRING: ${{ inputs.jf-artifactory-spring }}
+
+    - name: Configure JFrog Cli
+      shell: bash
+      run: |
+        jfrog rt mvnc \
+        --server-id-resolve=repo.spring.io \
+        --server-id-deploy=repo.spring.io \
+        --repo-resolve-releases=libs-milestone \
+        --repo-resolve-snapshots=libs-snapshot \
+        --repo-deploy-releases=release \
+        --repo-deploy-snapshots=snapshot
+        echo JFROG_CLI_BUILD_NAME=spring-cloud-dataflow-samples >> $GITHUB_ENV
+        echo JFROG_CLI_BUILD_NUMBER=$GITHUB_RUN_NUMBER >> $GITHUB_ENV
+      working-directory: ${{ inputs.app-dir }}
+
+    - name: Publish to Artifactory
+      shell: bash
+      run: |
+        jfrog rt mvn ${{ inputs.jf-mvn-build-commands }}
+        jfrog rt build-publish
+      working-directory: ${{ inputs.app-dir }}
+

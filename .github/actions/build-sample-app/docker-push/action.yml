@@ -1,0 +1,73 @@
+name: 'Sample App Push'
+description: 'Pushes a containerized sample app to Docker'
+inputs:
+  app-dir:
+    description: 'relative path to the app directory'
+    required: true
+  docker-registry:
+    description: 'docker registry'
+    required: false
+  docker-username:
+    description: 'docker username'
+    required: true
+  docker-password:
+    description: 'docker password'
+    required: true
+  docker-images:
+    description: 'csv of docker images to push'
+    required: true
+  docker-images-override:
+    description: 'csv of docker image tags to use when pushing (parallel array to docker-images)'
+    required: false
+runs:
+  using: "composite"
+  steps:
+
+    - name: Login Dockerhub
+      uses: docker/login-action@v1
+      with:
+        registry: ${{ inputs.docker-registry }}
+        username: ${{ inputs.docker-username }}
+        password: ${{ inputs.docker-password }}
+
+    - name: Push images to Dockerhub
+      env:
+        DOCKER_REGISTRY: ${{ inputs.docker-registry }}
+        DOCKER_IMAGES: ${{ inputs.docker-images }}
+        DOCKER_IMAGES_OVERRIDE: ${{ inputs.docker-images-override }}
+      working-directory: ${{ inputs.app-dir }}
+      shell: bash
+      run: |
+        # read the images into arrays
+        read -r -a images <<< "$DOCKER_IMAGES"
+        read -r -a imagesOverride <<< "$DOCKER_IMAGES_OVERRIDE"
+        
+        # validate lengths if override specified
+        numImages=${#images[@]}
+        numImagesOverride=${#imagesOverride[@]}
+        if [[ $numImagesOverride -gt 0 && $numImages -ne $numImagesOverride ]]; then
+          echo "when 'docker-images-override' is specified it must be the same length as 'docker-images'"
+          exit 1
+        fi
+        # determine the target images name based on registry and override
+        for idx in "${!images[@]}"
+        do
+          # use override if specified
+          if [[ $numImagesOverride -gt 0 ]]; then
+            image="${imagesOverride[idx]}"
+          else
+            image="${images[idx]}"
+          fi      
+          # pre-pend registry if specified
+          if [[ "$DOCKER_REGISTRY" != "" ]]; then
+            image="$DOCKER_REGISTRY/$image"
+          fi
+        
+          # tag the original image if it has changed (override and/or registry)
+          originalImage="${images[idx]}"
+          if [[ "$image" != "$originalImage" ]]; then
+            docker tag ${originalImage} ${image}
+          fi
+          docker push ${image}
+        
+        done

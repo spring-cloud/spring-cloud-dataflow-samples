@@ -8,9 +8,9 @@
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
-	<artifactId>usage-detail-sender</artifactId>
-	<name>usage-detail-sender</name>
-	<description>Demo project for Spring Boot</description>
+	<artifactId>usage-detail-sender-${binder}</artifactId>
+	<name>usage-detail-sender-${binder}</name>
+	<description>Demo project for Spring Boot (${binder})</description>
 
 	<dependencies>
 		<dependency>

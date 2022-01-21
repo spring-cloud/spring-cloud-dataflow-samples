@@ -9,9 +9,9 @@
 		<relativePath>..</relativePath>
 	</parent>
 
-	<artifactId>usage-cost-logger</artifactId>
-	<name>usage-cost-logger</name>
-	<description>Demo project for Spring Boot</description>
+	<artifactId>usage-cost-logger-${binder}</artifactId>
+	<name>usage-cost-logger-${binder}</name>
+	<description>Demo project for Spring Boot (${binder})</description>
 
 	<dependencies>
 		<dependency>

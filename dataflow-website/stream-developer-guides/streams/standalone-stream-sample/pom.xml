@@ -68,6 +68,9 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <properties>
+                <binder>kafka</binder>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.springframework.cloud</groupId>
@@ -77,6 +80,9 @@
         </profile>
         <profile>
             <id>rabbit</id>
+            <properties>
+                <binder>rabbit</binder>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.springframework.cloud</groupId>

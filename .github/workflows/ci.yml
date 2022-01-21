@@ -165,7 +165,7 @@ jobs:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            docker.io/springcloudtask/billsetuptask:0.0.1-SNAPSHOT
+            springcloudtask/billsetuptask:0.0.1-SNAPSHOT
             
   stream-dev-guides-composed-http-transformer-kafka:
     runs-on: ubuntu-latest

@@ -51,7 +51,7 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'multi-io-samples/ticktock'
-          mvn-build-commands: '-B clean install -Dmaven.javadoc.skip=true jib:dockerBuild -pl multi-output-time-rabbit,multi-input-log-rabbit,multi-output-time-kafka,multi-input-log-kafka'
+          mvn-build-commands: '-B clean install -Dmaven.javadoc.skip=true spring-boot:build-image -pl multi-output-time-rabbit,multi-input-log-rabbit,multi-output-time-kafka,multi-input-log-kafka'
 
   multi-io-http-purchase-orders:
     runs-on: ubuntu-latest
@@ -60,7 +60,7 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'multi-io-samples/purchase-orders/http-purchase-orders'
-          mvn-build-commands: '-B clean install jib:dockerBuild'
+          mvn-build-commands: '-B clean install spring-boot:build-image'
           docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -74,7 +74,7 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'multi-io-samples/kafka-streams/user-clicks-per-region-1.2.x'
-          mvn-build-commands: '-B clean install jib:dockerBuild -pl http-click-ingest,http-region-ingest,http-clicks-and-region-ingest,user-clicks-per-region-processor,log-user-clicks-per-region'
+          mvn-build-commands: '-B clean install spring-boot:build-image -pl http-click-ingest,http-region-ingest,http-clicks-and-region-ingest,user-clicks-per-region-processor,log-user-clicks-per-region'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           docker-push: ${{ inputs.maven-build-only != true }}
@@ -105,7 +105,7 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'function-samples/uppercase-processor'
-          mvn-build-commands: '-B clean install jib:dockerBuild'
+          mvn-build-commands: '-B clean install spring-boot:build-image'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           docker-push: ${{ inputs.maven-build-only != true }}
@@ -121,7 +121,7 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'dataflow-website/stream-developer-guides/streams/standalone-stream-sample'
-          mvn-build-commands: '-B clean install jib:dockerBuild'
+          mvn-build-commands: '-B clean install spring-boot:build-image'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           docker-push: ${{ inputs.maven-build-only != true }}
@@ -139,7 +139,7 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'dataflow-website/stream-developer-guides/streams/standalone-stream-sample'
-          mvn-build-commands: '-B clean install -Prabbit jib:dockerBuild'
+          mvn-build-commands: '-B clean install -Prabbit spring-boot:build-image'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           jf-mvn-build-commands: '-B clean install -Prabbit -DskipTests'
@@ -158,7 +158,7 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'dataflow-website/batch-developer-guides/batch/batchsamples'
-          mvn-build-commands: '-B clean install spring-boot:build-image -Dspring-boot.build-image.imageName=springcloudtask/billsetuptask:2.0.0-SNAPSHOT'
+          mvn-build-commands: '-B clean install spring-boot:build-image'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           docker-push: ${{ inputs.maven-build-only != true }}
@@ -174,7 +174,7 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'dataflow-website/stream-developer-guides/feature-guides/streams/function-composition/composed-http-transformer-kafka'
-          mvn-build-commands: '-B clean install jib:dockerBuild'
+          mvn-build-commands: '-B clean install spring-boot:build-image'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           docker-push: ${{ inputs.maven-build-only != true }}
@@ -190,7 +190,7 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'dataflow-website/stream-developer-guides/feature-guides/streams/function-composition/composed-http-transformer-kotlin-kafka'
-          mvn-build-commands: '-B clean install jib:dockerBuild'
+          mvn-build-commands: '-B clean install spring-boot:build-image'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           docker-push: ${{ inputs.maven-build-only != true }}
@@ -206,7 +206,7 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'dataflow-website/stream-developer-guides/feature-guides/streams/function-composition/composed-http-transformer-rabbitmq'
-          mvn-build-commands: '-B clean install jib:dockerBuild'
+          mvn-build-commands: '-B clean install spring-boot:build-image'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           docker-push: ${{ inputs.maven-build-only != true }}
@@ -222,7 +222,7 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'dataflow-website/stream-developer-guides/feature-guides/streams/function-composition/composed-http-transformer-kotlin-rabbitmq'
-          mvn-build-commands: '-B clean install jib:dockerBuild'
+          mvn-build-commands: '-B clean install spring-boot:build-image'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           docker-push: ${{ inputs.maven-build-only != true }}
@@ -238,7 +238,7 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'monitoring-samples/task-apps/task-demo-metrics-prometheus'
-          mvn-build-commands: '-B clean install docker:build'
+          mvn-build-commands: '-B clean install spring-boot:build-image'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           docker-push: ${{ inputs.maven-build-only != true }}
@@ -254,7 +254,7 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'scenario-task'
-          mvn-build-commands: '-B clean install spring-boot:build-image -Dspring-boot.build-image.imageName=springcloudtask/scenario-task:2.0.0-SNAPSHOT'
+          mvn-build-commands: '-B clean install spring-boot:build-image'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           docker-push: ${{ inputs.maven-build-only != true }}
@@ -270,7 +270,7 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'timestamp-task'
-          mvn-build-commands: '-B clean install spring-boot:build-image -Dspring-boot.build-image.imageName=springcloudtask/timestamp-task:2.0.0'
+          mvn-build-commands: '-B clean install spring-boot:build-image'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           docker-push: ${{ inputs.maven-build-only != true }}
@@ -286,7 +286,7 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'timestamp-batch'
-          mvn-build-commands: '-B clean install spring-boot:build-image -Dspring-boot.build-image.imageName=springcloudtask/timestamp-batch-task:2.0.0'
+          mvn-build-commands: '-B clean install spring-boot:build-image'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           docker-push: ${{ inputs.maven-build-only != true }}

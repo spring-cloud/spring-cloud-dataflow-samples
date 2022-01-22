@@ -47,7 +47,7 @@ One way to do this is to set deployment properties when creating and deploying t
 
 The source code for the <<Batch File Ingest>> batch job is located in `batch/file-ingest`.
 The resulting executable jar file must be available in a location that is accessible to your Cloud Foundry instance, such as an HTTP server or Maven repository.
-For convenience, the jar is published to the  https://repo.spring.io/libs-snapshot-local/io/spring/cloud/dataflow/ingest/ingest/1.0.0.BUILD-SNAPSHOT/[Spring Maven repository]
+For convenience, the jar is published to the  https://repo.spring.io/libs-snapshot-local/io/spring/cloud/dataflow/ingest/ingest/2.0.0-SNAPSHOT/[Spring Maven repository]
 
 . Create the remote directory
 +
@@ -85,7 +85,7 @@ Successfully registered application 'sink:task-launcher'
 +
 . Register and create the file ingest task:
 [source,console,options=nowrap]
-dataflow:>app register --name fileIngest --type task --uri maven://io.spring.cloud.dataflow.ingest:ingest:1.0.0.BUILD-SNAPSHOT
+dataflow:>app register --name fileIngest --type task --uri maven://io.spring.cloud.dataflow.ingest:ingest:2.0.0-SNAPSHOT
 Successfully registered application 'task:fileIngest'
 dataflow:>task create fileIngestTask --definition fileIngest
 Created new task 'fileIngestTask'

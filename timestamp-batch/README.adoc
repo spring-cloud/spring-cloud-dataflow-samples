@@ -30,7 +30,7 @@ This is a Spring Cloud Task application that executes two simple Spring Batch Jo
 === Command line
 [source,shell,indent=2]
 ----
-java -jar target/timestamp-batch-task-1.0.0.jar
+java -jar target/timestamp-batch-task-2.0.0.jar
 ----
 
 === Docker

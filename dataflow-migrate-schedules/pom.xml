@@ -11,14 +11,14 @@
 	</parent>
 	<groupId>io.spring</groupId>
 	<artifactId>migrateschedule</artifactId>
-	<version>1.0.0.BUILD-SNAPSHOT</version>
+	<version>2.0.0-SNAPSHOT</version>
 	<name>Schedule CD Migrator</name>
 	<description>Migrates SCDF Schedules so that SchedulerTaskLauncher is no longer required.</description>
 
 	<properties>
 		<java.version>1.8</java.version>
 		<spring-cloud-data-flow.version>2.5.0.BUILD-SNAPSHOT</spring-cloud-data-flow.version>
-		<deployer.version>2.3.0.BUILD-SNAPSHOT</deployer.version>
+		<deployer.version>2.0.0-SNAPSHOT</deployer.version>
 	</properties>
 
 	<dependencyManagement>

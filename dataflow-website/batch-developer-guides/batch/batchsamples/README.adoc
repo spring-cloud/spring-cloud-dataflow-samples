@@ -32,14 +32,14 @@ NOTE: You can modify the docker org and version by applying the following: `-Ddo
 
 Assuming you are using Mariadb
 ```
-$ java -jar target/billsetuptask-0.0.1-SNAPSHOT.jar --spring.datasource.url=jdbc:mariadb://localhost:3306/<your database>?useSSL=false --spring.datasource.username=<user> --spring.datasource.password=<password> --spring.datasource.driverClassName=org.mariadb.jdbc.Driver
+$ java -jar target/billsetuptask-2.0.0-SNAPSHOT.jar --spring.datasource.url=jdbc:mariadb://localhost:3306/<your database>?useSSL=false --spring.datasource.username=<user> --spring.datasource.password=<password> --spring.datasource.driverClassName=org.mariadb.jdbc.Driver
 ```
 
 === To execute billrun locally
 
 Assuming you are using Mariadb, this app will load data from the usageinfo.txt file found in the classpath (included in the jar).
 ```
-$ java -jar target/billrun-0.0.1-SNAPSHOT.jar --spring.datasource.url=--spring.datasource.url=jdbc:mariadb://localhost:3306/<your database>?useSSL=false --spring.datasource.username=<user> --spring.datasource.password=<password> --spring.datasource.driverClassName=org.mariadb.jdbc.Driver
+$ java -jar target/billrun-2.0.0-SNAPSHOT.jar --spring.datasource.url=--spring.datasource.url=jdbc:mariadb://localhost:3306/<your database>?useSSL=false --spring.datasource.username=<user> --spring.datasource.password=<password> --spring.datasource.driverClassName=org.mariadb.jdbc.Driver
 ```
 If you wish to read a directory containing the data you can use the following command line argument:
 `--usage.file.name=file://<location of json file to upload>`

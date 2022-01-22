@@ -34,9 +34,9 @@ Open two different terminals and start the producer and consumer as follows:
 
 [source,bash,options=nowrap,subs=attributes]
 ----
-java -jar kinesisproducer/target/kinesisproducer-0.0.1-SNAPSHOT.jar
+java -jar kinesisproducer/target/kinesisproducer-2.0.0-SNAPSHOT.jar
 
-java -jar kinesisconsumer/target/kinesisconsumer-0.0.1-SNAPSHOT.jar
+java -jar kinesisconsumer/target/kinesisconsumer-2.0.0-SNAPSHOT.jar
 ----
 
 ## Results

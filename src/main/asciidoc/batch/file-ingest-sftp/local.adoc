@@ -25,7 +25,7 @@ $ cd batch/file-ingest
 $ mvn clean package
 ```
 NOTE: For convenience, you can skip this step.
-The jar is published to the  https://repo.spring.io/libs-snapshot-local/io/spring/cloud/dataflow/ingest/ingest/1.0.0.BUILD-SNAPSHOT/[Spring Maven repository]
+The jar is published to the  https://repo.spring.io/libs-snapshot-local/io/spring/cloud/dataflow/ingest/ingest/2.0.0-SNAPSHOT/[Spring Maven repository]
 +
 
 . Create the data directories
@@ -56,7 +56,7 @@ dataflow:>app register --name task-launcher --type sink --uri maven://org.spring
 Successfully registered application 'sink:task-launcher'
 ----
 +
-. Register and create the file ingest task. If you're using the published jar, set `--uri maven://io.spring.cloud.dataflow.ingest:ingest:1.0.0.BUILD-SNAPSHOT`:
+. Register and create the file ingest task. If you're using the published jar, set `--uri maven://io.spring.cloud.dataflow.ingest:ingest:2.0.0-SNAPSHOT`:
 [source,console,options=nowrap]
 dataflow:>app register --name fileIngest --type task --uri file:///path/to/target/ingest-X.X.X.jar
 Successfully registered application 'task:fileIngest'

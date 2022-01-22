@@ -10,7 +10,7 @@
   </parent>
   <groupId>io.spring.dataflow.sample</groupId>
   <artifactId>composed-http-transformer-rabbitmq</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>2.0.0-SNAPSHOT</version>
   <name>composed-http-transformer-rabbitmq</name>
   <description>Spring Cloud Stream Http Transformer Rabbit Binder Application</description>
   <distributionManagement>

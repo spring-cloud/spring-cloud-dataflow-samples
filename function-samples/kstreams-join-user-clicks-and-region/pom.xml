@@ -11,7 +11,7 @@
 
 	<groupId>org.springframework.cloud.dataflow.samples</groupId>
 	<artifactId>kstreams-join-user-clicks-and-region</artifactId>
-	<version>1.0.1.BUILD-SNAPSHOT</version>
+	<version>2.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>kstreams-join-user-clicks-and-region</name>

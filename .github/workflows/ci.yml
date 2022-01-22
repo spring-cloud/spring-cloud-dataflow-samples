@@ -65,7 +65,7 @@ jobs:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            springcloudstream/multi-io-sample-http-purchase-orders:1.0.0-SNAPSHOT
+            springcloudstream/multi-io-sample-http-purchase-orders:2.0.0-SNAPSHOT
 
   user-clicks-per-region-12x:
     runs-on: ubuntu-latest
@@ -81,11 +81,11 @@ jobs:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            springcloudstream/multi-io-sample-http-click-ingest:1.2.0-SNAPSHOT
-            springcloudstream/multi-io-sample-http-region-ingest:1.2.0-SNAPSHOT
-            springcloudstream/multi-io-sample-http-clicks-and-region-ingest:1.2.0-SNAPSHOT
-            springcloudstream/multi-io-sample-user-clicks-per-region-processor:1.2.0-SNAPSHOT
-            springcloudstream/multi-io-sample-log-user-clicks-per-region:1.2.0-SNAPSHOT
+            springcloudstream/multi-io-sample-http-click-ingest:2.0.0-SNAPSHOT
+            springcloudstream/multi-io-sample-http-region-ingest:2.0.0-SNAPSHOT
+            springcloudstream/multi-io-sample-http-clicks-and-region-ingest:2.0.0-SNAPSHOT
+            springcloudstream/multi-io-sample-user-clicks-per-region-processor:2.0.0-SNAPSHOT
+            springcloudstream/multi-io-sample-log-user-clicks-per-region:2.0.0-SNAPSHOT
 
   function-samples:
     runs-on: ubuntu-latest
@@ -112,7 +112,7 @@ jobs:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            springcloudstream/uppercase-processor:1.0.0-SNAPSHOT
+            springcloudstream/uppercase-processor:2.0.0-SNAPSHOT
 
   stream-dev-guides-standalone-stream-kafka:
     runs-on: ubuntu-latest
@@ -128,9 +128,9 @@ jobs:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            springcloudstream/usage-detail-sender-kafka:0.0.1-SNAPSHOT
-            springcloudstream/usage-cost-processor-kafka:0.0.1-SNAPSHOT
-            springcloudstream/usage-cost-logger-kafka:0.0.1-SNAPSHOT
+            springcloudstream/usage-detail-sender-kafka:2.0.0-SNAPSHOT
+            springcloudstream/usage-cost-processor-kafka:2.0.0-SNAPSHOT
+            springcloudstream/usage-cost-logger-kafka:2.0.0-SNAPSHOT
 
   stream-dev-guides-standalone-stream-rabbitmq:
     runs-on: ubuntu-latest
@@ -147,9 +147,9 @@ jobs:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            springcloudstream/usage-detail-sender-rabbit:0.0.1-SNAPSHOT
-            springcloudstream/usage-cost-processor-rabbit:0.0.1-SNAPSHOT
-            springcloudstream/usage-cost-logger-rabbit:0.0.1-SNAPSHOT
+            springcloudstream/usage-detail-sender-rabbit:2.0.0-SNAPSHOT
+            springcloudstream/usage-cost-processor-rabbit:2.0.0-SNAPSHOT
+            springcloudstream/usage-cost-logger-rabbit:2.0.0-SNAPSHOT
 
   batch-dev-guides-batchsamples:
     runs-on: ubuntu-latest
@@ -158,15 +158,15 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'dataflow-website/batch-developer-guides/batch/batchsamples'
-          mvn-build-commands: '-B clean install spring-boot:build-image -Dspring-boot.build-image.imageName=springcloudtask/billsetuptask:0.0.1-SNAPSHOT'
+          mvn-build-commands: '-B clean install spring-boot:build-image -Dspring-boot.build-image.imageName=springcloudtask/billsetuptask:2.0.0-SNAPSHOT'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            springcloudtask/billsetuptask:0.0.1-SNAPSHOT
-  
+            springcloudtask/billsetuptask:2.0.0-SNAPSHOT
+
   stream-dev-guides-composed-http-transformer-kafka:
     runs-on: ubuntu-latest
     steps:
@@ -181,7 +181,7 @@ jobs:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            springcloudstream/composed-http-transformer-kafka:0.0.1-SNAPSHOT
+            springcloudstream/composed-http-transformer-kafka:2.0.0-SNAPSHOT
 
   stream-dev-guides-composed-http-transformer-kotlin-kafka:
     runs-on: ubuntu-latest
@@ -197,7 +197,7 @@ jobs:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            springcloudstream/composed-http-transformer-kotlin-kafka:0.0.1-SNAPSHOT
+            springcloudstream/composed-http-transformer-kotlin-kafka:2.0.0-SNAPSHOT
 
   stream-dev-guides-composed-http-transformer-rabbitmq:
     runs-on: ubuntu-latest
@@ -213,7 +213,7 @@ jobs:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            springcloudstream/composed-http-transformer-rabbitmq:0.0.1-SNAPSHOT            
+            springcloudstream/composed-http-transformer-rabbitmq:2.0.0-SNAPSHOT            
 
   stream-dev-guides-composed-http-transformer-kotlin-rabbitmq:
     runs-on: ubuntu-latest
@@ -229,7 +229,7 @@ jobs:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            springcloudstream/composed-http-transformer-kotlin-rabbitmq:0.0.1-SNAPSHOT
+            springcloudstream/composed-http-transformer-kotlin-rabbitmq:2.0.0-SNAPSHOT
 
   task-demo-metrics-prometheus:
     runs-on: ubuntu-latest
@@ -245,7 +245,7 @@ jobs:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            springcloudtask/task-demo-metrics-prometheus:0.0.4-SNAPSHOT
+            springcloudtask/task-demo-metrics-prometheus:2.0.0-SNAPSHOT
 
   scenario-task:
     runs-on: ubuntu-latest
@@ -254,14 +254,14 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'scenario-task'
-          mvn-build-commands: '-B clean install spring-boot:build-image -Dspring-boot.build-image.imageName=springcloudtask/scenario-task:0.0.1-SNAPSHOT'
+          mvn-build-commands: '-B clean install spring-boot:build-image -Dspring-boot.build-image.imageName=springcloudtask/scenario-task:2.0.0-SNAPSHOT'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            springcloudtask/scenario-task:0.0.1-SNAPSHOT
+            springcloudtask/scenario-task:2.0.0-SNAPSHOT
 
   timestamp-task:
     runs-on: ubuntu-latest
@@ -270,14 +270,14 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'timestamp-task'
-          mvn-build-commands: '-B clean install spring-boot:build-image -Dspring-boot.build-image.imageName=springcloudtask/timestamp-task:1.0.0'
+          mvn-build-commands: '-B clean install spring-boot:build-image -Dspring-boot.build-image.imageName=springcloudtask/timestamp-task:2.0.0'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            springcloudtask/timestamp-task:1.0.0
+            springcloudtask/timestamp-task:2.0.0
 
   timestamp-batch:
     runs-on: ubuntu-latest
@@ -286,11 +286,11 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'timestamp-batch'
-          mvn-build-commands: '-B clean install spring-boot:build-image -Dspring-boot.build-image.imageName=springcloudtask/timestamp-batch-task:1.0.0'
+          mvn-build-commands: '-B clean install spring-boot:build-image -Dspring-boot.build-image.imageName=springcloudtask/timestamp-batch-task:2.0.0'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            springcloudtask/timestamp-batch-task:1.0.0
+            springcloudtask/timestamp-batch-task:2.0.0

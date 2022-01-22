@@ -49,11 +49,11 @@ dataflow:>stream list
 
 [source,console,options=nowrap]
 ----
-2016-02-18 06:36:45.396  INFO 31194 --- [nio-9393-exec-1] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:log-sink:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
+2016-02-18 06:36:45.396  INFO 31194 --- [nio-9393-exec-1] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:log-sink:jar:exec:2.0.0-SNAPSHOT instance 0
    Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-3038434123335455382/pmmlTest-1455806205386/pmmlTest.log
-2016-02-18 06:36:45.402  INFO 31194 --- [nio-9393-exec-1] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:pmml-processor:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
+2016-02-18 06:36:45.402  INFO 31194 --- [nio-9393-exec-1] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:pmml-processor:jar:exec:2.0.0-SNAPSHOT instance 0
    Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-3038434123335455382/pmmlTest-1455806205386/pmmlTest.pmml
-2016-02-18 06:36:45.407  INFO 31194 --- [nio-9393-exec-1] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:http-source:jar:exec:1.0.0.BUILD-SNAPSHOT instance 0
+2016-02-18 06:36:45.407  INFO 31194 --- [nio-9393-exec-1] o.s.c.d.d.l.OutOfProcessModuleDeployer   : deploying module org.springframework.cloud.stream.module:http-source:jar:exec:2.0.0-SNAPSHOT instance 0
    Logs will be in /var/folders/c3/ctx7_rns6x30tq7rb76wzqwr0000gp/T/spring-cloud-data-flow-3038434123335455382/pmmlTest-1455806205386/pmmlTest.http
 ----
 +

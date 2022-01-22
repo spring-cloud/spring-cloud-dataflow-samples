@@ -5,7 +5,7 @@
 
 	<groupId>org.springframework.cloud.samples</groupId>
 	<artifactId>dataflow-template-load-generator</artifactId>
-	<version>1.0.0.BUILD-SNAPSHOT</version>
+	<version>2.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>ldapserver</name>

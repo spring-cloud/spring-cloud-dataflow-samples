@@ -72,7 +72,7 @@ Another useful class is the `DeploymentPropertiesBuilder` which aids in the crea
 This sample demonstrates the use of the local Data Flow Server, but you can pass in the option `--uri` to point to another Data Flow server instance that is running elsewhere.
 [source,bash]
 ----
-$ java -jar target/scdfdsl-0.0.1-SNAPSHOT.jar
+$ java -jar target/scdfdsl-2.0.0-SNAPSHOT.jar
 ----
 You will then see the following output.
 [source,bash]
@@ -139,7 +139,7 @@ different ways to authorize the sample application (i.e. the client).
 Use basic authentication:
 [source,bash,options="nowrap"]
 ----
-$ java -jar target/scdfdsl-0.0.1-SNAPSHOT.jar \
+$ java -jar target/scdfdsl-2.0.0-SNAPSHOT.jar \
   --spring.cloud.dataflow.client.authentication.basic.username=user \
   --spring.cloud.dataflow.client.authentication.basic.password=password
 ----
@@ -147,7 +147,7 @@ $ java -jar target/scdfdsl-0.0.1-SNAPSHOT.jar \
 Use OAuth client settings (UAA is used as the identity provider in this sample):
 [source,bash,options="nowrap"]
 ----
-$ java -jar target/scdfdsl-0.0.1-SNAPSHOT.jar \
+$ java -jar target/scdfdsl-2.0.0-SNAPSHOT.jar \
   --spring.cloud.dataflow.client.authentication.client-id=dataflow \
   --spring.cloud.dataflow.client.authentication.client-secret=secret \
   --spring.cloud.dataflow.client.authentication.token-uri=http://localhost:8080/uaa/oauth/token \
@@ -158,7 +158,7 @@ $ java -jar target/scdfdsl-0.0.1-SNAPSHOT.jar \
 Use OAuth access token:
 [source,bash,options="nowrap"]
 ----
-$ java -jar target/scdfdsl-0.0.1-SNAPSHOT.jar \
+$ java -jar target/scdfdsl-2.0.0-SNAPSHOT.jar \
   --spring.cloud.dataflow.client.authentication.access-token=849228ed663e450ab5051c998eb71a4a
 ----
 

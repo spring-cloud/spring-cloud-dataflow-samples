@@ -16,5 +16,5 @@ In order to get everything running we need to setup the following server instanc
 
 Configure the example application in `DataflowTemplateApplication.java`. Then build
 using `$ mvn clean package` and run using
-`$ java -jar target/dataflow-template-1.0.0.BUILD-SNAPSHOT.jar`
+`$ java -jar target/dataflow-template-2.0.0-SNAPSHOT.jar`
 

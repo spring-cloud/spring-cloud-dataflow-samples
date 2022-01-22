@@ -19,7 +19,7 @@ on:
         type: boolean
         description: Skip Artifactory publish and Docker push for all apps
         required: false
-        default: 'false'
+        default: false
     secrets:
       JF_ARTIFACTORY_SPRING:
         description: 'encoded JFrog server id configuration'
@@ -41,7 +41,7 @@ jobs:
         with:
           app-dir: 'kafka-samples'
           mvn-build-commands: '-B clean verify -Pspring'
-          artifactory-publish: ${{ inputs.maven-build-only != 'true' }}
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
 
   multi-io-ticktock:
@@ -61,7 +61,7 @@ jobs:
         with:
           app-dir: 'multi-io-samples/purchase-orders/http-purchase-orders'
           mvn-build-commands: '-B clean install jib:dockerBuild'
-          docker-push: ${{ inputs.maven-build-only != 'true' }}
+          docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
@@ -75,9 +75,9 @@ jobs:
         with:
           app-dir: 'multi-io-samples/kafka-streams/user-clicks-per-region-1.2.x'
           mvn-build-commands: '-B clean install jib:dockerBuild -pl http-click-ingest,http-region-ingest,http-clicks-and-region-ingest,user-clicks-per-region-processor,log-user-clicks-per-region'
-          artifactory-publish: ${{ inputs.maven-build-only != 'true' }}
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
-          docker-push: ${{ inputs.maven-build-only != 'true' }}
+          docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
@@ -95,7 +95,7 @@ jobs:
         with:
           app-dir: 'function-samples'
           mvn-build-commands: '-B clean verify -Pspring'
-          artifactory-publish: ${{ inputs.maven-build-only != 'true' }}
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
 
   function-samples-uppercase-processor:
@@ -106,9 +106,9 @@ jobs:
         with:
           app-dir: 'function-samples/uppercase-processor'
           mvn-build-commands: '-B clean install jib:dockerBuild'
-          artifactory-publish: ${{ inputs.maven-build-only != 'true' }}
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
-          docker-push: ${{ inputs.maven-build-only != 'true' }}
+          docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
@@ -122,9 +122,9 @@ jobs:
         with:
           app-dir: 'dataflow-website/stream-developer-guides/streams/standalone-stream-sample'
           mvn-build-commands: '-B clean install jib:dockerBuild'
-          artifactory-publish: ${{ inputs.maven-build-only != 'true' }}
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
-          docker-push: ${{ inputs.maven-build-only != 'true' }}
+          docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
@@ -140,10 +140,10 @@ jobs:
         with:
           app-dir: 'dataflow-website/stream-developer-guides/streams/standalone-stream-sample'
           mvn-build-commands: '-B clean install -Prabbit jib:dockerBuild'
-          artifactory-publish: ${{ inputs.maven-build-only != 'true' }}
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           jf-mvn-build-commands: '-B clean install -Prabbit -DskipTests'
-          docker-push: ${{ inputs.maven-build-only != 'true' }}
+          docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
@@ -159,14 +159,14 @@ jobs:
         with:
           app-dir: 'dataflow-website/batch-developer-guides/batch/batchsamples'
           mvn-build-commands: '-B clean install spring-boot:build-image -Dspring-boot.build-image.imageName=springcloudtask/billsetuptask:0.0.1-SNAPSHOT'
-          artifactory-publish: ${{ inputs.maven-build-only != 'true' }}
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
-          docker-push: ${{ inputs.maven-build-only != 'true' }}
+          docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
             springcloudtask/billsetuptask:0.0.1-SNAPSHOT
-            
+  
   stream-dev-guides-composed-http-transformer-kafka:
     runs-on: ubuntu-latest
     steps:
@@ -175,9 +175,9 @@ jobs:
         with:
           app-dir: 'dataflow-website/stream-developer-guides/feature-guides/streams/function-composition/composed-http-transformer-kafka'
           mvn-build-commands: '-B clean install jib:dockerBuild'
-          artifactory-publish: ${{ inputs.maven-build-only != 'true' }}
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
-          docker-push: ${{ inputs.maven-build-only != 'true' }}
+          docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
@@ -191,9 +191,9 @@ jobs:
         with:
           app-dir: 'dataflow-website/stream-developer-guides/feature-guides/streams/function-composition/composed-http-transformer-kotlin-kafka'
           mvn-build-commands: '-B clean install jib:dockerBuild'
-          artifactory-publish: ${{ inputs.maven-build-only != 'true' }}
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
-          docker-push: ${{ inputs.maven-build-only != 'true' }}
+          docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
@@ -207,9 +207,9 @@ jobs:
         with:
           app-dir: 'dataflow-website/stream-developer-guides/feature-guides/streams/function-composition/composed-http-transformer-rabbitmq'
           mvn-build-commands: '-B clean install jib:dockerBuild'
-          artifactory-publish: ${{ inputs.maven-build-only != 'true' }}
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
-          docker-push: ${{ inputs.maven-build-only != 'true' }}
+          docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
@@ -223,9 +223,9 @@ jobs:
         with:
           app-dir: 'dataflow-website/stream-developer-guides/feature-guides/streams/function-composition/composed-http-transformer-kotlin-rabbitmq'
           mvn-build-commands: '-B clean install jib:dockerBuild'
-          artifactory-publish: ${{ inputs.maven-build-only != 'true' }}
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
-          docker-push: ${{ inputs.maven-build-only != 'true' }}
+          docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
@@ -239,9 +239,9 @@ jobs:
         with:
           app-dir: 'monitoring-samples/task-apps/task-demo-metrics-prometheus'
           mvn-build-commands: '-B clean install docker:build'
-          artifactory-publish: ${{ inputs.maven-build-only != 'true' }}
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
-          docker-push: ${{ inputs.maven-build-only != 'true' }}
+          docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
@@ -255,9 +255,9 @@ jobs:
         with:
           app-dir: 'scenario-task'
           mvn-build-commands: '-B clean install spring-boot:build-image -Dspring-boot.build-image.imageName=springcloudtask/scenario-task:0.0.1-SNAPSHOT'
-          artifactory-publish: ${{ inputs.maven-build-only != 'true' }}
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
-          docker-push: ${{ inputs.maven-build-only != 'true' }}
+          docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
@@ -271,9 +271,9 @@ jobs:
         with:
           app-dir: 'timestamp-task'
           mvn-build-commands: '-B clean install spring-boot:build-image -Dspring-boot.build-image.imageName=springcloudtask/timestamp-task:1.0.0'
-          artifactory-publish: ${{ inputs.maven-build-only != 'true' }}
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
-          docker-push: ${{ inputs.maven-build-only != 'true' }}
+          docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
@@ -287,9 +287,9 @@ jobs:
         with:
           app-dir: 'timestamp-batch'
           mvn-build-commands: '-B clean install spring-boot:build-image -Dspring-boot.build-image.imageName=springcloudtask/timestamp-batch-task:1.0.0'
-          artifactory-publish: ${{ inputs.maven-build-only != 'true' }}
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
-          docker-push: ${{ inputs.maven-build-only != 'true' }}
+          docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-

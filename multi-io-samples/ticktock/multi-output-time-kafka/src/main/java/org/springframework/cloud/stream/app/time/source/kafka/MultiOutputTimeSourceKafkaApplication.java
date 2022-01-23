@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.cloud.stream.app.time.source.rabbit;
+package org.springframework.cloud.stream.app.time.source.kafka;
 
 import java.util.Date;
 import java.util.function.Supplier;

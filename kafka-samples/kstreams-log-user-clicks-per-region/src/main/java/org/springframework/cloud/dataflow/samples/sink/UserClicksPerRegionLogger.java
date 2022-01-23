@@ -36,7 +36,7 @@ public class UserClicksPerRegionLogger {
 		LoggingHandler loggingHandler = new LoggingHandler(LoggingHandler.Level.INFO) {
 
 			@Override
-			protected void handleMessageInternal(Message<?> message) throws Exception {
+			protected void handleMessageInternal(Message<?> message) {
 				Long userClicksPerRegion = (Long) message.getPayload();
 				String userRegion = (String) message.getHeaders().get("kafka_receivedMessageKey");
 				message = new MutableMessage<>(userRegion + " : " + userClicksPerRegion.toString());

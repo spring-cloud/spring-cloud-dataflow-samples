@@ -15,7 +15,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<spring-cloud.version>Greenwich.SR1</spring-cloud.version>
+		<spring-cloud.version>2021.0.0</spring-cloud.version>
 		<docker.org>springcloudtask</docker.org>
 	</properties>
 

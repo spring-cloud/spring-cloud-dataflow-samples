@@ -40,7 +40,7 @@ dataflow:>app register --name function-runner --type processor --uri maven://org
 . Create and deploy the following stream
 +
 ```
-dataflow:>stream create foo --definition "http --server.port=9001 | function-runner --function.className=com.example.functions.CharCounter --function.location=file:///<PATH/TO/SPRING-CLOUD-FUNCTION>/spring-cloud-function-samples/function-sample/target/spring-cloud-function-sample-1.0.0.BUILD-SNAPSHOT.jar | log" --deploy
+dataflow:>stream create foo --definition "http --server.port=9001 | function-runner --function.className=com.example.functions.CharCounter --function.location=file:///<PATH/TO/SPRING-CLOUD-FUNCTION>/spring-cloud-function-samples/function-sample/target/spring-cloud-function-sample-2.0.0-SNAPSHOT.jar | log" --deploy
 
 ```
 +

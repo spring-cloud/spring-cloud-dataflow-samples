@@ -10,5 +10,5 @@ To build this application:
 To register this application from Spring Cloud Data Flow shell:
 
 ```
-dataflow:> app register --name log-user-clicks-per-region --type app --uri file://<local parent directory of this git repo>/spring-cloud-dataflow-samples/kafka-samples/kstreams-log-user-clicks-per-region/target/kstreams-log-user-clicks-per-region-1.0.0.BUILD-SNAPSHOT.jar
+dataflow:> app register --name log-user-clicks-per-region --type app --uri file://<local parent directory of this git repo>/spring-cloud-dataflow-samples/kafka-samples/kstreams-log-user-clicks-per-region/target/kstreams-log-user-clicks-per-region-2.0.0-SNAPSHOT.jar
 ```

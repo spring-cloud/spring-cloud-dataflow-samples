@@ -11,5 +11,5 @@ To build this application:
 Register this KStream application as `app` type:
 
 ```
-dataflow:> app register --name join-user-clicks-and-regions --type app --uri file://<local parent directory of this git repo>/spring-cloud-dataflow-samples/kafka-samples/kstreams-join-user-clicks-and-region/target/kstreams-join-user-clicks-and-region-1.0.0.BUILD-SNAPSHOT.jar
+dataflow:> app register --name join-user-clicks-and-regions --type app --uri file://<local parent directory of this git repo>/spring-cloud-dataflow-samples/kafka-samples/kstreams-join-user-clicks-and-region/target/kstreams-join-user-clicks-and-region-2.0.0-SNAPSHOT.jar
 ```

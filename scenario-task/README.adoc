@@ -19,7 +19,7 @@ Allows user to test various success and failures scenarios when task-batch apps 
 
 ### Command Line
 ```
-java -jar scenario-task-0.0.1-SNAPSHOT.jar
+java -jar scenario-task-2.0.0-SNAPSHOT.jar
 ```
 
 ### Docker
@@ -59,12 +59,12 @@ export spring_datasource_url=jdbc:<your db>
 export spring_datasource_username=<your username>
 export spring_datasource_password=<your password>
 export spring_datasource_driverClassName=<your driver>
-java -jar scenario-task-0.0.1-SNAPSHOT.jar --io.spring.failBatch=true --io.spring.jobName=testSamp1
+java -jar scenario-task-2.0.0-SNAPSHOT.jar --io.spring.failBatch=true --io.spring.jobName=testSamp1
 ```
 Now looking at our results we see that the `ExpectedException` has been thrown as expected, the Job has failed, but, the task has succeeded.
 So now let's let's launch our scenario-task again with the same settings.
 ```
-java -jar scenario-task-0.0.1-SNAPSHOT.jar --io.spring.failBatch=true --io.spring.jobName=testSamp1
+java -jar scenario-task-2.0.0-SNAPSHOT.jar --io.spring.failBatch=true --io.spring.jobName=testSamp1
 ```
 Now looking at our results we see that job succeeded and the task succeeded.
 This is because our scenario-task saw that for this job instance the first run
@@ -83,12 +83,12 @@ export spring_datasource_url=jdbc:<your db>
 export spring_datasource_username=<your username>
 export spring_datasource_password=<your password>
 export spring_datasource_driverClassName=<your driver>
-java -jar scenario-task-0.0.1-SNAPSHOT.jar --io.spring.failBatch=true --io.spring.jobName=testSamp2 --spring.cloud.task.batch.fail-on-job-failure=true
+java -jar scenario-task-2.0.0-SNAPSHOT.jar --io.spring.failBatch=true --io.spring.jobName=testSamp2 --spring.cloud.task.batch.fail-on-job-failure=true
 ```
 Now looking at our results we see that the `ExpectedException` has been thrown as expected, the Job has failed, and the task has failed.
 So now let's let's launch our scenario-task again with the same settings.
 ```
-java -jar scenario-task-0.0.1-SNAPSHOT.jar --io.spring.failBatch=true --io.spring.jobName=testSamp2 --spring.cloud.task.batch.fail-on-job-failure=true
+java -jar scenario-task-2.0.0-SNAPSHOT.jar --io.spring.failBatch=true --io.spring.jobName=testSamp2 --spring.cloud.task.batch.fail-on-job-failure=true
 ```
 Now looking at our results we see that job succeeded and the task succeeded.
 This is because our scenario-task saw that for this job instance the first run
@@ -98,14 +98,14 @@ throw the `ExpectedException` again.   Thus, the job is successful.
 ### Successful Task Launch With No Job
 For this scenario we want launch the task that terminates successfully (exit code of 0) and have no associated batch job run.   Also, we want to set the name of our task-execution.
 ```
-java -jar scenario-task-0.0.1-SNAPSHOT.jar  --io.spring.launchBatchJob=false --spring.application.name=testTask1
+java -jar scenario-task-2.0.0-SNAPSHOT.jar  --io.spring.launchBatchJob=false --spring.application.name=testTask1
 ```
 We can see that the task launched and completed successfully with no associated batch job.
 
 ### Fail Task Launch With No Job
 For this scenario we want launch the task that terminates unsuccessfully (exit code of 1) and have no associated batch job run.   Also, we want to set the name of our task-execution.
 ```
-java -jar scenario-task-0.0.1-SNAPSHOT.jar  --io.spring.launchBatchJob=false --spring.application.name=testTask1 --io.spring.failTask=true
+java -jar scenario-task-2.0.0-SNAPSHOT.jar  --io.spring.launchBatchJob=false --spring.application.name=testTask1 --io.spring.failTask=true
 ```
 We can see that the task launched and failed because a `ExpectedException` was thrown.  Also, the task execution had no associated batch job.
 
@@ -116,7 +116,7 @@ This will test the fail and restart capabilities of an composed task.
 #### Register The Scenario Task Application
 Using The Spring Cloud Data Flow shell enter the following command:
 ```
-app register --name scenario --type task --uri maven://io.spring:scenario-task:0.0.1-SNAPSHOT
+app register --name scenario --type task --uri maven://io.spring:scenario-task:2.0.0-SNAPSHOT
 ```
 
 #### Create Composed Task Definition

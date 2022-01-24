@@ -18,5 +18,5 @@ In order to get everything running we need to setup the following server instanc
 == Build + Run
 
 Build the sample using `$ mvn clean package` and run using
-`$ java -jar target/dataflow-zuul-1.0.0.BUILD-SNAPSHOT.jar`
+`$ java -jar target/dataflow-zuul-2.0.0-SNAPSHOT.jar`
 

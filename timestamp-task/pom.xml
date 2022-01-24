@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>io.spring</groupId>
 	<artifactId>timestamp-task</artifactId>
-	<version>1.0.0</version>
+	<version>2.0.0</version>
 	<name>timestamp-task</name>
 	<description>Simple Timestamp sample.</description>
 
@@ -71,42 +71,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>io.fabric8</groupId>
-				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.21.0</version>
-				<configuration>
-					<images>
-						<image>
-							<name>springcloudtask/${project.artifactId}</name>
-							<build>
-								<tags>
-									<tag>${project.version}</tag>
-								</tags>
-								<from>springcloud/openjdk:2.0.0.RELEASE</from>
-								<volumes>
-									<volume>/tmp</volume>
-								</volumes>
-								<env>
-									<LANG>C.UTF-8</LANG>
-								</env>
-								<entryPoint>
-									<exec>
-										<arg>java</arg>
-										<arg>-jar</arg>
-										<arg>/maven/timestamp-task.jar</arg>
-									</exec>
-								</entryPoint>
-								<assembly>
-									<name>maven</name>
-									<descriptor>assembly.xml</descriptor>
-									<targetDir>/</targetDir>
-								</assembly>
-							</build>
-						</image>
-					</images>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>

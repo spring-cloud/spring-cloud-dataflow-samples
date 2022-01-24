@@ -183,7 +183,7 @@ Run
 ./mvnw clean install
 ```
 
-Will produce `task-demo-metrics-prometheus-0.0.4-SNAPSHOT.jar` task application under the `target` folder.
+Will produce `task-demo-metrics-prometheus-2.0.0-SNAPSHOT.jar` task application under the `target` folder.
 
 ## Spring Cloud Data FLow server
 

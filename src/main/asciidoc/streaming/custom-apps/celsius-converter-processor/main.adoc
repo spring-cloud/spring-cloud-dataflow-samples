@@ -76,7 +76,7 @@ $./mvnw clean package
 . Run the Application standalone
 +
 ```
-java -jar target/celsius-converter-processor-0.0.1-SNAPSHOT.jar
+java -jar target/celsius-converter-processor-2.0.0-SNAPSHOT.jar
 ```
 +
 If all goes well, we should have a running standalone Spring Boot Application.

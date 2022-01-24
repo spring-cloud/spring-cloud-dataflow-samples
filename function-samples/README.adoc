@@ -13,13 +13,13 @@ cd http-ingest
 ./mvnw clean package
 ```
 
-At this step, the artifact `http-ingest-1.0.0.BUILD-SNAPSHOT.jar` is available.
+At this step, the artifact `http-ingest-2.0.0-SNAPSHOT.jar` is available.
 
 You can register this artifact as the Spring Cloud Data Flow `Source` application as follows,
 From the Spring Cloud Data Flow shell,
 
 ```
-dataflow:>app register --name http-ingest --type source --uri file://<Your local parent directory to the forked github repo>/spring-cloud-dataflow-samples/kafka-samples/http-ingest/target/http-ingest-1.0.0.BUILD-SNAPSHOT.jar
+dataflow:>app register --name http-ingest --type source --uri file://<Your local parent directory to the forked github repo>/spring-cloud-dataflow-samples/kafka-samples/http-ingest/target/http-ingest-2.0.0-SNAPSHOT.jar
 Successfully registered application 'source:http-ingest'
 ```
 
@@ -30,14 +30,14 @@ cd kstreams-word-count
 ./mvnw clean package
 ```
 
-After this step, the artifact `kstreams-word-count-1.0.0.BUILD-SNAPSHOT.jar` is available.
+After this step, the artifact `kstreams-word-count-2.0.0-SNAPSHOT.jar` is available.
 
 You can register this artifact as the Spring Cloud Data Flow `Processor` application as follows:
 
 From the Spring Cloud Data Flow shell,
 
 ```
-dataflow:>app register --name kstream-word-count --type processor --uri file://<Your local parent directory to the forked github repo>/spring-cloud-dataflow-samples/kafka-samples/kstreams-word-count/target/kstreams-word-count-1.0.0.BUILD-SNAPSHOT.jar
+dataflow:>app register --name kstream-word-count --type processor --uri file://<Your local parent directory to the forked github repo>/spring-cloud-dataflow-samples/kafka-samples/kstreams-word-count/target/kstreams-word-count-2.0.0-SNAPSHOT.jar
 Successfully registered application 'processor:kstream-word-count'
 ```
 
@@ -86,7 +86,7 @@ You can register this artifact as the Spring Cloud Data Flow `Source` applicatio
 From the Spring Cloud Data Flow shell,
 
 ```
-dataflow:>app register --name http-ingest --type source --uri file://<Your local parent directory to the forked github repo>/spring-cloud-dataflow-samples/kafka-samples/http-ingest/target/http-ingest-1.0.0.BUILD-SNAPSHOT.jar
+dataflow:>app register --name http-ingest --type source --uri file://<Your local parent directory to the forked github repo>/spring-cloud-dataflow-samples/kafka-samples/http-ingest/target/http-ingest-2.0.0-SNAPSHOT.jar
 Successfully registered application 'source:http-ingest'
 ```
 
@@ -137,7 +137,7 @@ cd kstreams-join-user-clicks-and-region
 Register this Kafka Streams application as `app` type:
 
 ```
-dataflow:> app register --name join-user-clicks-and-regions --type app --uri file://<local parent directory of this git repo>/spring-cloud-dataflow-samples/kafka-samples/kstreams-join-user-clicks-and-region/target/kstreams-join-user-clicks-and-region-1.0.0.BUILD-SNAPSHOT.jar
+dataflow:> app register --name join-user-clicks-and-regions --type app --uri file://<local parent directory of this git repo>/spring-cloud-dataflow-samples/kafka-samples/kstreams-join-user-clicks-and-region/target/kstreams-join-user-clicks-and-region-2.0.0-SNAPSHOT.jar
 
 ```
 
@@ -151,7 +151,7 @@ cd kstreams-log-user-clicks-per-region
 ```
 
 ```
-dataflow:> app register --name log-user-clicks-per-region --type app --uri file://<local parent directory of this git repo>/spring-cloud-dataflow-samples/kafka-samples/kstreams-log-user-clicks-per-region/target/kstreams-log-user-clicks-per-region-1.0.0.BUILD-SNAPSHOT.jar
+dataflow:> app register --name log-user-clicks-per-region --type app --uri file://<local parent directory of this git repo>/spring-cloud-dataflow-samples/kafka-samples/kstreams-log-user-clicks-per-region/target/kstreams-log-user-clicks-per-region-2.0.0-SNAPSHOT.jar
 
 ```
 

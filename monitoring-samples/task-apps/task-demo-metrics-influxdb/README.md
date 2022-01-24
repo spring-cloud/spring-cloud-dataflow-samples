@@ -116,7 +116,7 @@ Run
 ./mvnw clean install
 ```
 
-Will produce `task-demo-metrics-influx-0.0.1-SNAPSHOT.jar` task application under the `target` folder.
+Will produce `task-demo-metrics-influx-2.0.0-SNAPSHOT.jar` task application under the `target` folder.
 
 ## Spring Cloud Data FLow server
 

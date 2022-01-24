@@ -11,7 +11,7 @@ pushd ..
 popd
 
 echo "Diff gradle build"
-diff <(unzip -l spring-cloud-dataflow-server-$version.jar|grep BOOT-INF/lib|awk '{print $4}'|sort) <(unzip -l ../build/libs/custom-dataflow-server-gradle-0.0.1-SNAPSHOT.jar|grep BOOT-INF/lib|awk '{print $4}'|sort)
+diff <(unzip -l spring-cloud-dataflow-server-$version.jar|grep BOOT-INF/lib|awk '{print $4}'|sort) <(unzip -l ../build/libs/custom-dataflow-server-gradle-2.0.0-SNAPSHOT.jar|grep BOOT-INF/lib|awk '{print $4}'|sort)
 
 echo "Diff maven build"
-diff <(unzip -l spring-cloud-dataflow-server-$version.jar|grep BOOT-INF/lib|awk '{print $4}'|sort) <(unzip -l ../target/custom-dataflow-server-maven-0.0.1-SNAPSHOT.jar|grep BOOT-INF/lib|awk '{print $4}'|sort)
+diff <(unzip -l spring-cloud-dataflow-server-$version.jar|grep BOOT-INF/lib|awk '{print $4}'|sort) <(unzip -l ../target/custom-dataflow-server-maven-2.0.0-SNAPSHOT.jar|grep BOOT-INF/lib|awk '{print $4}'|sort)

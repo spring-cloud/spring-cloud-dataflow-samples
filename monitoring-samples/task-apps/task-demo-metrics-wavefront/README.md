@@ -86,7 +86,7 @@ Run
 ./mvnw clean install
 ```
 
-Will produce `task-demo-metrics-wavefront-0.0.1-SNAPSHOT.jar` task application under the `target` folder.
+Will produce `task-demo-metrics-wavefront-2.0.0-SNAPSHOT.jar` task application under the `target` folder.
 
 ## Spring Cloud Data Flow server
 

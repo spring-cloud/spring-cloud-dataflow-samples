@@ -20,4 +20,4 @@ To build the docker image:
 ```
 
 === Running the Application
-java -jar target/transition-sample-1.0.0.BUILD-SNAPSHOT.jar --taskapp.exitMessage=<yourexitmessage>
+java -jar target/transition-sample-2.0.0-SNAPSHOT.jar --taskapp.exitMessage=<yourexitmessage>

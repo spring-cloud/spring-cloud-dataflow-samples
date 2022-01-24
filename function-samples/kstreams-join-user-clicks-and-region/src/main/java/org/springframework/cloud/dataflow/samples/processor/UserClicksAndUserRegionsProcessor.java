@@ -23,7 +23,7 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Joined;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
-import org.apache.kafka.streams.kstream.Serialized;
+import org.apache.kafka.streams.kstream.Grouped;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -44,7 +44,7 @@ public class UserClicksAndUserRegionsProcessor {
 						(clicks, region) -> new RegionWithClicks(region == null ? "UNKNOWN" : region, clicks),
 						Joined.with(Serdes.String(), Serdes.Long(), null))
 				.map((user, regionWithClicks) -> new KeyValue<>(regionWithClicks.getRegion(), regionWithClicks.getClicks()))
-				.groupByKey(Serialized.with(Serdes.String(), Serdes.Long()))
+				.groupByKey(Grouped.with(Serdes.String(), Serdes.Long()))
 				.reduce((firstClicks, secondClicks) -> firstClicks + secondClicks)
 				.toStream();
 	}

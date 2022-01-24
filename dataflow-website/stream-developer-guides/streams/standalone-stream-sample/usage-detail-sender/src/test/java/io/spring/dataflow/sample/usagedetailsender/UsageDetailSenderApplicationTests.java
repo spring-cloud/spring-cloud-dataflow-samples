@@ -28,7 +28,7 @@ public class UsageDetailSenderApplicationTests {
 				.run()) {
 
 			OutputDestination target = context.getBean(OutputDestination.class);
-			Message<byte[]> sourceMessage = target.receive(10000);
+			Message<byte[]> sourceMessage = target.receive(10000, "usage-detail");
 
 			final MessageConverter converter = context.getBean(CompositeMessageConverter.class);
 			UsageDetail usageDetail = (UsageDetail) converter

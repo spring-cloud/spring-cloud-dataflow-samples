@@ -134,7 +134,7 @@
 						<name>springcloudstream/multi-io-sample-${project.artifactId}:${project.version}</name>
 						<env>
 							<BP_IMAGE_LABELS>
-								configuration-properties.inbound-ports="${configuration-properties.inbound-ports}",configuration-properties.outbound-ports="${configuration-properties.outbound-ports}"
+								configuration-properties.inbound-ports="${configuration-properties.inbound-ports}" configuration-properties.outbound-ports="${configuration-properties.outbound-ports}"
 							</BP_IMAGE_LABELS>
 						</env>
 					</image>

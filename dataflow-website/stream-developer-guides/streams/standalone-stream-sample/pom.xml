@@ -42,7 +42,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <image>
-                        <name>springcloudstream/multi-io-sample-${project.artifactId}:${project.version}</name>
+                        <name>springcloudstream/${project.artifactId}:${project.version}</name>
                     </image>
                 </configuration>
             </plugin>

@@ -26,8 +26,6 @@
     </snapshotRepository>
   </distributionManagement>
   <properties>
-    <docker.org>springcloudstream</docker.org>
-    <docker.version>${project.version}</docker.version>
     <skipTests>true</skipTests>
     <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -121,21 +119,10 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>com.google.cloud.tools</groupId>
-        <artifactId>jib-maven-plugin</artifactId>
-        <version>0.10.1</version>
         <configuration>
-          <from>
-            <image>springcloud/openjdk</image>
-          </from>
-          <to>
-            <image>${docker.org}/${project.artifactId}:${docker.version}</image>
-          </to>
-          <container>
-            <useCurrentTimestamp>true</useCurrentTimestamp>
-          </container>
+          <image>
+            <name>springcloudstream/${project.artifactId}:${project.version}</name>
+          </image>
         </configuration>
       </plugin>
     </plugins>

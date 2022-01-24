@@ -23,8 +23,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<spring-cloud.version>2021.0.0</spring-cloud.version>
-		<docker.org>springcloudtask</docker.org>
-		<docker.version>${project.version}</docker.version>
 	</properties>
 
 	<modules>
@@ -84,6 +82,11 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+						<name>springcloudtask/${project.artifactId}:${project.version}</name>
+					</image>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

@@ -120,58 +120,15 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>properties-maven-plugin</artifactId>
-				<version>1.0.0</version>
-				<executions>
-					<execution>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>read-project-properties</goal>
-						</goals>
-						<configuration>
-							<files>
-								<file>${project.build.outputDirectory}/META-INF/spring-configuration-metadata-encoded.properties</file>
-							</files>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>io.fabric8</groupId>
-				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.33.0</version>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<images>
-						<image>
-							<name>springcloudtask/${project.artifactId}</name>
-							<build>
-								<tags>
-									<tag>latest</tag>
-									<tag>${project.version}</tag>
-								</tags>
-								<from>springcloud/baseimage:1.0.0</from>
-								<volumes>
-									<volume>/tmp</volume>
-								</volumes>
-								<labels>
-									<org.springframework.cloud.dataflow.spring-configuration-metadata.json>
-										${org.springframework.cloud.dataflow.spring.configuration.metadata.json}
-									</org.springframework.cloud.dataflow.spring-configuration-metadata.json>
-								</labels>
-								<entryPoint>
-									<exec>
-										<arg>java</arg>
-										<arg>-jar</arg>
-										<arg>/maven/task-demo-metrics-prometheus.jar</arg>
-									</exec>
-								</entryPoint>
-								<assembly>
-									<descriptor>assembly.xml</descriptor>
-								</assembly>
-							</build>
-						</image>
-					</images>
+					<image>
+						<name>springcloudtask/${project.artifactId}:${project.version}</name>
+						<bindings>
+							<binding>/tmp:/tmp</binding>
+						</bindings>
+					</image>
 				</configuration>
 			</plugin>
 		</plugins>

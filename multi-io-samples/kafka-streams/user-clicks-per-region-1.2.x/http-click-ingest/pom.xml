@@ -130,31 +130,15 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>com.google.cloud.tools</groupId>
-        <artifactId>jib-maven-plugin</artifactId>
-        <version>2.0.0</version>
         <configuration>
-          <from>
-            <image>springcloud/openjdk</image>
-          </from>
-          <to>
-            <image>springcloudstream/multi-io-sample-${project.artifactId}</image>
-            <tags>
-              <tag>1.2.0-SNAPSHOT</tag>
-            </tags>
-          </to>
-          <container>
-            <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
-            <format>Docker</format>
-            <labels>
-              <org.springframework.cloud.dataflow.spring-configuration-metadata.json>
-                ${org.springframework.cloud.dataflow.spring.configuration.metadata.json}
-              </org.springframework.cloud.dataflow.spring-configuration-metadata.json>
-              <configuration-properties.outbound-ports>${configuration-properties.outbound-ports}</configuration-properties.outbound-ports>
-            </labels>
-          </container>
+          <image>
+            <name>springcloudstream/multi-io-sample-${project.artifactId}:${project.version}</name>
+            <env>
+              <BP_IMAGE_LABELS>
+                configuration-properties.outbound-ports="${configuration-properties.outbound-ports}"
+              </BP_IMAGE_LABELS>
+            </env>
+          </image>
         </configuration>
       </plugin>
       <plugin>

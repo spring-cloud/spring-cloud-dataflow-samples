@@ -190,60 +190,17 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-
-			<plugin>
-				<groupId>com.google.cloud.tools</groupId>
-				<artifactId>jib-maven-plugin</artifactId>
-				<version>2.0.0</version>
 				<configuration>
-					<from>
-						<image>springcloud/openjdk</image>
-					</from>
-					<to>
-						<image>springcloudstream/multi-io-sample-${project.artifactId}</image>
-						<tags>
-							<tag>1.0.0-SNAPSHOT</tag>
-						</tags>
-					</to>
-					<container>
-						<creationTime>USE_CURRENT_TIMESTAMP</creationTime>
-						<format>Docker</format>
-						<labels>
-							<org.springframework.cloud.dataflow.spring-configuration-metadata.json>
-								${org.springframework.cloud.dataflow.spring.configuration.metadata.json}
-							</org.springframework.cloud.dataflow.spring-configuration-metadata.json>
-							<configuration-properties.inbound-ports>input1,input2,input3</configuration-properties.inbound-ports>
-						</labels>
-					</container>
+					<image>
+						<name>springcloudstream/multi-io-sample-${project.artifactId}:${project.version}</name>
+						<env>
+							<BP_IMAGE_LABELS>
+								configuration-properties.inbound-ports="input1,input2,input3"
+							</BP_IMAGE_LABELS>
+						</env>
+					</image>
 				</configuration>
 			</plugin>
-
-			<!--
-			 Use of properties-maven-plugin to load the encoded metadata properties created by the jib-maven-plugin
-			 Use: Use: ./mvnw clean install jib:dockerBuild or ./mvnw clean install jib:build
-			-->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>properties-maven-plugin</artifactId>
-				<version>1.0.0</version>
-				<executions>
-					<execution>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>read-project-properties</goal>
-						</goals>
-						<configuration>
-							<files>
-								<file>
-									${project.build.outputDirectory}/META-INF/spring-configuration-metadata-encoded.properties
-								</file>
-							</files>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
 			<plugin>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-app-starter-metadata-maven-plugin</artifactId>

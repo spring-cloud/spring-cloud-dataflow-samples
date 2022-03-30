@@ -277,7 +277,7 @@ jobs:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            springcloudtask/timestamp-task:2.0.0
+            springcloudtask/timestamp-task:2.0.1
 
   timestamp-batch:
     runs-on: ubuntu-latest
@@ -293,4 +293,4 @@ jobs:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            springcloudtask/timestamp-batch-task:2.0.0
+            springcloudtask/timestamp-batch-task:2.0.1

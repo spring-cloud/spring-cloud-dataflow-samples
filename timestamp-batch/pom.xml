@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>io.spring</groupId>
 	<artifactId>timestamp-batch-task</artifactId>
-	<version>2.0.1</version>
+	<version>2.0.2</version>
 	<name>timestamp-task</name>
 	<description>Simple Timestamp sample.</description>
 

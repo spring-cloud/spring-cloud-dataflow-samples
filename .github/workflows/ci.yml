@@ -44,6 +44,53 @@ jobs:
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
 
+  restaurant-stream-apps-customer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/build-sample-app
+        with:
+          app-dir: 'restaurant-stream-apps/scdf-app-customer'
+          mvn-build-commands: '-B clean verify -Pspring'
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
+          jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
+          docker-push: ${{ inputs.maven-build-only != true }}
+          docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          docker-images: >-
+            springcloudstream/scdf-app-customer:1.0.0-SNAPSHOT
+
+  restaurant-stream-apps-kitchen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/build-sample-app
+        with:
+          app-dir: 'restaurant-stream-apps/scdf-app-kitchen'
+          mvn-build-commands: '-B clean verify -Pspring'
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
+          jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
+          docker-push: ${{ inputs.maven-build-only != true }}
+          docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          docker-images: >-
+            springcloudstream/scdf-app-kitchen:1.0.0-SNAPSHOT
+
+  restaurant-stream-apps-waitron:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/build-sample-app
+        with:
+          app-dir: 'restaurant-stream-apps/scdf-app-waitron'
+          mvn-build-commands: '-B clean verify -Pspring'
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
+          jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
+          docker-push: ${{ inputs.maven-build-only != true }}
+          docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          docker-images: >-
+            springcloudstream/scdf-app-waitron:1.0.0-SNAPSHOT
   multi-io-ticktock:
     runs-on: ubuntu-latest
     steps:

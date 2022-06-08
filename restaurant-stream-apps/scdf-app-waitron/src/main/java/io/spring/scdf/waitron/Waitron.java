@@ -29,10 +29,13 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.Callable;
 
 /**
  * @author Corneil du Plessis
@@ -44,11 +47,13 @@ public class Waitron {
     private final Events events;
     private final ApplicationAvailability applicationAvailability;
     private final Environment environment;
+    private final AsyncTaskExecutor taskExecutor;
 
-    public Waitron(Events events, ApplicationAvailability applicationAvailability, Environment environment) {
+    public Waitron(Events events, ApplicationAvailability applicationAvailability, Environment environment, AsyncTaskExecutor taskExecutor) {
         this.events = events;
         this.applicationAvailability = applicationAvailability;
         this.environment = environment;
+        this.taskExecutor = taskExecutor;
     }
 
     @StreamListener(Events.PAYMENT)
@@ -62,8 +67,12 @@ public class Waitron {
         logger.info("availability:{}:{}", applicationAvailability.getLivenessState(), applicationAvailability.getReadinessState());
         if (!environment.acceptsProfiles(Profiles.of("test"))) {
             if (LivenessState.CORRECT.equals(applicationAvailability.getLivenessState())) {
-                logger.info("onEvent:send:atWork:waitron");
-                events.atWork().send(MessageBuilder.withPayload("waitron").build());
+                taskExecutor.submit((Callable<Object>) () -> {
+                    logger.info("onEvent:wait");
+                    Thread.sleep(30000L);
+                    logger.info("onEvent:send:atWork:waitron");
+                    return events.atWork().send(MessageBuilder.withPayload("waitron").build());
+                });
             }
         } else {
             logger.info("onEvent:skip:test");

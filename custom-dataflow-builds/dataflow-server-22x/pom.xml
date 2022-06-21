@@ -22,7 +22,7 @@
 		<mariadb.version>2.4.1</mariadb.version>
 		<spring-security-oauth2-autoconfigure.version>2.1.6.RELEASE</spring-security-oauth2-autoconfigure.version>
 		<kubernetes-client.version>4.1.0</kubernetes-client.version>
-		<mysql-jdbc-driver.version>8.0.16</mysql-jdbc-driver.version>
+		<mysql-jdbc-driver.version>8.0.28</mysql-jdbc-driver.version>
 	</properties>
 
 	<dependencies>

@@ -10,7 +10,7 @@ $./mvnw clean package -Pkafka
 or
 
 ```bash
-$./mvnw clean package -Pkafka
+$./mvnw clean package -Prabbit
 ```
 
 ## Building Docker Images

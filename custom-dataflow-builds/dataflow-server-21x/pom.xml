@@ -99,7 +99,7 @@
 		<repository>
 			<id>spring-release</id>
 			<name>Spring Releases</name>
-			<url>https://repo.spring.io/libs-release</url>
+			<url>https://repo.spring.io/release</url>
 		</repository>
 	</repositories>
 </project>

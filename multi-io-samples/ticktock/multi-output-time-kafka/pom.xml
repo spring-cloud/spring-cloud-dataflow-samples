@@ -25,7 +25,7 @@
 		<snapshotRepository>
 			<id>repo.spring.io</id>
 			<name>Spring Snapshot Repository</name>
-			<url>https://repo.spring.io/libs-snapshot-local</url>
+			<url>https://repo.spring.io/snapshot</url>
 		</snapshotRepository>
 	</distributionManagement>
 

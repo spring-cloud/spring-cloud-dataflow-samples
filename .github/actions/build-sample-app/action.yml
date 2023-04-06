@@ -38,6 +38,10 @@ inputs:
   docker-images-override:
     description: 'csv of docker image tags to use when pushing (parallel array to docker-images)'
     required: false
+  java-version:
+    description: 'Java Version. Default is 8'
+    required: false
+    default: '8'
 runs:
   using: "composite"
   steps:
@@ -49,8 +53,7 @@ runs:
 
     - uses: actions/setup-java@v2
       with:
-        distribution: adopt
-        java-version: 8
+        java-version: ${{ inputs.java-version }}
         cache: maven
 
     - name: Maven build

@@ -321,8 +321,8 @@ jobs:
           docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
-          docker-images: >-
-            springcloudtask/timestamp-task:2.0.2
+          java-version: '17'
+          docker-images: 'springcloudtask/timestamp-task:3.0.0'
 
   timestamp-batch:
     runs-on: ubuntu-latest
@@ -337,5 +337,5 @@ jobs:
           docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
-          docker-images: >-
-            springcloudtask/timestamp-batch-task:2.0.2
+          java-version: '17'
+          docker-images: 'springcloudtask/timestamp-batch-task:3.0.0'

@@ -5,18 +5,18 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.5</version>
+		<version>3.0.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>io.spring</groupId>
 	<artifactId>timestamp-batch-task</artifactId>
-	<version>2.0.2</version>
-	<name>timestamp-task</name>
+	<version>3.0.0</version>
+	<name>timestamp-batch-task</name>
 	<description>Simple Timestamp sample.</description>
 
 	<properties>
 		<java.version>8</java.version>
-		<spring-cloud.version>2021.0.5</spring-cloud.version>
+		<spring-cloud.version>2022.0.2</spring-cloud.version>
 	</properties>
 
 	<dependencies>

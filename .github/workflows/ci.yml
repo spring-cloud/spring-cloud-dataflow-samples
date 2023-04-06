@@ -32,7 +32,6 @@ on:
         required: false
 
 jobs:
-
   kafka-samples:
     runs-on: ubuntu-latest
     steps:
@@ -339,3 +338,30 @@ jobs:
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           java-version: '17'
           docker-images: 'springcloudtask/timestamp-batch-task:3.0.0'
+  completed:
+    runs-on: ubuntu-latest
+    needs:
+      - kafka-samples
+      - restaurant-stream-apps-customer
+      - restaurant-stream-apps-kitchen
+      - restaurant-stream-apps-waitron
+      - multi-io-ticktock
+      - multi-io-http-purchase-orders
+      - user-clicks-per-region-12x
+      - function-samples
+      - function-samples-uppercase-processor
+      - stream-dev-guides-standalone-stream-kafka
+      - stream-dev-guides-standalone-stream-rabbitmq
+      - batch-dev-guides-batchsamples
+      - stream-dev-guides-composed-http-transformer-kafka
+      - stream-dev-guides-composed-http-transformer-kotlin-kafka
+      - stream-dev-guides-composed-http-transformer-rabbitmq
+      - stream-dev-guides-composed-http-transformer-kotlin-rabbitmq
+      - task-demo-metrics-prometheus
+      - scenario-task
+      - timestamp-task
+      - timestamp-batch
+    steps:
+      - name: 'Completed'
+        shell: bash
+        run: echo "::info ::completed"

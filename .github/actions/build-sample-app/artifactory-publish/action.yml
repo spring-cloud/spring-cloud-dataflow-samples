@@ -41,5 +41,6 @@ runs:
       run: |
         jfrog rt mvn ${{ inputs.jf-mvn-build-commands }}
         jfrog rt build-publish
+        echo "::info ::published ${{ inputs.app-dir }}"
       working-directory: ${{ inputs.app-dir }}
 

@@ -69,5 +69,5 @@ runs:
             docker tag ${originalImage} ${image}
           fi
           docker push ${image}
-        
-        done
+          echo "::info ::published ${image}"
+        done        

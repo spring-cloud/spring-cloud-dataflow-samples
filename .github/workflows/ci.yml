@@ -288,8 +288,7 @@ jobs:
           docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
-          docker-images: >-
-            springcloudtask/task-demo-metrics-prometheus:2.0.0-SNAPSHOT
+          docker-images: 'springcloudtask/task-demo-metrics-prometheus:2.0.1-SNAPSHOT'
 
   scenario-task:
     runs-on: ubuntu-latest

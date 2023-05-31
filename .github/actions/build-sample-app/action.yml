@@ -19,6 +19,14 @@ inputs:
     description: 'commands passed to \"jfrog rt mvn\" to publish the app'
     required: false
     default: '-B clean install -DskipTests'
+  artifactory-repo-deploy-snapshots:
+    description: 'which Artifactory repo to publish snapshot versions to (the \"--repo-deploy-snapshots\" arg passed to \"jfrog rt mvn\")'
+    required: false
+    default: 'libs-snapshot-local'
+  artifactory-repo-deploy-releases:
+    description: 'which Artifactory repo to publish non-snapshot versions to (the \"--repo-deploy-releases\" arg passed to \"jfrog rt mvn\")'
+    required: false
+    default: 'libs-release-local'
   docker-push:
     description: 'whether or not to push docker image to docker hub'
     required: false
@@ -69,6 +77,8 @@ runs:
         app-dir: ${{ inputs.app-dir }}
         jf-artifactory-spring: ${{ inputs.jf-artifactory-spring }}
         jf-mvn-build-commands: ${{ inputs.jf-mvn-build-commands }}
+        artifactory-repo-deploy-snapshots: ${{ inputs.artifactory-repo-deploy-snapshots }}
+        artifactory-repo-deploy-releases: ${{ inputs.artifactory-repo-deploy-releases }}
 
     - uses: ./.github/actions/build-sample-app/docker-push
       if: ${{ inputs.docker-push == 'true' }}

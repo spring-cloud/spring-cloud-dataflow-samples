@@ -11,6 +11,14 @@ inputs:
     description: 'commands passed to \"jfrog rt mvn\" to publish the app'
     required: false
     default: '-B clean install -DskipTests'
+  artifactory-repo-deploy-snapshots:
+    description: 'which Artifactory repo to publish snapshot versions to (the \"--repo-deploy-snapshots\" arg passed to \"jfrog rt mvn\")'
+    required: false
+    default: 'libs-snapshot-local'
+  artifactory-repo-deploy-releases:
+    description: 'which Artifactory repo to publish non-snapshot versions to (the \"--repo-deploy-releases\" arg passed to \"jfrog rt mvn\")'
+    required: false
+    default: 'libs-release-local'
 runs:
   using: "composite"
   steps:
@@ -30,8 +38,8 @@ runs:
         --server-id-deploy=repo.spring.io \
         --repo-resolve-releases=libs-milestone \
         --repo-resolve-snapshots=libs-snapshot \
-        --repo-deploy-releases=release \
-        --repo-deploy-snapshots=snapshot
+        --repo-deploy-releases=$${{ inputs.artifactory-repo-deploy-releases }} \
+        --repo-deploy-snapshots=$${{ inputs.artifactory-repo-deploy-snapshots }}
         echo JFROG_CLI_BUILD_NAME=spring-cloud-dataflow-samples >> $GITHUB_ENV
         echo JFROG_CLI_BUILD_NUMBER=$GITHUB_RUN_NUMBER >> $GITHUB_ENV
       working-directory: ${{ inputs.app-dir }}
@@ -43,4 +51,3 @@ runs:
         jfrog rt build-publish
         echo "::info ::published ${{ inputs.app-dir }}"
       working-directory: ${{ inputs.app-dir }}
-

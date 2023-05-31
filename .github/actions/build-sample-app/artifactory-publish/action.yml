@@ -38,8 +38,8 @@ runs:
         --server-id-deploy=repo.spring.io \
         --repo-resolve-releases=libs-milestone \
         --repo-resolve-snapshots=libs-snapshot \
-        --repo-deploy-releases=$${{ inputs.artifactory-repo-deploy-releases }} \
-        --repo-deploy-snapshots=$${{ inputs.artifactory-repo-deploy-snapshots }}
+        --repo-deploy-releases=${{ inputs.artifactory-repo-deploy-releases }} \
+        --repo-deploy-snapshots=${{ inputs.artifactory-repo-deploy-snapshots }}
         echo JFROG_CLI_BUILD_NAME=spring-cloud-dataflow-samples >> $GITHUB_ENV
         echo JFROG_CLI_BUILD_NUMBER=$GITHUB_RUN_NUMBER >> $GITHUB_ENV
       working-directory: ${{ inputs.app-dir }}

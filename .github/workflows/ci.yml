@@ -306,13 +306,13 @@ jobs:
           docker-images: >-
             springcloudtask/scenario-task:2.0.0-SNAPSHOT
 
-  timestamp-task:
+  timestamp-task-30x:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/build-sample-app
         with:
-          app-dir: 'timestamp-task'
+          app-dir: 'timestamp-task-3.0.x'
           mvn-build-commands: '-B clean install spring-boot:build-image'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
@@ -323,13 +323,13 @@ jobs:
           java-version: '17'
           docker-images: 'springcloudtask/timestamp-task:3.0.0'
 
-  timestamp-batch:
+  timestamp-batch-30x:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/build-sample-app
         with:
-          app-dir: 'timestamp-batch'
+          app-dir: 'timestamp-batch-3.0.x'
           mvn-build-commands: '-B clean install spring-boot:build-image'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
@@ -339,6 +339,41 @@ jobs:
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           java-version: '17'
           docker-images: 'springcloudtask/timestamp-batch-task:3.0.0'
+
+  timestamp-task-20x:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/build-sample-app
+        with:
+          app-dir: 'timestamp-task-2.0.x'
+          mvn-build-commands: '-B clean install spring-boot:build-image'
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
+          jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
+          artifactory-repo-deploy-releases: 'libs-milestone-local'
+          docker-push: ${{ inputs.maven-build-only != true }}
+          docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          java-version: '8'
+          docker-images: 'springcloudtask/timestamp-task:2.0.2'
+
+  timestamp-batch-20x:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/build-sample-app
+        with:
+          app-dir: 'timestamp-batch-2.0.x'
+          mvn-build-commands: '-B clean install spring-boot:build-image'
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
+          jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
+          artifactory-repo-deploy-releases: 'libs-milestone-local'
+          docker-push: ${{ inputs.maven-build-only != true }}
+          docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          java-version: '8'
+          docker-images: 'springcloudtask/timestamp-batch-task:2.0.2'
+
   completed:
     runs-on: ubuntu-latest
     needs:
@@ -360,8 +395,10 @@ jobs:
       - stream-dev-guides-composed-http-transformer-kotlin-rabbitmq
       - task-demo-metrics-prometheus
       - scenario-task
-      - timestamp-task
-      - timestamp-batch
+      - timestamp-task-30x
+      - timestamp-batch-30x
+      - timestamp-task-20x
+      - timestamp-batch-20x
     steps:
       - name: 'Completed'
         shell: bash

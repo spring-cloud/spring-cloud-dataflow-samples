@@ -395,8 +395,10 @@ jobs:
       - stream-dev-guides-composed-http-transformer-kotlin-rabbitmq
       - task-demo-metrics-prometheus
       - scenario-task
-      - timestamp-task
-      - timestamp-batch
+      - timestamp-task-30x
+      - timestamp-batch-30x
+      - timestamp-task-20x
+      - timestamp-batch-20x
     steps:
       - name: 'Completed'
         shell: bash

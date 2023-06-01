@@ -306,7 +306,7 @@ jobs:
           docker-images: >-
             springcloudtask/scenario-task:2.0.0-SNAPSHOT
 
-  timestamp-task-3.0.x:
+  timestamp-task-30x:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -323,7 +323,7 @@ jobs:
           java-version: '17'
           docker-images: 'springcloudtask/timestamp-task:3.0.0'
 
-  timestamp-batch-3.0.x:
+  timestamp-batch-30x:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -340,7 +340,7 @@ jobs:
           java-version: '17'
           docker-images: 'springcloudtask/timestamp-batch-task:3.0.0'
 
-  timestamp-task-2.0.x:
+  timestamp-task-20x:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -357,7 +357,7 @@ jobs:
           java-version: '8'
           docker-images: 'springcloudtask/timestamp-task:2.0.2'
 
-  timestamp-batch-2.0.x:
+  timestamp-batch-20x:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Call Build Workflow
-    uses: spring-cloud/spring-cloud-dataflow-samples/.github/workflows/ci.yml@main
+    uses: spring-cloud/spring-cloud-dataflow-samples/.github/workflows/ci.yml
     with:
       maven-build-only: true
     secrets:

@@ -18,7 +18,7 @@ inputs:
   artifactory-repo-deploy-releases:
     description: 'which Artifactory repo to publish non-snapshot versions to (the \"--repo-deploy-releases\" arg passed to \"jfrog rt mvn\")'
     required: false
-    default: 'libs-release-local'
+    default: 'libs-milestone-local'
 runs:
   using: "composite"
   steps:

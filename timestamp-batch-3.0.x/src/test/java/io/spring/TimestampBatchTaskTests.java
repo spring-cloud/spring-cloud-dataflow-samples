@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Glenn Renfro
  */
 @ExtendWith(OutputCaptureExtension.class)
-@SpringBootTest
+@SpringBootTest(properties = "--timestamp.format=yyyy.......")
 public class TimestampBatchTaskTests {
 
 	@Test
@@ -43,12 +43,7 @@ public class TimestampBatchTaskTests {
 		final String UPDATE_TASK_MESSAGE = "Updating: TaskExecution with executionId=1 with the following";
 		final String JOB1_MESSAGE = "Job1 was run with date ";
 		final String JOB2_MESSAGE = "Job2 was run with date ";
-
-		String[] args = {"--timestamp.format=yyyy" + TEST_DATE_DOTS};
-
-		SpringApplication
-				.run(TestTimestampBatchTaskApplication.class, args);
-
+		
 		String output = capturedOutput.toString();
 
 		assertThat(output).contains(TEST_DATE_DOTS);
@@ -57,9 +52,7 @@ public class TimestampBatchTaskTests {
 
 		assertThat(output).contains(JOB1_MESSAGE);
 		assertThat(output).contains(JOB2_MESSAGE);
-
 	}
-
 
 	@SpringBootApplication
 	public static class TestTimestampBatchTaskApplication {

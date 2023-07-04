@@ -28,6 +28,7 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -55,7 +56,7 @@ public class TimestampBatchTaskConfiguration extends DefaultBatchConfiguration {
 	private TimestampBatchTaskProperties config;
 
 	@Bean
-	@ConditionalOnProperty(name = "spring.datasource.driver-class-name", matchIfMissing = true, havingValue="matchonlyifmissing")
+	@ConditionalOnMissingBean
 	public DataSource dataSource() {
 		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
 				.addScript("/org/springframework/batch/core/schema-h2.sql")

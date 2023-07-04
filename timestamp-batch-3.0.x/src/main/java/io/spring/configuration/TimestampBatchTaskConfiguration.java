@@ -56,7 +56,7 @@ public class TimestampBatchTaskConfiguration extends DefaultBatchConfiguration {
 	private TimestampBatchTaskProperties config;
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnProperty(name = "spring.datasource.driver-class-name", matchIfMissing = true, havingValue="matchonlyifmissing")
 	public DataSource dataSource() {
 		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
 				.addScript("/org/springframework/batch/core/schema-h2.sql")

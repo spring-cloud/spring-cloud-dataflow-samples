@@ -10,17 +10,17 @@ Otherwise, follow the instructions below to build your own `monitorable` Task fr
 
 Follow the [Task development instructions](https://docs.spring.io/spring-cloud-task/docs/2.3.0/reference/#getting-started-developing-first-task) and then: 
 
-* Set the parent POM version of Boot to 2.4.3 or latest
+* Set the parent POM version of Boot to 2.7.16 or latest
 
 ```xml
 <parent>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-starter-parent</artifactId>
-	<version>2.4.3</version>
+	<version>2.7.16</version>
 	<relativePath/>
 </parent>
 ``` 
-* Make sure that `spring-cloud-task-dependencies` version `2.3.0` or newer are imported: 
+* Make sure that `spring-cloud-task-dependencies` version `2.4.6` or newer are imported: 
 
 ```xml
 	<dependencyManagement>
@@ -28,7 +28,7 @@ Follow the [Task development instructions](https://docs.spring.io/spring-cloud-t
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-task-dependencies</artifactId>
-			<version>2.3.0</version>
+			<version>2.4.6</version>
 			<type>pom</type>
 			<scope>import</scope>
 		</dependency>
@@ -74,12 +74,7 @@ To enable Prometheus metrics collection add:
 <dependency>
 	<groupId>io.micrometer.prometheus</groupId>
 	<artifactId>prometheus-rsocket-spring</artifactId>
-	<version>1.3.0</version>
-</dependency>
-<dependency>
-    <groupId>io.micrometer.prometheus</groupId>
-    <artifactId>prometheus-rsocket-client</artifactId>
-    <version>1.3.0</version>
+	<version>1.5.2</version>
 </dependency>
 ```
  
@@ -97,7 +92,7 @@ To enable Prometheus metrics collection add:
 <plugin>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-dataflow-apps-metadata-plugin</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.7</version>
     <configuration>
         <storeFilteredMetadata>true</storeFilteredMetadata>
         <metadataFilter>

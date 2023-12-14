@@ -16,15 +16,8 @@
 
 package io.spring.configuration;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import javax.sql.DataSource;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
 import org.springframework.batch.core.configuration.annotation.DefaultBatchConfigurer;
@@ -39,15 +32,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
+
+import javax.sql.DataSource;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Configuration
 @EnableConfigurationProperties({ TimestampBatchTaskProperties.class })
 public class TimestampBatchTaskConfiguration {
 
-	private static final Log logger = LogFactory.getLog(TimestampBatchTaskProperties.class);
+	private static final Logger logger = LoggerFactory.getLogger(TimestampBatchTaskProperties.class);
 
 	@Autowired
 	public JobBuilderFactory jobBuilderFactory;
@@ -96,7 +92,11 @@ public class TimestampBatchTaskConfiguration {
 				.start(stepBuilderFactory.get("job1step1")
 						.tasklet((contribution, chunkContext) -> {
 							DateFormat dateFormat = new SimpleDateFormat(config.getFormat());
-							logger.info(String.format("Job1 was run with date %s", dateFormat.format(new Date())));
+							contribution.getStepExecution().getExecutionContext().put("ctx1", "exec1");
+							contribution.getStepExecution().getJobExecution().getExecutionContext().put("job-ctx1", "exec-job1");
+							logger.info("jobstep1:{}", contribution.getStepExecution().getExecutionContext());
+							logger.info("job1:{}", contribution.getStepExecution().getJobExecution().getExecutionContext());
+							logger.info("Job1 was run with date {}", dateFormat.format(new Date()));
 							return RepeatStatus.FINISHED;
 						})
 						.build())
@@ -108,8 +108,12 @@ public class TimestampBatchTaskConfiguration {
 		return jobBuilderFactory.get("job2")
 				.start(stepBuilderFactory.get("job2step1")
 						.tasklet((contribution, chunkContext) -> {
+							contribution.getStepExecution().getExecutionContext().put("ctx2", "exec2");
+							contribution.getStepExecution().getJobExecution().getExecutionContext().put("job-ctx2", "exec-job2");
+							logger.info("jobstep1:{}", contribution.getStepExecution().getExecutionContext());
+							logger.info("job2:{}", contribution.getStepExecution().getJobExecution().getExecutionContext());
 							DateFormat dateFormat = new SimpleDateFormat(config.getFormat());
-							logger.info(String.format("Job2 was run with date %s", dateFormat.format(new Date())));
+							logger.info("Job2 was run with date {}", dateFormat.format(new Date()));
 							return RepeatStatus.FINISHED;
 						})
 						.build())

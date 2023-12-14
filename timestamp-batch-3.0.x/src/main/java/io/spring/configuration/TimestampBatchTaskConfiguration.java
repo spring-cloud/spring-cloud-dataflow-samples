@@ -16,8 +16,8 @@
 
 package io.spring.configuration;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
@@ -28,7 +28,6 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -46,7 +45,7 @@ import java.util.Date;
 @EnableConfigurationProperties({ TimestampBatchTaskProperties.class })
 public class TimestampBatchTaskConfiguration extends DefaultBatchConfiguration {
 
-	private static final Log logger = LogFactory.getLog(TimestampBatchTaskProperties.class);
+	private static final Logger logger = LoggerFactory.getLogger(TimestampBatchTaskProperties.class);
 
 
 	@Value("${spring.batch.jdbc.table-prefix:BATCH_}")
@@ -80,6 +79,10 @@ public class TimestampBatchTaskConfiguration extends DefaultBatchConfiguration {
 	private Tasklet getTasklet(String format) {
 		return (contribution, chunkContext) -> {
 			DateFormat dateFormat = new SimpleDateFormat(config.getFormat());
+			contribution.getStepExecution().getExecutionContext().put("ctx1", "exec1");
+			contribution.getStepExecution().getJobExecution().getExecutionContext().put("job-ctx1", "exec-job1");
+			logger.info("{}:{}", contribution.getStepExecution().getStepName(), contribution.getStepExecution().getExecutionContext());
+			logger.info("{}:{}", contribution.getStepExecution().getJobExecution().getJobInstance().getJobName(), contribution.getStepExecution().getJobExecution().getExecutionContext());
 			logger.info(String.format(format, dateFormat.format(new Date())));
 			return RepeatStatus.FINISHED;
 		};

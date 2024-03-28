@@ -203,8 +203,8 @@
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-app-starter-metadata-maven-plugin</artifactId>
-				<version>2.0.2.BUILD-SNAPSHOT</version>
+				<artifactId>spring-cloud-dataflow-apps-metadata-plugin</artifactId>
+				<version>1.0.12-SNAPSHOT</version>
 				<configuration>
 					<storeFilteredMetadata>true</storeFilteredMetadata>
 					<metadataFilter>

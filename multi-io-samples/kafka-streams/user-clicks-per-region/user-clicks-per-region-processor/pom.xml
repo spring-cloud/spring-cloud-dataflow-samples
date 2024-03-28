@@ -6,12 +6,13 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.1.RELEASE</version>
+		<version>3.2.3</version>
+		<relativePath/>
 	</parent>
 
 	<groupId>org.springframework.cloud.dataflow.samples</groupId>
 	<artifactId>user-clicks-per-region-processor</artifactId>
-	<version>2.0.0-SNAPSHOT</version>
+	<version>3.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>user-clicks-per-region-processor</name>
@@ -23,21 +24,21 @@
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-stream-dependencies</artifactId>
-				<version>Horsham.SR6</version>
+				<version>4.0.5</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-function-dependencies</artifactId>
-				<version>3.0.8.RELEASE</version>
+				<version>4.0.5</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>Hoxton.SR1</version>
+				<version>2022.0.5</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -56,17 +57,17 @@
 		<dependency>
 			<groupId>org.springframework.cloud.stream.app</groupId>
 			<artifactId>stream-applications-composite-function-support</artifactId>
-			<version>3.0.0-SNAPSHOT</version>
+			<version>4.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud.stream.app</groupId>
 			<artifactId>stream-applications-security-common</artifactId>
-			<version>3.0.0-SNAPSHOT</version>
+			<version>4.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud.stream.app</groupId>
 			<artifactId>stream-applications-micrometer-common</artifactId>
-			<version>3.0.0-SNAPSHOT</version>
+			<version>4.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
@@ -109,35 +110,14 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>com.google.cloud.tools</groupId>
-				<artifactId>jib-maven-plugin</artifactId>
-				<version>2.0.0</version>
 				<configuration>
-					<from>
-						<image>springcloud/openjdk</image>
-					</from>
-					<to>
-						<image>springcloudstream/multi-io-sample-${project.artifactId}</image>
-						<tags>
-							<tag>1.0.0-SNAPSHOT</tag>
-						</tags>
-					</to>
-					<container>
-						<creationTime>USE_CURRENT_TIMESTAMP</creationTime>
-						<format>Docker</format>
-						<labels>
-							<configuration-properties.inbound-ports>${configuration-properties.inbound-ports}</configuration-properties.inbound-ports>
-							<configuration-properties.outbound-ports>${configuration-properties.outbound-ports}</configuration-properties.outbound-ports>
-						</labels>
-					</container>
+					<image>springcloudstream/multi-io-sample-${project.artifactId}:${project.version}</image>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-app-starter-metadata-maven-plugin</artifactId>
-				<version>2.0.2.BUILD-SNAPSHOT</version>
+				<artifactId>spring-cloud-dataflow-apps-metadata-plugin</artifactId>
+				<version>1.0.12-SNAPSHOT</version>
 				<executions>
 					<execution>
 						<id>aggregate-metadata</id>

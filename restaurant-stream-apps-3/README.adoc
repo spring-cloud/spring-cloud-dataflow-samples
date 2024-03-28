@@ -1,0 +1,47 @@
+= Demonstration of Multi binding Stream apps
+
+In the case where stream apps need to consume or produce multiple streams the following scenario may provide an example.
+
+== Scenario
+This artificial scenario consists of 3 apps representing a kitchen, waitron and customer of a restaurant.
+
+* Once the kitchen app is live it will send an open message.
+* When customer receive the open message it places 3 random orders of food, hot drinks and cold drinks.
+* The waitron receives order from customers and passes those to the Kitchen.
+* The Kitchen prepares and sends out the food or hot drinks or cold drinks.
+* The waitron receives the food or drinks and delivers to the Customer.
+* The customer pays for the items.
+* The Waitron acknowledges receipt.
+
+The set of properties below are required to connect the various endpoints.
+The DSL to create and deploy this scenario is: `kitchen || waitron || customer`
+Assuming the apps are registered with those names.
+
+[source,properties]
+....
+app.customer.spring.cloud.stream.bindings.open.destination=openDest
+app.customer.spring.cloud.stream.bindings.order.destination=orderDest
+app.customer.spring.cloud.stream.bindings.payment.destination=paymentDest
+app.customer.spring.cloud.stream.bindings.receive.destination=receiveDest
+
+app.kitchen.spring.cloud.stream.bindings.coldDrinks.destination=coldDrinksDest
+app.kitchen.spring.cloud.stream.bindings.food.destination=foodDest
+app.kitchen.spring.cloud.stream.bindings.hotDrinks.destination=hotDrinksDest
+app.kitchen.spring.cloud.stream.bindings.open.destination=openDest
+app.kitchen.spring.cloud.stream.bindings.orders.destination=ordersDate
+app.kitchen.spring.cloud.stream.bindings.staff.destination=staffDest
+
+app.waitron.spring.cloud.stream.bindings.atWork.destination=staffDest
+app.waitron.spring.cloud.stream.bindings.coldDrinks.destination=coldDrinksDest
+app.waitron.spring.cloud.stream.bindings.delivery.destination=receiveDest
+app.waitron.spring.cloud.stream.bindings.food.destination=foodDest
+app.waitron.spring.cloud.stream.bindings.hotDrinks.destination=hotDrinksDest
+app.waitron.spring.cloud.stream.bindings.order.destination=orderDest
+app.waitron.spring.cloud.stream.bindings.orders.destination=ordersDest
+app.waitron.spring.cloud.stream.bindings.payment.destination=paymentDest
+....
+
+[NOTE]
+====
+These projects are configured with RabbitMQ binders only.
+====

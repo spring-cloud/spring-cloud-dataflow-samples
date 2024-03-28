@@ -1,0 +1,5 @@
+# HTTP Clicks And Region Ingest Source
+
+To build this application:
+
+./mvnw clean package

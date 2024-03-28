@@ -1,0 +1,1 @@
+= Spring Cloud Stream Multi Output Time Source Kafka Binder Application

@@ -1,0 +1,24 @@
+spring.cloud.stream.bindings.user-clicks.producer:
+  useNativeEncoding: true
+
+spring.cloud.stream.kafka.bindings.user-clicks.producer:
+  messageKeyExpression: headers['username']
+  configuration.key.serializer: org.apache.kafka.common.serialization.StringSerializer
+  configuration.value.serializer: org.apache.kafka.common.serialization.LongSerializer
+
+spring.cloud.stream.bindings.user-regions.producer:
+  useNativeEncoding: true
+spring.cloud.stream.kafka.bindings.user-regions.producer:
+  messageKeyExpression: headers['username']
+  configuration.key.serializer: org.apache.kafka.common.serialization.StringSerializer
+  configuration.value.serializer: org.apache.kafka.common.serialization.StringSerializer
+
+spring.cloud.stream.function.definition: clickSupplier;regionSupplier
+spring.cloud.stream.function.bindings.clickSupplier-out-0: user-clicks
+spring.cloud.stream.function.bindings.regionSupplier-out-0: user-regions
+
+spring.main.web-application-type: reactive
+spring.cloud.streamapp.security.enabled: false
+spring.cloud.streamapp.security.csrf-enabled: false
+
+management.endpoints.web.exposure.include: health,info,bindings

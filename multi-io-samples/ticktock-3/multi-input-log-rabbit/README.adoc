@@ -1,0 +1,1 @@
+= Spring Cloud Stream Multi Input Log Sink Rabbit Binder Application

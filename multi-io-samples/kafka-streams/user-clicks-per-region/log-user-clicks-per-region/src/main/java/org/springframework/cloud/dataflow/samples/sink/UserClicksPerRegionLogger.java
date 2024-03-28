@@ -21,11 +21,8 @@ import java.util.function.Consumer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.expression.common.LiteralExpression;
 import org.springframework.integration.dsl.IntegrationFlow;
-import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.handler.LoggingHandler;
-import org.springframework.integration.support.MutableMessage;
 import org.springframework.messaging.Message;
 
 @SpringBootApplication
@@ -33,7 +30,7 @@ public class UserClicksPerRegionLogger {
 
 	@Bean
 	IntegrationFlow logConsumerFlow() {
-		return IntegrationFlows.from(MessageConsumer.class, (gateway) -> gateway.beanName("logConsumer"))
+		return IntegrationFlow.from(MessageConsumer.class, (gateway) -> gateway.beanName("logConsumer"))
 				.handle((payload, headers) -> {
 					String userRegion = (String) headers.get("kafka_receivedMessageKey");
 					return (userRegion + ": " + payload);

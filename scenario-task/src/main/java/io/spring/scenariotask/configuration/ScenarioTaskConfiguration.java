@@ -42,7 +42,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.task.configuration.EnableTask;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -52,7 +51,6 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
  *
  * @author Glenn Renfro
  */
-@EnableTask
 @EnableBatchProcessing
 @Configuration
 @EnableConfigurationProperties(ScenarioProperties.class)
@@ -61,10 +59,7 @@ public class ScenarioTaskConfiguration {
 	private static final Log logger = LogFactory.getLog(ScenarioTaskConfiguration.class);
 
 	@Configuration
-	@ConditionalOnProperty(
-			value = "io.spring.launchBatchJob",
-			havingValue = "true",
-			matchIfMissing = true)
+	@ConditionalOnProperty(value = "io.spring.launch-batch-job", havingValue = "true", matchIfMissing = true)
 	static class BatchConfig {
 		@Autowired
 		public JobBuilderFactory jobBuilderFactory;
@@ -80,16 +75,17 @@ public class ScenarioTaskConfiguration {
 
 		@Bean
 		public Job pausedemoAgain() {
+			logger.info("properties=:" + properties);
 			SimpleJobBuilder jobBuilder = this.jobBuilderFactory.get(properties.getJobName())
 					.start(this.stepBuilderFactory.get(properties.getStepName())
+							.allowStartIfComplete(true)
 							.tasklet((contribution, chunkContext) -> {
 								logger.info(String.format("%s is starting", properties.getStepName()));
 								if (properties.getPauseInSeconds() > 0) {
-									logger.info(String.format("%s is pausing", properties.getStepName()));
+									logger.info(String.format("%s is pausing for %d seconds", properties.getStepName(), properties.getPauseInSeconds()));
 									Thread.sleep(properties.getPauseInSeconds() * 1000);
 								}
 								logger.info(String.format("%s is completing", properties.getStepName()));
-
 								if (jobExecutionCount() == 1 && properties.isFailBatch()) {
 									throw new ExpectedException("Exception thrown during Batch Execution");
 								}
@@ -151,6 +147,10 @@ public class ScenarioTaskConfiguration {
 	public ApplicationRunner applicationRunner(ScenarioProperties properties) {
 		return args -> {
 			logger.info("ApplicationRunner Executing for ScenarioTaskApplication");
+			if (!properties.isLaunchBatchJob() && properties.getPauseInSeconds() > 0) {
+				logger.info(String.format("Task is pausing for %d seconds", properties.getPauseInSeconds()));
+				Thread.sleep(properties.getPauseInSeconds() * 1000);
+			}
 			if (properties.isFailTask()) {
 				throw new ExpectedException("Exception thrown during Task Execution");
 			}

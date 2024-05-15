@@ -30,6 +30,8 @@ docker run spring/scenario-task:latest
 
 ### Properties
 
+All properties should be prefixed with `io.spring.`
+
 * *jobName* - The name associated with the batch job.  The default is "scenario-job".
 * *stepName* - The name associated with the single step for the job.  The default is "scenario-step".
 * *failBatch* - If true, the batch will throw a {@link ExpectedException}.  Defaults to false.

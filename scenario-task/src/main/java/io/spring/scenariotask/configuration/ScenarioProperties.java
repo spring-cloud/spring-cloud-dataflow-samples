@@ -117,4 +117,17 @@ public class ScenarioProperties {
 	public void setIncludeRunidIncrementer(boolean includeRunidIncrementer) {
 		this.includeRunidIncrementer = includeRunidIncrementer;
 	}
+
+	@Override
+	public String toString() {
+		return "ScenarioProperties{" +
+				"jobName='" + jobName + '\'' +
+				", stepName='" + stepName + '\'' +
+				", failBatch=" + failBatch +
+				", failTask=" + failTask +
+				", launchBatchJob=" + launchBatchJob +
+				", pauseInSeconds=" + pauseInSeconds +
+				", includeRunidIncrementer=" + includeRunidIncrementer +
+				'}';
+	}
 }

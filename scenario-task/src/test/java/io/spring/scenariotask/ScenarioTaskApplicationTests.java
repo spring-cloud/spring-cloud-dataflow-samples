@@ -83,7 +83,7 @@ public class ScenarioTaskApplicationTests {
 	}
 
 	private static TaskExplorer taskExplorer() {
-		TaskExecutionDaoFactoryBean taskExecutionDaoFactoryBean = new TaskExecutionDaoFactoryBean(dataSource, "TASK_");
+		TaskExecutionDaoFactoryBean taskExecutionDaoFactoryBean = new TaskExecutionDaoFactoryBean(dataSource);
 		return new SimpleTaskExplorer(taskExecutionDaoFactoryBean);
 	}
 

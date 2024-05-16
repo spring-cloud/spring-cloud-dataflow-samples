@@ -210,7 +210,7 @@ public class ScenarioTaskApplicationTests {
 	private List<String> getSuccessBatchArgs(String jobName) {
 		List<String> args = new ArrayList<>(getDatabaseArgs());
 		args.add("--io.spring.job-name=" + jobName);
-		args.add("--spring.batch.initialize-schema=always");
+		args.add("--spring.batch.jdbc.initialize-schema=always");
 		return args;
 	}
 

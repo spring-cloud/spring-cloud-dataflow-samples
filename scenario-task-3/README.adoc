@@ -19,7 +19,7 @@ Allows user to test various success and failures scenarios when task-batch apps 
 
 ### Command Line
 ```
-java -jar scenario-task-3.0.0-SNAPSHOT.jar
+java -jar scenario-task-3.0.0.jar
 ```
 
 ### Docker

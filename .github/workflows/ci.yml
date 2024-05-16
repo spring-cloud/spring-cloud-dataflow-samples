@@ -314,6 +314,7 @@ jobs:
         with:
           app-dir: 'scenario-task-3'
           mvn-build-commands: '-B clean install spring-boot:build-image'
+          java-version: '17'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           docker-push: ${{ inputs.maven-build-only != true }}

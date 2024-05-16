@@ -12,19 +12,19 @@ Allows user to test various success and failures scenarios when task-batch apps 
 ### Docker Build
 
 ```
-./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=spring/scenario-task:2.0.0
+./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=spring/scenario-task:3.0.0
 ```
 
 ## Launching the app
 
 ### Command Line
 ```
-java -jar scenario-task-2.0.0-SNAPSHOT.jar
+java -jar scenario-task-3.0.0-SNAPSHOT.jar
 ```
 
 ### Docker
 ```
-docker run spring/scenario-task:2.0.0
+docker run spring/scenario-task:3.0.0
 ```
 
 

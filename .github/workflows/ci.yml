@@ -304,7 +304,23 @@ jobs:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           docker-images: >-
-            springcloudtask/scenario-task:2.0.0-SNAPSHOT
+            springcloudtask/scenario-task:2.0.0
+
+  scenario-task-3:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/build-sample-app
+        with:
+          app-dir: 'scenario-task-3'
+          mvn-build-commands: '-B clean install spring-boot:build-image'
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
+          jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
+          docker-push: ${{ inputs.maven-build-only != true }}
+          docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          docker-images: >-
+            springcloudtask/scenario-task:3.0.0
 
   timestamp-task-30x:
     runs-on: ubuntu-latest
@@ -395,6 +411,7 @@ jobs:
       - stream-dev-guides-composed-http-transformer-kotlin-rabbitmq
       - task-demo-metrics-prometheus
       - scenario-task
+      - scenario-task-3
       - timestamp-task-30x
       - timestamp-batch-30x
       - timestamp-task-20x

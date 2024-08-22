@@ -106,22 +106,8 @@
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.springframework.boot</groupId>
-						<artifactId>spring-boot-maven-plugin</artifactId>
-						<configuration>
-							<image>
-								<pullPolicy>IF_NOT_PRESENT</pullPolicy>
-								<env>
-									<BP_JVM_VERSION>${java.version}</BP_JVM_VERSION>
-									<BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
-								</env>
-								<buildpacks>
-									<buildpack>gcr.io/paketo-buildpacks/oracle</buildpack>
-									<buildpack>gcr.io/paketo-buildpacks/java-native-image</buildpack>
-								</buildpacks>
-								<name>springcloudtask/${project.artifactId}:${project.version}</name>
-							</image>
-						</configuration>
+						<groupId>org.graalvm.buildtools</groupId>
+						<artifactId>native-maven-plugin</artifactId>
 					</plugin>
 				</plugins>
 			</build>

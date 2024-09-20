@@ -39,8 +39,8 @@ public class TimestampBatchTaskTests {
 		final String TEST_DATE_DOTS = ".......";
 		final String CREATE_TASK_MESSAGE = "Creating: TaskExecution{executionId=";
 		final String UPDATE_TASK_MESSAGE = "Updating: TaskExecution with executionId=1 with the following";
-		final String JOB1_MESSAGE = "Job1 was run with date ";
-		final String JOB2_MESSAGE = "Job2 was run with date ";
+		final String JOB1_MESSAGE = "Job1 was run with ";
+		final String JOB2_MESSAGE = "Job2 was run with ";
 
 		String[] args = {"--timestamp.format=yyyy" + TEST_DATE_DOTS};
 

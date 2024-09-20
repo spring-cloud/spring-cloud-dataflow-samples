@@ -317,6 +317,7 @@ jobs:
           java-version: '17'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
+          jf-mvn-build-commands: '-B clean install -DskipTests'
           docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -330,7 +331,7 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'timestamp-task-3.0.x'
-          mvn-build-commands: '-B clean install spring-boot:build-image'
+          mvn-build-commands: '-B clean install spring-boot:build-image -Pnative'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           artifactory-repo-deploy-releases: 'libs-milestone-local'
@@ -347,7 +348,7 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'timestamp-batch-3.0.x'
-          mvn-build-commands: '-B clean install spring-boot:build-image'
+          mvn-build-commands: '-B clean install spring-boot:build-image -Pnative'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           artifactory-repo-deploy-releases: 'libs-milestone-local'

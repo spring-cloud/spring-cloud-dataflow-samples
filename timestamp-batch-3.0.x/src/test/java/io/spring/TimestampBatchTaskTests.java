@@ -16,11 +16,10 @@
 
 package io.spring;
 
+import io.spring.configuration.TimestampBatchTaskConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
@@ -33,7 +32,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Glenn Renfro
  */
 @ExtendWith(OutputCaptureExtension.class)
-@SpringBootTest(properties = "--timestamp.format=yyyy.......")
+@SpringBootTest(classes = {
+		BatchJobApplication.class,
+		TimestampBatchTaskConfiguration.class
+},
+		properties = {
+				"logging.level.root=debug",
+				"timestamp.format=yyyy......."
+		})
 public class TimestampBatchTaskTests {
 
 	@Test
@@ -41,9 +47,9 @@ public class TimestampBatchTaskTests {
 		final String TEST_DATE_DOTS = ".......";
 		final String CREATE_TASK_MESSAGE = "Creating: TaskExecution{executionId=";
 		final String UPDATE_TASK_MESSAGE = "Updating: TaskExecution with executionId=1 with the following";
-		final String JOB1_MESSAGE = "Job1 was run with date ";
-		final String JOB2_MESSAGE = "Job2 was run with date ";
-		
+		final String JOB1_MESSAGE = "Job1 was run with ";
+
+
 		String output = capturedOutput.toString();
 
 		assertThat(output).contains(TEST_DATE_DOTS);
@@ -51,14 +57,13 @@ public class TimestampBatchTaskTests {
 		assertThat(output).contains(UPDATE_TASK_MESSAGE);
 
 		assertThat(output).contains(JOB1_MESSAGE);
-		assertThat(output).contains(JOB2_MESSAGE);
 	}
 
-	@SpringBootApplication
-	public static class TestTimestampBatchTaskApplication {
-		public static void main(String[] args) {
-			SpringApplication.run(TestTimestampBatchTaskApplication.class, args);
-		}
-	}
+//	@SpringBootApplication
+//	public static class TestTimestampBatchTaskApplication {
+//		public static void main(String[] args) {
+//			SpringApplication.run(TestTimestampBatchTaskApplication.class, args);
+//		}
+//	}
 
 }

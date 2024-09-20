@@ -16,64 +16,40 @@
 
 package io.spring.configuration;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import javax.sql.DataSource;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @Configuration
 @EnableConfigurationProperties({ TimestampBatchTaskProperties.class })
-public class TimestampBatchTaskConfiguration extends DefaultBatchConfiguration {
+public class TimestampBatchTaskConfiguration {
 
 	private static final Logger logger = LoggerFactory.getLogger(TimestampBatchTaskProperties.class);
-
-
-	@Value("${spring.batch.jdbc.table-prefix:BATCH_}")
-	private String tablePrefix;
 
 	@Autowired
 	private TimestampBatchTaskProperties config;
 
-	@Bean
-	@ConditionalOnProperty(name = "spring.datasource.driver-class-name", matchIfMissing = true, havingValue="matchonlyifmissing")
-	public DataSource dataSource() {
-		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
-				.addScript("/org/springframework/batch/core/schema-h2.sql")
-				.generateUniqueName(true).build();
-	}
-
-	protected String getTablePrefix() {
-		return tablePrefix;
-	}
-
-	/**
-	 * Override default transaction isolation level 'ISOLATION_REPEATABLE_READ' which Oracle does not
-	 * support.
-	 */
-	@Bean
+	@Bean(name = "job1step1")
 	public Step job1step1(JobRepository jobRepository, PlatformTransactionManager springCloudTaskTransactionManager) {
 		return new StepBuilder("job1step1", jobRepository)
-				.tasklet(getTasklet("Job1 was run with date %s"), springCloudTaskTransactionManager).build();
+				.tasklet(getTasklet("Job1 was run with format %s and result=date %s"), springCloudTaskTransactionManager).build();
 	}
 
 	private Tasklet getTasklet(String format) {
@@ -83,29 +59,15 @@ public class TimestampBatchTaskConfiguration extends DefaultBatchConfiguration {
 			contribution.getStepExecution().getJobExecution().getExecutionContext().put("job-ctx1", "exec-job1");
 			logger.info("{}:{}", contribution.getStepExecution().getStepName(), contribution.getStepExecution().getExecutionContext());
 			logger.info("{}:{}", contribution.getStepExecution().getJobExecution().getJobInstance().getJobName(), contribution.getStepExecution().getJobExecution().getExecutionContext());
-			logger.info(String.format(format, dateFormat.format(new Date())));
+			logger.info(String.format(format, format, dateFormat.format(new Date())));
 			return RepeatStatus.FINISHED;
 		};
 	}
 
-	@Bean
-	public Job job1(JobRepository jobRepository, Step job1step1) {
+	@Bean(name = "job1")
+	public Job job1(JobRepository jobRepository, @Qualifier("job1step1") Step job1step1) {
 		return new JobBuilder("job1", jobRepository)
 				.start(job1step1)
-				.build();
-	}
-	@Bean
-	public Step job2step1(JobRepository jobRepository,
-						  PlatformTransactionManager springCloudTaskTransactionManager
-	) {
-		return new StepBuilder("job2step1", jobRepository)
-				.tasklet(getTasklet("Job2 was run with date %s"), springCloudTaskTransactionManager)
-				.build();
-	}
-	@Bean
-	public Job job2(JobRepository jobRepository, Step job2step1) {
-		return new JobBuilder("job2", jobRepository)
-				.start(job2step1)
 				.build();
 	}
 

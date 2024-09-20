@@ -113,7 +113,7 @@ public class TimestampBatchTaskConfiguration {
 							logger.info("jobstep1:{}", contribution.getStepExecution().getExecutionContext());
 							logger.info("job2:{}", contribution.getStepExecution().getJobExecution().getExecutionContext());
 							DateFormat dateFormat = new SimpleDateFormat(config.getFormat());
-							logger.info("Job2 was run with date {}", dateFormat.format(new Date()));
+							logger.info("Job2 was run with {}", dateFormat.format(new Date()));
 							return RepeatStatus.FINISHED;
 						})
 						.build())

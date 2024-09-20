@@ -16,6 +16,11 @@
 
 package io.spring;
 
+import java.util.Arrays;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -28,31 +33,30 @@ import org.springframework.context.annotation.Bean;
 @EnableTask
 @SpringBootApplication
 public class BatchJobApplication {
-
+    private static final Logger logger = LoggerFactory.getLogger(BatchJobApplication.class);
     public static void main(String[] args) {
         SpringApplication.run(BatchJobApplication.class, args);
     }
 
     @Bean
-    public TimestampTask timestampTask(JobLauncher jobLauncher, Job job1, Job job2) {
-        return new TimestampTask(jobLauncher, job1, job2);
+    public TimestampTask timestampTask(JobLauncher jobLauncher, Job job1) {
+        return new TimestampTask(jobLauncher, job1);
     }
 
     public static class TimestampTask implements CommandLineRunner {
         private final JobLauncher launcher;
         private final Job job1;
-        private final Job job2;
 
-        public TimestampTask(JobLauncher launcher, Job job1, Job job2) {
+
+        public TimestampTask(JobLauncher launcher, Job job1) {
             this.launcher = launcher;
             this.job1 = job1;
-            this.job2 = job2;
         }
 
         @Override
         public void run(String... strings) throws Exception {
+            logger.info("starting: {} with {}", job1.getName(), Arrays.asList(strings));
             launcher.run(job1, new JobParameters());
-            launcher.run(job2, new JobParameters());
         }
     }
 }

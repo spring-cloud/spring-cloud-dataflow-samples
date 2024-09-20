@@ -19,10 +19,12 @@ package io.spring.timestamp;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -40,7 +42,7 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties({TimestampTaskProperties.class})
 public class TaskApplication {
 
-	private static final Log logger = LogFactory.getLog(TaskApplication.class);
+	private static final Logger logger = LoggerFactory.getLogger(TaskApplication.class);
 
 	public static void main(String[] args) {
 		SpringApplication.run(TaskApplication.class, args);
@@ -60,9 +62,11 @@ public class TaskApplication {
 		private TimestampTaskProperties config;
 
 		@Override
-		public void run(String... strings) throws Exception {
+		public void run(String... arguments) throws Exception {
+			List<String> args = Arrays.asList(arguments);
+			logger.info("starting with {}", args);
 			DateFormat dateFormat = new SimpleDateFormat(this.config.getFormat());
-			logger.info(dateFormat.format(new Date()));
+			logger.info("completed at:{} with args {}", dateFormat.format(new Date()), args);
 		}
 	}
 }

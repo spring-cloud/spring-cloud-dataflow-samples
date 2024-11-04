@@ -11,7 +11,7 @@
 	<groupId>io.spring</groupId>
 	<artifactId>timestamp-batch-task</artifactId>
 	<version>2.0.2</version>
-	<name>timestamp-task</name>
+	<name>timestamp-batch-task</name>
 	<description>Simple Timestamp sample.</description>
 
 	<properties>

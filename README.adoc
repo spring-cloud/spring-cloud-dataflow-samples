@@ -1,6 +1,8 @@
-# Spring Cloud Data Flow Samples
+## Spring Cloud Data Flow Samples
 
 This repository provides various developer tutorials and samples for building data pipelines with Spring Cloud Data Flow. The samples are included in a document available in https://docs.spring.io/spring-cloud-dataflow-samples/docs/current/reference/html/[multi-page] and https://docs.spring.io/spring-cloud-dataflow-samples/docs/current/reference/htmlsingle/[single-page] HTML.
+
+NOTE: This repository is intended for training and initial demonstration purposes. Some samples may not be maintained after the associated training is complete.
 
 To build the documents
 
@@ -8,7 +10,7 @@ To build the documents
 $mvn package
 ```
 
-## Contributions
+### Contributions
 
 All commits must include a **Signed-off-by** trailer at the end of each commit message to indicate that the contributor agrees to the Developer Certificate of Origin.
 For additional details, please refer to the blog post https://spring.io/blog/2025/01/06/hello-dco-goodbye-cla-simplifying-contributions-to-spring[Hello DCO, Goodbye CLA: Simplifying Contributions to Spring].

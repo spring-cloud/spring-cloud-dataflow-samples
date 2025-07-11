@@ -21,7 +21,7 @@
 		<spring-security-oauth2.version>2.3.7.RELEASE</spring-security-oauth2.version>
 		<mariadb.version>2.4.1</mariadb.version>
 		<kubernetes-client.version>4.1.0</kubernetes-client.version>
-		<nimbus-jose-jwt.version>8.17</nimbus-jose-jwt.version>
+		<nimbus-jose-jwt.version>10.0.2</nimbus-jose-jwt.version>
 	</properties>
 
 	<dependencies>

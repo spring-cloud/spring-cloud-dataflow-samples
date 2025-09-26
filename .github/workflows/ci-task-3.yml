@@ -50,6 +50,7 @@ jobs:
           app-dir: 'timestamp-task-3'
           mvn-build-commands: '-B clean install spring-boot:build-image'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
+          jf-server-id: ${{ vars.JF_SERVER_ID }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           artifactory-repo-deploy-releases: 'libs-milestone-local'
           docker-push: ${{ inputs.maven-build-only != true }}
@@ -75,6 +76,7 @@ jobs:
           app-dir: 'timestamp-batch-3'
           mvn-build-commands: '-B clean install spring-boot:build-image'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
+          jf-server-id: ${{ vars.JF_SERVER_ID }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           artifactory-repo-deploy-releases: 'libs-milestone-local'
           docker-push: ${{ inputs.maven-build-only != true }}

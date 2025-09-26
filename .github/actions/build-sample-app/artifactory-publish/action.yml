@@ -4,6 +4,9 @@ inputs:
   app-dir:
     description: 'relative path to the app directory'
     required: true
+  jf-server-id:
+    description: 'JFrog server id'
+    required: true
   jf-artifactory-spring:
     description: 'encoded JFrog server id configuration'
     required: true
@@ -29,10 +32,11 @@ runs:
         JF_ARTIFACTORY_SPRING: ${{ inputs.JF_ARTIFACTORY_SPRING }}
 
     - name: Configure JFrog Cli
+      shell: bash
       run: |
         jfrog mvnc --use-wrapper \
-          --server-id-resolve=${{ vars.JF_SERVER_ID }} \
-          --server-id-deploy=${{ vars.JF_SERVER_ID }} \
+          --server-id-resolve=${{ inputs.jf-server-id }} \
+          --server-id-deploy=${{ inputs.jf-server-id }} \
           --repo-resolve-releases=libs-milestone \
           --repo-resolve-snapshots=libs-snapshot \
           --repo-deploy-releases=${{ inputs.artifactory-repo-deploy-releases }} \

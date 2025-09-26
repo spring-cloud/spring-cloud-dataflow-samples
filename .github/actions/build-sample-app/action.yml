@@ -12,6 +12,10 @@ inputs:
     description: 'whether or not to publish to artifactory'
     required: false
     default: 'false'
+  jf-server-id:
+    description: 'JFrog server id'
+    required: false
+    default: 'github-spring-cloud'
   jf-artifactory-spring:
     description: 'encoded JFrog server id configuration'
     required: false
@@ -75,6 +79,7 @@ runs:
       if: ${{ inputs.artifactory-publish == 'true' }}
       with:
         app-dir: ${{ inputs.app-dir }}
+        jf-server-id: ${{ inputs.jf-server-id }}
         jf-artifactory-spring: ${{ inputs.jf-artifactory-spring }}
         jf-mvn-build-commands: ${{ inputs.jf-mvn-build-commands }}
         artifactory-repo-deploy-snapshots: ${{ inputs.artifactory-repo-deploy-snapshots }}

@@ -4,6 +4,14 @@ on:
   # Called by UI
   workflow_dispatch:
 
+  # Called when code gets pushed to the main branch
+  push:
+    branches:
+      - main
+    paths:
+      - 'timestamp-task-3'
+      - 'timestamp-batch-3'
+
   # Called by the CI PR workflow (invokes main CI but skips publish and push)
   workflow_call:
     inputs:

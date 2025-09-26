@@ -8,6 +8,8 @@ on:
       - main
     paths-ignore:
       - '.github/**'
+      - 'timestamp-task-3'
+      - 'timestamp-batch-3'
 
   # Called by UI
   workflow_dispatch:

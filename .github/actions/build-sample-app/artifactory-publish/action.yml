@@ -23,24 +23,21 @@ runs:
   using: "composite"
   steps:
 
-    - name: Setup JFrog CLI
-      uses: jfrog/setup-jfrog-cli@v1
-      with:
-        version: 1.46.4
+    - uses: jfrog/setup-jfrog-cli@v3
       env:
-        JF_ARTIFACTORY_SPRING: ${{ inputs.jf-artifactory-spring }}
+        JF_URL: 'https://repo.spring.io'
+        JF_ARTIFACTORY_SPRING: ${{ inputs.JF_ARTIFACTORY_SPRING }}
 
     - name: Configure JFrog Cli
-      shell: bash
       run: |
-        jfrog rt mvnc \
-        --server-id-resolve=repo.spring.io \
-        --server-id-deploy=repo.spring.io \
-        --repo-resolve-releases=libs-milestone \
-        --repo-resolve-snapshots=libs-snapshot \
-        --repo-deploy-releases=${{ inputs.artifactory-repo-deploy-releases }} \
-        --repo-deploy-snapshots=${{ inputs.artifactory-repo-deploy-snapshots }}
-        echo JFROG_CLI_BUILD_NAME=spring-cloud-dataflow-samples >> $GITHUB_ENV
+        jfrog mvnc --use-wrapper \
+          --server-id-resolve=${{ vars.JF_SERVER_ID }} \
+          --server-id-deploy=${{ vars.JF_SERVER_ID }} \
+          --repo-resolve-releases=libs-milestone \
+          --repo-resolve-snapshots=libs-snapshot \
+          --repo-deploy-releases=${{ inputs.artifactory-repo-deploy-releases }} \
+          --repo-deploy-snapshots=${{ inputs.artifactory-repo-deploy-snapshots }}
+        echo JFROG_CLI_BUILD_NAME=spring-cloud-dataflow-samples-task3 >> $GITHUB_ENV
         echo JFROG_CLI_BUILD_NUMBER=$GITHUB_RUN_NUMBER >> $GITHUB_ENV
       working-directory: ${{ inputs.app-dir }}
 

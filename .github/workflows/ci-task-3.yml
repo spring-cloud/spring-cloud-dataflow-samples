@@ -4,6 +4,25 @@ on:
   # Called by UI
   workflow_dispatch:
 
+  # Called by the CI PR workflow (invokes main CI but skips publish and push)
+  workflow_call:
+    inputs:
+      maven-build-only:
+        type: boolean
+        description: Skip Artifactory publish and Docker push for all apps
+        required: false
+        default: false
+    secrets:
+      JF_ARTIFACTORY_SPRING:
+        description: 'encoded JFrog server id configuration'
+        required: false
+      DOCKER_USERNAME:
+        description: 'docker username'
+        required: false
+      DOCKER_TOKEN:
+        description: 'docker password'
+        required: false
+
 jobs:
 
   timestamp-task-3:

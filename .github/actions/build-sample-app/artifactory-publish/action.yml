@@ -34,7 +34,7 @@ runs:
     - name: Configure JFrog Cli
       shell: bash
       run: |
-        jfrog mvnc --use-wrapper \
+        jfrog mvnc \
           --server-id-resolve=${{ inputs.jf-server-id }} \
           --server-id-deploy=${{ inputs.jf-server-id }} \
           --repo-resolve-releases=libs-milestone \
@@ -48,7 +48,7 @@ runs:
     - name: Publish to Artifactory
       shell: bash
       run: |
-        jfrog rt mvn ${{ inputs.jf-mvn-build-commands }}
+        jfrog mvn ${{ inputs.jf-mvn-build-commands }}
         jfrog rt build-publish
         echo "::info ::published ${{ inputs.app-dir }}"
       working-directory: ${{ inputs.app-dir }}

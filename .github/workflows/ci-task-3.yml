@@ -1,0 +1,67 @@
+name: CI-TASK-3
+
+on:
+  # Called by UI
+  workflow_dispatch:
+
+jobs:
+
+  timestamp-task-3:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get the build version
+        id: buildversion
+        run: |
+          cd timestamp-task-3
+          VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "BUILD_VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "BUILD_VERSION=$VERSION"
+          cd ..
+      - uses: ./.github/actions/build-sample-app
+        with:
+          app-dir: 'timestamp-task-3'
+          mvn-build-commands: '-B clean install spring-boot:build-image'
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
+          jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
+          artifactory-repo-deploy-releases: 'libs-milestone-local'
+          docker-push: ${{ inputs.maven-build-only != true }}
+          docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          java-version: '17'
+          docker-images: springcloudtask/timestamp-task:${{steps.buildversion.outputs.BUILD_VERSION}}
+
+  timestamp-batch-3:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get the build version
+        id: buildversion
+        run: |
+          cd timestamp-batch-3
+          VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "BUILD_VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "BUILD_VERSION=$VERSION"
+          cd ..
+      - uses: ./.github/actions/build-sample-app
+        with:
+          app-dir: 'timestamp-batch-3'
+          mvn-build-commands: '-B clean install spring-boot:build-image'
+          artifactory-publish: ${{ inputs.maven-build-only != true }}
+          jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
+          artifactory-repo-deploy-releases: 'libs-milestone-local'
+          docker-push: ${{ inputs.maven-build-only != true }}
+          docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          java-version: '17'
+          docker-images: springcloudtask/timestamp-batch-task:${{steps.buildversion.outputs.BUILD_VERSION}}
+
+  completed:
+    runs-on: ubuntu-latest
+    needs:
+      - timestamp-task-3
+      - timestamp-batch-3
+    steps:
+      - name: 'Completed'
+        shell: bash
+        run: echo "::info ::completed"

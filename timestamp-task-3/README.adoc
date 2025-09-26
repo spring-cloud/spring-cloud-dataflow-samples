@@ -1,0 +1,43 @@
+= Timestamp Task
+
+This is a Spring Cloud Task application that logs a timestamp.
+
+== Requirements
+
+* Java 8 or Above
+
+== Classes
+
+* TaskApplication - the Spring Boot Main Application
+
+== Build
+
+=== Build and test
+[source,shell,indent=2]
+----
+./mvnw clean install
+----
+
+=== Build Docker container
+
+[source,shell,indent=2]
+----
+./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=spring/timestamp-task:latest
+----
+
+== Run
+
+=== Command line
+[source,shell,indent=2]
+----
+java -jar target/timestamp-task-2.0.0.jar
+----
+
+=== Docker
+[source,shell,indent=2]
+----
+docker run spring/timestamp-task:latest
+----
+
+=== Properties
+* *timestamp.format* - The timestamp format, "yyyy-MM-dd HH:mm:ss.SSS" by default.

@@ -29,7 +29,7 @@ runs:
     - uses: jfrog/setup-jfrog-cli@v3
       env:
         JF_URL: 'https://repo.spring.io'
-        JF_ARTIFACTORY_SPRING: ${{ inputs.JF_ARTIFACTORY_SPRING }}
+        JF_ARTIFACTORY_SPRING: ${{ inputs.jf-artifactory-spring }}
 
     - name: Configure JFrog Cli
       shell: bash

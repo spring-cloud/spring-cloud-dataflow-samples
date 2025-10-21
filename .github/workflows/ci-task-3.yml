@@ -48,16 +48,19 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'timestamp-task-3'
-          mvn-build-commands: '-B clean install spring-boot:build-image'
+          mvn-build-commands: '-B -Pstagingrelease clean install spring-boot:build-image'
+          jf-mvn-build-commands: '-B -Pstagingrelease clean install'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-server-id: ${{ vars.JF_SERVER_ID }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
-          artifactory-repo-deploy-releases: 'libs-milestone-local'
+          artifactory-repo-deploy-releases: 'libs-release-local'
           docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           java-version: '17'
           docker-images: springcloudtask/timestamp-task:${{steps.buildversion.outputs.BUILD_VERSION}}
+          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
 
   timestamp-batch-3:
     runs-on: ubuntu-latest
@@ -74,16 +77,19 @@ jobs:
       - uses: ./.github/actions/build-sample-app
         with:
           app-dir: 'timestamp-batch-3'
-          mvn-build-commands: '-B clean install spring-boot:build-image'
+          mvn-build-commands: '-B -Pstagingrelease clean install spring-boot:build-image'
+          jf-mvn-build-commands: '-B -Pstagingrelease clean install'
           artifactory-publish: ${{ inputs.maven-build-only != true }}
           jf-server-id: ${{ vars.JF_SERVER_ID }}
           jf-artifactory-spring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
-          artifactory-repo-deploy-releases: 'libs-milestone-local'
+          artifactory-repo-deploy-releases: 'libs-release-local'
           docker-push: ${{ inputs.maven-build-only != true }}
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-password: ${{ secrets.DOCKERHUB_TOKEN }}
           java-version: '17'
           docker-images: springcloudtask/timestamp-batch-task:${{steps.buildversion.outputs.BUILD_VERSION}}
+          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
 
   completed:
     runs-on: ubuntu-latest

@@ -22,6 +22,13 @@ inputs:
     description: 'which Artifactory repo to publish non-snapshot versions to (the \"--repo-deploy-releases\" arg passed to \"jfrog rt mvn\")'
     required: false
     default: 'libs-milestone-local'
+  gpg-passphrase:
+    description: 'The passphrase of the gpg key to sign the artifacts with'
+    required: false
+  gpg-private-key:
+    description: 'The gpg private key to sign the artifacts with'
+    required: false
+
 runs:
   using: "composite"
   steps:
@@ -45,9 +52,22 @@ runs:
         echo JFROG_CLI_BUILD_NUMBER=$GITHUB_RUN_NUMBER >> $GITHUB_ENV
       working-directory: ${{ inputs.app-dir }}
 
-    - name: Publish to Artifactory
+    - name: Print Build Info
       shell: bash
       run: |
+        echo "::notice ::JFROG_CLI_BUILD_NAME=$JFROG_CLI_BUILD_NAME"
+        echo "::notice ::JFROG_CLI_BUILD_NUMBER=$JFROG_CLI_BUILD_NUMBER"
+
+    - name: Publish to Artifactory
+      shell: bash
+      env:
+        MAVEN_GPG_PRIVATE_KEY: ${{ inputs.gpg-private-key }}
+        MAVEN_GPG_PASSPHRASE: ${{ inputs.gpg-passphrase }}
+      run: |
+        if [ -n "$variable_name" ]; then
+          echo "${MAVEN_GPG_PRIVATE_KEY}" > private.asc
+          gpg --import --batch --no-tty private.asc
+        fi
         jfrog mvn ${{ inputs.jf-mvn-build-commands }}
         jfrog rt build-publish
         echo "::info ::published ${{ inputs.app-dir }}"

@@ -54,6 +54,13 @@ inputs:
     description: 'Java Version. Default is 8'
     required: false
     default: '8'
+  gpg-passphrase:
+    description: 'The passphrase of the gpg key to sign the artifacts with'
+    required: false
+  gpg-private-key:
+    description: 'The gpg private key to sign the artifacts with'
+    required: false
+
 runs:
   using: "composite"
   steps:
@@ -72,7 +79,15 @@ runs:
 
     - name: Maven build
       shell: bash
-      run: ./mvnw ${{ inputs.mvn-build-commands }}
+      env:
+        MAVEN_GPG_PRIVATE_KEY: ${{ inputs.gpg-private-key }}
+        MAVEN_GPG_PASSPHRASE: ${{ inputs.gpg-passphrase }}
+      run: |
+        if [ -n "$variable_name" ]; then
+          echo "${MAVEN_GPG_PRIVATE_KEY}" > private.asc
+          gpg --import --batch --no-tty private.asc
+        fi
+        ./mvnw ${{ inputs.mvn-build-commands }}
       working-directory: ${{ inputs.app-dir }}
 
     - uses: ./.github/actions/build-sample-app/artifactory-publish
@@ -84,6 +99,8 @@ runs:
         jf-mvn-build-commands: ${{ inputs.jf-mvn-build-commands }}
         artifactory-repo-deploy-snapshots: ${{ inputs.artifactory-repo-deploy-snapshots }}
         artifactory-repo-deploy-releases: ${{ inputs.artifactory-repo-deploy-releases }}
+        gpg-passphrase: ${{ inputs.gpg-passphrase }}
+        gpg-private-key: ${{ inputs.gpg-private-key }}
 
     - uses: ./.github/actions/build-sample-app/docker-push
       if: ${{ inputs.docker-push == 'true' }}

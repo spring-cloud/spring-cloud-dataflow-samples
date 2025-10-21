@@ -1,0 +1,49 @@
+name: Task/Batch 3 Apps (Release to Maven Central)
+
+on:
+  workflow_dispatch:
+    inputs:
+      buildName:
+        description: "Artifactory build name"
+        required: true
+      buildNumber:
+        description: "Artifactory build number"
+        required: true
+
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  JF_ENV_SPRING: ${{ secrets.JF_ARTIFACTORY_SPRING }}
+  CENTRAL_TOKEN_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
+
+jobs:
+  deploy-to-maven-central:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          show-progress: false
+
+      - name: Verify Maven Secrets
+        run: |
+          if [[ -z $CENTRAL_TOKEN_USERNAME ]] 
+          then
+            gh run cancel ${{ github.run_id }}
+            echo "::error title=Cannot deploy to Maven Central:: The 'CENTRAL_TOKEN_USERNAME' & 'CENTRAL_TOKEN_PASSWORD' must be provided"
+            exit 1
+          fi
+
+      - uses: jfrog/setup-jfrog-cli@v4
+
+      - name: Download Release Files
+        run: |
+          jfrog rt download \
+          --spec '.github/artifactory-release-files-spec.json' \
+          --spec-vars "buildname=${{ inputs.buildName }};buildnumber=${{ inputs.buildNumber }}"
+
+      - name: Deploy to Maven Central
+        if: env.CENTRAL_TOKEN_USERNAME
+        uses: spring-io/central-publish-action@v0.3.0
+        with:
+          token-name: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
+          token: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
+          dir: central_bundle

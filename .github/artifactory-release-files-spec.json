@@ -1,0 +1,31 @@
+{
+  "files": [
+    {
+      "aql": {
+        "items.find": {
+          "$and": [
+            {
+              "@build.name": "${buildname}",
+              "@build.number": "${buildnumber}",
+              "path": {"$match": "org*"}
+            },
+            {
+              "$or": [
+                {
+                  "name": {"$match": "*.pom"}
+                },
+                {
+                  "name": {"$match": "*.jar"}
+                },
+                {
+                  "name": {"$match": "*.asc"}
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "target": "central_bundle/"
+    }
+  ]
+}

@@ -83,7 +83,7 @@ runs:
         MAVEN_GPG_PRIVATE_KEY: ${{ inputs.gpg-private-key }}
         MAVEN_GPG_PASSPHRASE: ${{ inputs.gpg-passphrase }}
       run: |
-        if [ -n "$variable_name" ]; then
+        if [ -n "$MAVEN_GPG_PRIVATE_KEY" ]; then
           echo "${MAVEN_GPG_PRIVATE_KEY}" > private.asc
           gpg --import --batch --no-tty private.asc
         fi

@@ -47,3 +47,4 @@ jobs:
           token-name: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
           token: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
           dir: central_bundle
+          timeout: 2h
